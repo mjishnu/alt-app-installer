@@ -1,5 +1,6 @@
 import subprocess
 import tkinter as tk
+from tkinter import ttk
 from tkinter import filedialog
 
 try:
@@ -18,23 +19,21 @@ try:
     # icon set
     # window.iconbitmap(path)
 
-    label = tk.Label(window,
-                     text="file Installer V1.0",
-                     fg="blue")
+    label = tkk.Label(window,
+                     text="file Installer V1.0")
 
     label.config(font=("Courier", 12))
 
-    button_explore = tk.Button(window,
+    button_explore = ttk.Button(window,
                                text="Select File",
                                command=select_file)
 
-    button_exit = tk.Button(window,
+    button_exit = ttk.Button(window,
                             text="Exit",
                             command=window.destroy)
 
-    label_credits = tk.Label(window,
-                             text="By TechoZ",
-                             fg="blue")
+    label_credits = ttk.Label(window,
+                             text="By TechoZ")
 
     label_credits.config(font=("Courier", 12))
 
