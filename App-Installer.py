@@ -16,7 +16,7 @@ try:
     window.title('file Installer')
 
     # icon set
-    # window.iconbitmap('C:/Users/Desktop/icon.ico')
+    # window.iconbitmap(path)
 
     label = tk.Label(window,
                      text="file Installer V1.0",
