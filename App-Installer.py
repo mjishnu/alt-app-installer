@@ -20,20 +20,20 @@ try:
     # window.iconbitmap(path)
 
     label = tkk.Label(window,
-                     text="file Installer V1.0")
+                      text="file Installer V1.0")
 
     label.config(font=("Courier", 12))
 
     button_explore = ttk.Button(window,
-                               text="Select File",
-                               command=select_file)
+                                text="Select File",
+                                command=select_file)
 
     button_exit = ttk.Button(window,
-                            text="Exit",
-                            command=window.destroy)
+                             text="Exit",
+                             command=window.destroy)
 
     label_credits = ttk.Label(window,
-                             text="By TechoZ")
+                              text="By TechoZ")
 
     label_credits.config(font=("Courier", 12))
 
