@@ -19,7 +19,7 @@ try:
     # icon set
     # window.iconbitmap(path)
 
-    label = tkk.Label(window,
+    label = ttk.Label(window,
                       text="file Installer V1.0")
 
     label.config(font=("Courier", 12))
