@@ -24,8 +24,6 @@ try:
 
     # Set window title
     window.title('file Installer')
-    # icon set
-    # window.iconbitmap(path)
 
     label = ttk.Label(window,
                       text="file Installer V1.0")
@@ -54,28 +52,12 @@ try:
     label_credits.grid(column=0, row=3, padx=10,
                        sticky='E', columnspan=True)
 
-    label_credits.bind("<Button-1>", lambda e: callback("http://youtube.com/c/techoz_youtube_channel"))
+    label_credits.bind(
+        "<Button-1>", lambda e: callback("http://youtube.com/c/techoz_youtube_channel"))
 
     window.mainloop()
+    
 except:
     import traceback
     traceback.print_exc()
-    input("Press Enter to end...")
-
-
-# from tkinter import *
-# import webbrowser
-
-# def callback(url):
-#     webbrowser.open_new(url)
-
-# root = Tk()
-# link1 = Label(root, text="Google Hyperlink", fg="blue", cursor="hand2")
-# link1.pack()
-# link1.bind("<Button-1>", lambda e: callback("http://www.google.com"))
-
-# link2 = Label(root, text="Ecosia Hyperlink", fg="blue", cursor="hand2")
-# link2.pack()
-# link2.bind("<Button-1>", lambda e: callback("http://www.ecosia.org"))
-
-# root.mainloop()
+    input("Press Enter to end the program...")
