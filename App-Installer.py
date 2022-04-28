@@ -1,4 +1,4 @@
-import subprocess
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -17,8 +17,7 @@ try:
         filename = filedialog.askopenfilename(initialdir="/",
                                               title="Select a File")
 
-        subprocess.run(f'powershell -Command Add-AppxPackage "{filename}"')
-        print(f'powershell -Command Add-AppPackage "{filename}"')
+        os.system(f'powershell.exe Add-AppPackage "{filename}"')
 
     # Create the root window
     window = tk.Tk()
@@ -29,7 +28,7 @@ try:
     # window.iconbitmap(path)
 
     label = ttk.Label(window,
-                      text="file Installer V1.0")
+                      text="file Installer V1.1")
 
     label.config(font=("Courier", 12))
 
