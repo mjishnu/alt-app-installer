@@ -24,6 +24,9 @@ try:
 
     # Set window title
     window.title('file Installer')
+    
+    # icon set
+    # window.iconbitmap(path)
 
     label = ttk.Label(window,
                       text="file Installer V1.0")
