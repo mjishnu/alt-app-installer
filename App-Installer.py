@@ -17,14 +17,14 @@ try:
         filename = filedialog.askopenfilename(initialdir="/",
                                               title="Select a File")
 
-        subprocess.run(f"powershell -Command Add-AppxPackage {filename}")
+        subprocess.run(f'powershell -Command Add-AppxPackage "{filename}"')
+        print(f'powershell -Command Add-AppPackage "{filename}"')
 
     # Create the root window
     window = tk.Tk()
 
     # Set window title
     window.title('file Installer')
-    
     # icon set
     # window.iconbitmap(path)
 
@@ -59,8 +59,7 @@ try:
         "<Button-1>", lambda e: callback("http://youtube.com/c/techoz_youtube_channel"))
 
     window.mainloop()
-    
 except:
     import traceback
     traceback.print_exc()
-    input("Press Enter to end the program...")
+    input("Press Enter to end...")
