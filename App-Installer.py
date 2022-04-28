@@ -1,4 +1,4 @@
-import subprocess
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -17,7 +17,7 @@ try:
         filename = filedialog.askopenfilename(initialdir="/",
                                               title="Select a File")
 
-        subprocess.run(f"powershell -Command Add-AppxPackage {filename}")
+        os.system(f'powershell.exe Add-AppPackage "{filename}"')
 
     # Create the root window
     window = tk.Tk()
@@ -28,7 +28,7 @@ try:
     # window.iconbitmap(path)
 
     label = ttk.Label(window,
-                      text="file Installer V1.0")
+                      text="file Installer V1.1")
 
     label.config(font=("Courier", 12))
 
@@ -54,28 +54,11 @@ try:
     label_credits.grid(column=0, row=3, padx=10,
                        sticky='E', columnspan=True)
 
-    label_credits.bind("<Button-1>", lambda e: callback("http://youtube.com/c/techoz_youtube_channel"))
+    label_credits.bind(
+        "<Button-1>", lambda e: callback("http://youtube.com/c/techoz_youtube_channel"))
 
     window.mainloop()
 except:
     import traceback
     traceback.print_exc()
     input("Press Enter to end...")
-
-
-# from tkinter import *
-# import webbrowser
-
-# def callback(url):
-#     webbrowser.open_new(url)
-
-# root = Tk()
-# link1 = Label(root, text="Google Hyperlink", fg="blue", cursor="hand2")
-# link1.pack()
-# link1.bind("<Button-1>", lambda e: callback("http://www.google.com"))
-
-# link2 = Label(root, text="Ecosia Hyperlink", fg="blue", cursor="hand2")
-# link2.pack()
-# link2.bind("<Button-1>", lambda e: callback("http://www.ecosia.org"))
-
-# root.mainloop()
