@@ -1,0 +1,4 @@
+17-05-2022 23:07:47.479 INFO: Running App Installer
+17-05-2022 23:08:13.520 INFO: Running App Installer
+17-05-2022 23:18:24.807 INFO: Running App Installer
+17-05-2022 23:25:19.451 INFO: Running App Installer

@@ -145,6 +145,11 @@ class MainWindowGui(Ui_MainProgram):
         else:
             self.show_error_popup()
 
+    def clear_cache_helper(self):
+        worker = Worker(lambda *ars, **kwargs: self.clear_cache())
+        worker.signals.error.connect(self.error_handler)
+        self.threadpool.start(worker)
+
     def clear_cache(self):
         def remove_(path, mode='file'):
             if mode == 'file':
@@ -161,7 +166,6 @@ class MainWindowGui(Ui_MainProgram):
                     pass
 
         remove_('config.txt')
-        remove_('log.txt')
         remove_('Downloads', 'dir')
         remove_('__pycache__', 'dir')
         remove_('.qt_for_python', 'dir')
