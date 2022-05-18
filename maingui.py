@@ -139,7 +139,7 @@ class MainWindowGui(Ui_MainProgram):
         webbrowser.open(arg)
 
     def open_Logs(self):
-        path = 'logs.txt'
+        path = 'log.txt'
         if os.path.exists(path):
             os.startfile(path)
         else:
