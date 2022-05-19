@@ -12,7 +12,7 @@ NOTE: You can only get free apps through this if you want to install any paid ap
 <img width="1041" alt="image" src="https://user-images.githubusercontent.com/83004520/169115064-b1cf9080-5ef1-425b-b81e-ea69114ae926.png">
 <img width="893" alt="image" src="https://user-images.githubusercontent.com/83004520/169115417-15624c09-923d-4be2-a1be-ecdf47c04f24.png">
 
-# requirements
+# Requirements
 - [Chrome browser](https://www.google.com/intl/en_in/chrome/)
 
 # How to use the app
@@ -23,16 +23,16 @@ NOTE: You can only get free apps through this if you want to install any paid ap
 - Wait for the process to complete, afterwards check for the app in start menu
 - you can also install already downloaded apps via "install from file" in "Options" 
 
-# Video Guide
-
-https://youtu.be/pFv5N1BDBUs
-
 # How to build from source
 
 - first open a terminal run the command `git clone https://github.com/m-jishnu/Windows-Store-App-Installer`
 - now install python3 and pip, go to the cloned folder and run the command `pip install -r requirement.txt`
 - run the "run.bat", open the clone folder and run the command  `.\run` 
 - enjoy!
+
+# Video Guide
+
+https://youtu.be/pFv5N1BDBUs
 
 # FAQ
 
