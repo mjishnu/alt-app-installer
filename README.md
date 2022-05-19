@@ -16,8 +16,8 @@ NOTE: You can only get free apps through this if you want to install any paid ap
 - [Chrome browser](https://www.google.com/intl/en_in/chrome/)
 
 # How to use the app
-- Download the alt-app-installer.exe and run it or build it from source
-- Now open the alt-app-installer.exe file in the extracted folder and run it ( the first run can take time )
+- Download the alt_app_installer.exe and run it or build it from source
+- Now open the alt_app_installer.exe file in the extracted folder(alt_app_installer) and run it ( the first run can take time )
 - Go to options select install chrome driver and wait for it to complete a pop will appear indicating its completion
 - Now click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
