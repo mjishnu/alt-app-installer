@@ -38,7 +38,7 @@ https://youtu.be/pFv5N1BDBUs
 
 **How to solve Error popup after choosing the app?**
 
-If you have selected the app correctly then most of the time its your internet speed, to solve this go to option click on 'set wait time' and increase the wait time
+If you have selected the app correctly then most of the time its your internet speed, to solve this go to option click on "set wait time" and increase the wait time
 
 NOTE: Increasing the wait time means it will take longer to complete the installation
 
