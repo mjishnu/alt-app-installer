@@ -1,4 +1,4 @@
-# Alt-App-Installer
+# Alt App Installer
 A Simple Program To  Download And Install Windows Store Apps
 
 This Program basically automates the process of getting the file from https://store.rg-adguard.net/ and installs the app for the user, so all credit goes to the creator of https://store.rg-adguard.net/
