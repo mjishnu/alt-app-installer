@@ -36,12 +36,12 @@ https://youtu.be/pFv5N1BDBUs
 
 # FAQ
 
-1. How to solve Error popup after choosing the app?
+- How to solve Error popup after choosing the app?
 
 If you have selected the app correctly then most of the time its your internet speed, to solve this go to option click on 'set wait time' and increase the wait time
 
 NOTE: Increasing the wait time means it will take longer to complete the installation
 
-Other Errors ?
+- Other Errors ?
 
 You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
