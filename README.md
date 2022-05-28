@@ -32,7 +32,7 @@ NOTE: You can only get free apps through this if you want to install any paid ap
 
 # Video Guide
 
-bit.ly/3LPHfu8
+https://bit.ly/3LPHfu8
 
 # FAQ
 
