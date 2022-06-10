@@ -1,3 +1,4 @@
+from ast import If
 import os
 import platform
 import re
@@ -114,7 +115,7 @@ class MainWindowGui(Ui_MainProgram):
         self.show_bar(False)
         self.pushButton.clicked.connect(self.openWindow)
         self.actioninstall_From_File.triggered.connect(
-            self.run_installer_helper)
+            self.run_installer)
         self.actionSet_Wait_Time.triggered.connect(self.set_wait_time)
         self.actionclear_cache.triggered.connect(self.clear_cache)
         self.actionCheck_For_Updates.triggered.connect(lambda: self.open_browser(
@@ -135,30 +136,32 @@ class MainWindowGui(Ui_MainProgram):
         else:
             self.show_error_popup()
 
-    def clear_cache_helper(self):
-        worker = Worker(lambda *ars, **kwargs: self.clear_cache())
-        worker.signals.error.connect(self.error_handler)
-        self.threadpool.start(worker)
-
     def clear_cache(self):
-        def remove_(path, mode='file'):
-            if mode == 'file':
-                if os.path.exists(path):
-                    os.remove(path)
-                else:
-                    pass
+        def remove_file():
+            def remove_(path, mode='file'):
+                if mode == 'file':
+                    if os.path.exists(path):
+                        os.remove(path)
+                    else:
+                        pass
 
-            elif mode == 'dir':
-                try:
-                    shutil.rmtree(path)
+                elif mode == 'dir':
+                    try:
+                        shutil.rmtree(path)
 
-                except OSError as e:
-                    pass
+                    except OSError as e:
+                        pass
 
-        remove_('config.txt')
-        remove_('Downloads', 'dir')
-        remove_('__pycache__', 'dir')
-        remove_('.qt_for_python', 'dir')
+            remove_('config.txt')
+            remove_('Downloads', 'dir')
+            remove_('__pycache__', 'dir')
+            remove_('.qt_for_python', 'dir')
+            
+        worker = Worker(lambda *ars, **kwargs: remove_file())
+        worker.signals.error.connect(self.error_handler)
+        
+        self.threadpool.start(worker)
+        worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
 
     def set_wait_time(self):
         window = QtWidgets.QWidget()
@@ -168,16 +171,32 @@ class MainWindowGui(Ui_MainProgram):
             with open('./config.txt', 'w') as f:
                 f.write(f'wait_time:{i}')
 
-    def run_installer(self, *args, **kwargs):
+    def error_msg(self, text,msg_details,title="Error",critical = False):
+            msg = QtWidgets.QMessageBox()
+            msg.setWindowTitle(title)
+            msg.setText(f'{str(text)}     ')
+            if critical:
+                msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+            else:
+                msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+            msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
+            self.set_bar_0()
+            self.show_bar(False)
+            self.pushButton.setEnabled(True)
+            msg.exec()
+
+    def run_success(self,value):
+        if value == 0:
+            self.show_success_popup()
+        else:
+            self.error_msg(*value)
+
+
+    def run_installer(self):
         fname = QtWidgets.QFileDialog.getOpenFileNames()
-        self.install(path=fname[0][0])
-
-    def run_installer_helper(self):
-        worker = Worker(self.run_installer)
-        worker.signals.error.connect(self.error_handler)
+        worker = Worker(lambda *args,**kwargs: self.install(path=fname[0][0]))
         self.threadpool.start(worker)
-
-        worker.signals.finished.connect(self.show_success_popup)
+        worker.signals.result.connect(self.run_success)
 
     def openWindow(self):
         self.window = QtWidgets.QMainWindow()
@@ -199,27 +218,35 @@ class MainWindowGui(Ui_MainProgram):
         if total == 100:
             self.main_Progress(20)
 
-    def error_handler(self, n):
+    def error_handler(self, n,normal=True):
         with open('log.txt', 'a') as f:
             f.write(f'[maingui.py, Thread logs] \n{self.current_time}\n\n')
             f.write(n[2])
             f.write(f'{82*"-"}\n')
-        self.show_error_popup()
-
+        if normal:
+            self.show_error_popup()
+        else:
+            msg = 'An Error Has Occured Try Again!'
+            msg_details = f'{n[1]}'
+            self.error_msg(msg,msg_details,"Error",True)
+            
     def show_error_popup(self):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle('Error')
         msg.setText('An Error Has Occured Try Again!     ')
-        msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+        msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         self.set_bar_0()
         self.show_bar(False)
         self.pushButton.setEnabled(True)
         msg.exec()
 
-    def show_success_popup(self):
+    def show_success_popup(self,text=None):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle('Success')
-        msg.setText('Installation completed!     ')
+        if text:
+            msg.setText(f'{text}     ')
+        else:
+            msg.setText('Installation completed!     ')
         msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
         self.set_bar_0()
         self.show_bar(False)
@@ -228,25 +255,26 @@ class MainWindowGui(Ui_MainProgram):
 
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
-        worker.signals.result.connect(self.helper)
+        worker.signals.result.connect(self.post_runner)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(self.error_handler)
+        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,**kwargs))
         self.threadpool.start(worker)
 
         self.pushButton.setEnabled(False)
         self.show_bar(True)
 
-    def helper(self, arg):
+    def post_runner(self, arg):
         worker = Worker(lambda **kwargs: self.installer(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
+        worker.signals.result.connect(self.run_success)
         worker.signals.progress.connect(self.progress)
         worker.signals.error.connect(self.error_handler)
         self.threadpool.start(worker)
 
-        worker.signals.finished.connect(self.show_success_popup)
+        
 
     def set_bar_0(self):
         self.mainprogressBar.setValue(0)
@@ -447,12 +475,19 @@ class MainWindowGui(Ui_MainProgram):
         with open('log.txt', 'a') as f:
             f.write(f'[installer.py, powershell command logs] \n{self.current_time}\n')
             f.write(f'command: {output.args[1]}\n\n')    
-            f.write(str(output.stderr.decode("utf-8")))
-            print(output.stderr.decode("utf-8"))           
+            f.write(output.stderr.decode("utf-8"))           
             f.write(f'{82*"-"}\n')
-            if output.returncode == 0:
-                #code for future versions
-                pass
+            msg = 'Failed To Install The Application!'
+            detail_msg = f'Command Execution Failed: {output.args[1]}'
+            if output.returncode != 0:
+                if lst != None:
+                    detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
+                    detail_msg+='So check wheather the program is installed in start menu if not, try again!'
+                    return (msg,detail_msg,"Warning")
+                elif path != None:
+                    detail_msg+='\nThe Installation has failed, try again!'
+                    return (msg,detail_msg,"Error",True)
+            return 0
             
     def installer(self, data,  progress_current, progress_main, progress):
         main_dict, final_data = data
@@ -479,8 +514,8 @@ class MainWindowGui(Ui_MainProgram):
                 request.urlretrieve(remote_url, path, Handle_Progress)
                 progress_main.emit(2)
             path_lst.append(path)
-        self.install(lst=path_lst)
-        progress_main.emit(100)
+        progress_main.emit(10)
+        return self.install(lst=path_lst)
 
 
 def main():
