@@ -286,14 +286,13 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actionInstall_Chrome_Driver"/>
     <addaction name="actioninstall_From_File"/>
     <addaction name="actionSet_Wait_Time"/>
     <addaction name="actionclear_cache"/>

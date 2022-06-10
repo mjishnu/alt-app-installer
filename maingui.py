@@ -124,16 +124,6 @@ class MainWindowGui(Ui_MainProgram):
         self.actionHelp.triggered.connect(lambda: self.open_browser(
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
-        self.actionInstall_Chrome_Driver.triggered.connect(
-            self.install_Chrome_driver)
-
-    def install_Chrome_driver(self):
-
-        worker = Worker(
-            lambda *ars, **kwargs: chromedriver_autoinstaller.install(cwd=True))
-        worker.signals.error.connect(self.error_handler)
-        self.threadpool.start(worker)
-        worker.signals.finished.connect(self.show_success_popup)
 
     def open_browser(self, arg):
         webbrowser.open(arg)
@@ -190,19 +180,9 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.finished.connect(self.show_success_popup)
 
     def openWindow(self):
-        if os.path.exists('101/chromedriver.exe'):
-            self.window = QtWidgets.QMainWindow()
-            newWindow = MainWindow(self.window)
-            newWindow.closed.connect(self.runner)
-        else:
-            msg = QtWidgets.QMessageBox()
-            msg.setWindowTitle('Error')
-            msg.setText(
-                'Chrome Driver Not Installed!     ')
-            msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
-            msg.setDetailedText(
-                "Chromedriver Not Found!\n\nFix:  Options --> Install Chrome Driver")
-            msg.exec()
+        self.window = QtWidgets.QMainWindow()
+        newWindow = MainWindow(self.window)
+        newWindow.closed.connect(self.runner)
 
     def main_Progress(self, n):
         total = self.mainprogressBar.value()
@@ -221,8 +201,9 @@ class MainWindowGui(Ui_MainProgram):
 
     def error_handler(self, n):
         with open('log.txt', 'a') as f:
-            f.write(
-                f'[maingui.py, Thread logs] \n{self.current_time} {str(n)}\n \n')
+            f.write(f'[maingui.py, Thread logs] \n{self.current_time}\n\n')
+            f.write(n[2])
+            f.write(f'{82*"-"}\n')
         self.show_error_popup()
 
     def show_error_popup(self):
@@ -326,7 +307,7 @@ class MainWindowGui(Ui_MainProgram):
         options.add_argument("--hide-scrollbars")
         options.add_argument("--disable-gpu")
         options.add_argument("--log-level=3")  # fatal
-        chrome_service = ChromeService('101/chromedriver.exe')
+        chrome_service = ChromeService(chromedriver_autoinstaller.install(cwd=True))
         chrome_service.creationflags = CREATE_NO_WINDOW
 
         # path of driver
@@ -464,9 +445,15 @@ class MainWindowGui(Ui_MainProgram):
         output = subprocess.run(
             ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
         with open('log.txt', 'a') as f:
-            f.write(
-                f'[installer.py, powershell command logs] \n{self.current_time} {output}\n \n')
-
+            f.write(f'[installer.py, powershell command logs] \n{self.current_time}\n')
+            f.write(f'command: {output.args[1]}\n\n')    
+            f.write(str(output.stderr.decode("utf-8")))
+            print(output.stderr.decode("utf-8"))           
+            f.write(f'{82*"-"}\n')
+            if output.returncode == 0:
+                #code for future versions
+                pass
+            
     def installer(self, data,  progress_current, progress_main, progress):
         main_dict, final_data = data
         dwnpath = './Downloads/'

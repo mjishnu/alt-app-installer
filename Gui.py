@@ -149,7 +149,7 @@ class Ui_MainProgram(object):
         self.currentprogressBar.raise_()
         MainProgram.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainProgram)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 18))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 600, 21))
         self.menubar.setObjectName("menubar")
         self.menuOptions = QtWidgets.QMenu(self.menubar)
         self.menuOptions.setObjectName("menuOptions")
@@ -184,7 +184,6 @@ class Ui_MainProgram(object):
         self.actioninstall_From_File.setObjectName("actioninstall_From_File")
         self.actionSet_Wait_Time = QtGui.QAction(MainProgram)
         self.actionSet_Wait_Time.setObjectName("actionSet_Wait_Time")
-        self.menuOptions.addAction(self.actionInstall_Chrome_Driver)
         self.menuOptions.addAction(self.actioninstall_From_File)
         self.menuOptions.addAction(self.actionSet_Wait_Time)
         self.menuOptions.addAction(self.actionclear_cache)
@@ -231,13 +230,3 @@ class Ui_MainProgram(object):
         self.actioninstall_From_File.setStatusTip(_translate("MainProgram", "Install App (Appx,Msix..etc) From Local File "))
         self.actionSet_Wait_Time.setText(_translate("MainProgram", "Set Wait Time"))
         self.actionSet_Wait_Time.setStatusTip(_translate("MainProgram", "Set Wait Time ( Use If Slow Internet Speed,Default: 5)"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainProgram = QtWidgets.QMainWindow()
-    ui = Ui_MainProgram()
-    ui.setupUi(MainProgram)
-    MainProgram.show()
-    sys.exit(app.exec())
