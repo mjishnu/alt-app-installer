@@ -4,14 +4,7 @@ import subprocess
 import re
 import platform
 from datetime import datetime
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service as ChromeService
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
-import warnings
-import time
-import chromedriver_autoinstaller
+from requests_html import HTMLSession
 
 
 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
@@ -52,90 +45,38 @@ def install(path=None, lst=None):
                 return (msg,detail_msg,"Error",True)
         return 0
 
-def selenium_func(data_args):
+def get_data(arg):
     
-    def get_time():
-        if not os.path.exists('./config.txt'):
-            with open('./config.txt', 'w') as f:
-                f.write('wait_time:5')
-
-        with open('./config.txt', 'r') as f:
-            file_n = f.read()
-            pattern = re.compile(r"([a-z_]+):(\d)")
-            return int(pattern.search(str(file_n)).group(2))
-        
+    #geting product id from url
     def product_id_getter(wrd):
         try:
             pattern = re.compile(r".+\/([a-zA-Z-]+)\/([a-zA-Z0-9]+)|.+")
             matches = pattern.search(str(wrd))
-            return matches.group(2)
+            match=matches.group(2)
+            return match
+        
         except AttributeError:
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
             
-    wait_time = get_time()
-    product_id = product_id_getter(str(data_args))
-
-    # ignoring unwanted warning
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    #using the api from store.adguard
+    url = "https://store.rg-adguard.net/api/GetFiles"
+    data = {"type":"ProductId","url":"product_id_url","ring":"RP","lang":"en-EN"}
+    data["url"]= product_id_getter(str(arg))
+    session = HTMLSession()
+    r = session.post(url,data = data)
     
-    # adding option to hide browser window
-    options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--hide-scrollbars")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--log-level=3")  # fatal
-    chrome_service = ChromeService(chromedriver_autoinstaller.install(cwd=True))
-    chrome_service.creationflags = subprocess.CREATE_NO_WINDOW
-
-    # path of driver
-    driver = Chrome(options=options, service=chrome_service)
-    driver.get("https://store.rg-adguard.net/")
-
-    # inputing data
-    # selecting type from the options [url,productId etc] here we choose productid
-    select = Select(driver.find_element(
-        by=By.XPATH, value=r"/html/body/div[1]/select[1]"))
-    select.select_by_value("ProductId")
-    # selecting the box field and passing data to it
-    box_field = driver.find_element(
-        by=By.XPATH, value=r"/html/body/div[1]/input[1]")
-    box_field.send_keys(product_id)
-
-    # click on the submit button
-    submit_button = driver.find_element(
-        By.CSS_SELECTOR, r"body > div.center > input[type=button]:nth-child(8)"
-    )
-    time.sleep(wait_time-1)
-    submit_button.click()
-    time.sleep(wait_time+1)
-    # inputing data end --------------------------
-
-    # get contents from site
-    main_dict = {}
-    file = driver.find_element(
-        by=By.XPATH, value="/html/body/div[1]/div/table/tbody"
-    ).text.split("\n")
-
-    # geting length of the table
-    length = len(file)
-
-    # getting size of files
-    splited = [i.split(" ") for i in file]
-    size = dict()
-    for i in splited:
-        size[i[0]] = (i[-2], i[-1])
-
-    # looping to get all elements and adding them to a dict with {name:url}
-    for i in range(length):
-        file = driver.find_element_by_xpath(
-            f"/html/body/div[1]/div/table/tbody/tr[{i+1}]/td[1]/a"
-        )
-
-        main_dict[file.text] = file.get_attribute("href")
-    driver.quit()
+    #getting all the files from the html
+    matches = r.html.find("a")
+    
+    #parsing the results
+    main_dict = dict()
+    for match in matches:
+        main_dict[match.text] = ' '.join(map(str, match.absolute_links))
+    if len(main_dict) == 0:
+        raise Exception("Application not found in servers, make sure you selected the application properly. Please try again!")
     return main_dict
-  
+
 def parse_dict(args):
     
     main_dict = args
@@ -143,7 +84,7 @@ def parse_dict(args):
     bad_data = list()
     data_link = list()
     final_data = list()
-    full_data = [i for i in main_dict.keys()]
+    full_data = [keys for keys in main_dict.keys()]
 
     # using regular expression
     pattern = re.compile(r".+\.BlockMap")

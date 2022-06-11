@@ -9,7 +9,7 @@ from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 
 from get_url import url_window
 from Gui import Ui_MainProgram
-from utls import install, open_browser, open_Logs, selenium_func,parse_dict,current_time
+from utls import install, open_browser, open_Logs, get_data,parse_dict,current_time
 
 
 class WorkerSignals(QObject):
@@ -268,9 +268,9 @@ class MainWindowGui(Ui_MainProgram):
         progress_main.emit(20)
         
         progress_current.emit(10)
-        selenium_dict = dict(selenium_func(data_args))
+        data_dict = dict(get_data(data_args))
         progress.emit(40)
-        parse_data = parse_dict(selenium_dict)
+        parse_data = parse_dict(data_dict)
         progress.emit(50)
         return parse_data
         
