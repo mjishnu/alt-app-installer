@@ -332,7 +332,7 @@
     <string>Clear Cache</string>
    </property>
    <property name="statusTip">
-    <string>Clear all files like [Downloads,configs,.. etc] [Excludes Chrome Driver,logs]</string>
+    <string>Clear all files like [Downloads,configs,logs.. etc] [Excludes Chrome Driver]</string>
    </property>
   </action>
   <action name="actionInstall_Driver_Chrome">

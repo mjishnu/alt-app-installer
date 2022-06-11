@@ -213,7 +213,7 @@ class Ui_MainProgram(object):
         self.actionDownload_From_Url.setText(_translate("MainProgram", "Install From Url"))
         self.actionDownload_From_Url.setStatusTip(_translate("MainProgram", "Install from link given by user (link of the app from microsoft.com)"))
         self.actionclear_cache.setText(_translate("MainProgram", "Clear Cache"))
-        self.actionclear_cache.setStatusTip(_translate("MainProgram", "Clear all files like [Downloads,configs,.. etc] [Excludes Chrome Driver,logs]"))
+        self.actionclear_cache.setStatusTip(_translate("MainProgram", "Clear all files like [Downloads,configs,logs.. etc] [Excludes Chrome Driver]"))
         self.actionInstall_Driver_Chrome.setText(_translate("MainProgram", "Install Driver + Chrome"))
         self.actionInstall_Chrome_Driver.setText(_translate("MainProgram", "Install Chrome Driver"))
         self.actionInstall_Chrome_Driver.setStatusTip(_translate("MainProgram", "Download and install chrome driver"))
