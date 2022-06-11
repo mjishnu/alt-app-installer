@@ -4,7 +4,7 @@ import warnings
 from PyQt6.QtCore import pyqtSignal, QUrl
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import QMainWindow, QApplication, QStatusBar, QToolBar, QLabel, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QApplication, QStatusBar, QToolBar, QLabel, QLineEdit, QPushButton,QMainWindow
 # ignoring unwanted warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -12,14 +12,14 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 # creating main window class
 
 
-class MainWindow(QMainWindow):
+class url_window(QMainWindow):
 
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
     # constructor
 
     def __init__(self, *args, **kwargs):
-        super(MainWindow, self).__init__(*args, **kwargs)
+        super(url_window, self).__init__(*args, **kwargs)
         # creating a signal to to get run next code after this executes
 
         # set the title
@@ -147,7 +147,7 @@ def url_grabber():
     # creating a pyQt5 application
     app = QApplication(sys.argv)
 
-    window = MainWindow()
+    window = url_window()
     # window.resize(600, 400)
     # loop
     app.exec()
