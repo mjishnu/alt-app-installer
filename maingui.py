@@ -197,6 +197,13 @@ class MainWindowGui(Ui_MainProgram):
             self.Current_bar.show()
             self.Main_bar.show()
 
+    def open_Logs(self):
+        path = 'log.txt'
+        if os.path.exists(path):
+            os.startfile(path)
+        else:
+            self.show_error_popup()
+
     def clear_cache(self):
         def remove_file():
             def remove_(path, mode='file'):
