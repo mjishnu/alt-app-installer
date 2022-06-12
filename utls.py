@@ -11,13 +11,6 @@ current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
 def open_browser(arg):
     webbrowser.open(arg)
     
-def open_Logs():
-    path = 'log.txt'
-    if os.path.exists(path):
-        os.startfile(path)
-    else:
-        self.show_error_popup()
-
 def install(path=None, lst=None):    
     if lst:
         all_paths = str()
