@@ -1,9 +1,11 @@
+from typing import final
 import webbrowser
 import os
 import subprocess
 import re
 import platform
 from datetime import datetime
+from requests import get
 from requests_html import HTMLSession
 
 
@@ -74,6 +76,29 @@ def get_data(arg):
         raise Exception("Sorry, Application not found. Please try again!")
     return main_dict
 
+def greater_ver(arg, n):
+    first = arg.split(".")
+    second = n.split(".")
+    if first[0] > second[0]:
+        return arg
+    elif first[0] == second[0]:
+        if first[1] > second[1]:
+            return arg
+        elif first[1] == second[1]:
+            if first[2] > second[2]:
+                return arg
+            elif first[2] == second[2]:
+                if first[3] > second[3]:
+                    return arg
+                else:
+                    return n
+            else:
+                return n
+        else:
+            return n
+    else:
+        return n
+    
 def parse_dict(args):
     
     main_dict = args
@@ -125,19 +150,56 @@ def parse_dict(args):
         pass
     # check device archtecture
 
-    def is_os_64bit():
+    def os_arc():
         if platform.machine().endswith("64"):
             return "x64"
         else:
             return "x86"
+        
+    def latest_version(lst):
+        max = lst[0]
+        for i in lst:
+            if greater_ver(i,max) == i:
+                max = i
+        return max
 
-    # get appropriate keys
 
+    # get the data according to device architecture
+    app_data = dict()
     for key, value in dict_data.items():
-        if value[2] == is_os_64bit():
-            final_data.append(key)
+        if value[2] == os_arc():
+            app_data[(value[0],value[1])] = key
         elif value[2] == "neutral":
-            final_data.append(key)
-
+            app_data[(value[0],value[1])] = key
+    
+    #getting the latest version  of the app
+    name_ver_list  = list()
+    name_list = list()
+    repeated_name_dict = dict()
+    for key, value in app_data.items():
+        name_ver_list.append(key)
+        
+    for name_ver in name_ver_list:
+        name = name_ver[0]
+        version = name_ver[1]
+        if name not in name_list:
+            name_list.append(name)
+            repeated_name_dict[name]=[version]
+        
+        else:
+            old_value = repeated_name_dict[name]
+            old_value.append(version)
+            repeated_name_dict[name] = old_value
+            
+    for name in name_list:
+        if len(repeated_name_dict[name]) > 1:
+            versions = repeated_name_dict[name]
+            repeated_name_dict[name] = latest_version(versions)
+        else:
+            repeated_name_dict[name] = repeated_name_dict[name][0]
+    
+    for key, value in repeated_name_dict.items():
+        final_data.append(app_data[(key,value)])
+        
     # parsing end ----------------------------------
     return (main_dict, final_data)
