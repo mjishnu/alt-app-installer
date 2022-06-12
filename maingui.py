@@ -9,7 +9,7 @@ from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 
 from get_url import url_window
 from Gui import Ui_MainProgram
-from utls import install, open_browser, open_Logs, get_data,parse_dict,current_time
+from utls import install, open_browser, get_data,parse_dict,current_time
 
 
 class WorkerSignals(QObject):
@@ -106,7 +106,7 @@ class MainWindowGui(Ui_MainProgram):
             'https://github.com/m-jishnu/Windows-Store-App-Installer'))
         self.actionHelp.triggered.connect(lambda: open_browser(
             'https://discord.com/invite/cbuEkpd'))
-        self.actionOpen_Logs.triggered.connect(open_Logs)
+        self.actionOpen_Logs.triggered.connect(self.open_Logs)
 
     def error_msg(self, text,msg_details,title="Error",critical = False):
             msg = QtWidgets.QMessageBox()
