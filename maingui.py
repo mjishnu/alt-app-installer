@@ -9,7 +9,7 @@ from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 
 from get_url import url_window
 from Gui import Ui_MainProgram
-from utls import install, open_browser, open_Logs, selenium_func,parse_dict,current_time
+from utls import install, open_browser, open_Logs, get_data,parse_dict,current_time
 
 
 class WorkerSignals(QObject):
@@ -99,7 +99,6 @@ class MainWindowGui(Ui_MainProgram):
         self.pushButton.clicked.connect(self.openWindow)
         self.actioninstall_From_File.triggered.connect(
             self.run_installer)
-        self.actionSet_Wait_Time.triggered.connect(self.set_wait_time)
         self.actionclear_cache.triggered.connect(self.clear_cache)
         self.actionCheck_For_Updates.triggered.connect(lambda: open_browser(
             'https://github.com/m-jishnu/Windows-Store-App-Installer/releases'))
@@ -166,7 +165,10 @@ class MainWindowGui(Ui_MainProgram):
 
     def main_Progress(self, n):
         total = self.mainprogressBar.value()
-        total += n
+        if total + n < 100:
+            total += n
+        else:
+            total = 99
         self.mainprogressBar.setValue(total)
 
     def cur_Progress(self, n):
@@ -195,6 +197,13 @@ class MainWindowGui(Ui_MainProgram):
             self.Current_bar.show()
             self.Main_bar.show()
 
+    def open_Logs(self):
+        path = 'log.txt'
+        if os.path.exists(path):
+            os.startfile(path)
+        else:
+            self.show_error_popup()
+
     def clear_cache(self):
         def remove_file():
             def remove_(path, mode='file'):
@@ -211,7 +220,6 @@ class MainWindowGui(Ui_MainProgram):
                     except OSError as e:
                         pass
 
-            remove_('config.txt')
             remove_('log.txt')
             remove_('Downloads', 'dir')
             remove_('__pycache__', 'dir')
@@ -223,14 +231,6 @@ class MainWindowGui(Ui_MainProgram):
         
         self.threadpool.start(worker)
         worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
-
-    def set_wait_time(self):
-        window = QtWidgets.QWidget()
-        i, okPressed = QtWidgets.QInputDialog.getInt(
-            window, "Set Wait Time", "Wait time:", 5, 0, 100, 1)
-        if okPressed:
-            with open('./config.txt', 'w') as f:
-                f.write(f'wait_time:{i}')
 
     def run_installer(self):
         fname = QtWidgets.QFileDialog.getOpenFileNames()
@@ -268,9 +268,9 @@ class MainWindowGui(Ui_MainProgram):
         progress_main.emit(20)
         
         progress_current.emit(10)
-        selenium_dict = dict(selenium_func(data_args))
+        data_dict = dict(get_data(data_args))
         progress.emit(40)
-        parse_data = parse_dict(selenium_dict)
+        parse_data = parse_dict(data_dict)
         progress.emit(50)
         return parse_data
         
@@ -300,7 +300,7 @@ class MainWindowGui(Ui_MainProgram):
                 request.urlretrieve(remote_url, path, Handle_Progress)
                 progress_main.emit(2)
             path_lst.append(path)
-        progress_main.emit(10)
+        progress_main.emit(100)
         return install(lst=path_lst)
 
 
