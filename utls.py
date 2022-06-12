@@ -1,11 +1,8 @@
-from typing import final
 import webbrowser
-import os
 import subprocess
 import re
 import platform
 from datetime import datetime
-from requests import get
 from requests_html import HTMLSession
 
 
