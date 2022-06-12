@@ -99,7 +99,6 @@ class MainWindowGui(Ui_MainProgram):
         self.pushButton.clicked.connect(self.openWindow)
         self.actioninstall_From_File.triggered.connect(
             self.run_installer)
-        self.actionSet_Wait_Time.triggered.connect(self.set_wait_time)
         self.actionclear_cache.triggered.connect(self.clear_cache)
         self.actionCheck_For_Updates.triggered.connect(lambda: open_browser(
             'https://github.com/m-jishnu/Windows-Store-App-Installer/releases'))
@@ -166,7 +165,10 @@ class MainWindowGui(Ui_MainProgram):
 
     def main_Progress(self, n):
         total = self.mainprogressBar.value()
-        total += n
+        if total + n < 100:
+            total += n
+        else:
+            total = 99
         self.mainprogressBar.setValue(total)
 
     def cur_Progress(self, n):
@@ -211,7 +213,6 @@ class MainWindowGui(Ui_MainProgram):
                     except OSError as e:
                         pass
 
-            remove_('config.txt')
             remove_('log.txt')
             remove_('Downloads', 'dir')
             remove_('__pycache__', 'dir')
@@ -223,14 +224,6 @@ class MainWindowGui(Ui_MainProgram):
         
         self.threadpool.start(worker)
         worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
-
-    def set_wait_time(self):
-        window = QtWidgets.QWidget()
-        i, okPressed = QtWidgets.QInputDialog.getInt(
-            window, "Set Wait Time", "Wait time:", 5, 0, 100, 1)
-        if okPressed:
-            with open('./config.txt', 'w') as f:
-                f.write(f'wait_time:{i}')
 
     def run_installer(self):
         fname = QtWidgets.QFileDialog.getOpenFileNames()
@@ -300,7 +293,7 @@ class MainWindowGui(Ui_MainProgram):
                 request.urlretrieve(remote_url, path, Handle_Progress)
                 progress_main.emit(2)
             path_lst.append(path)
-        progress_main.emit(10)
+        progress_main.emit(100)
         return install(lst=path_lst)
 
 

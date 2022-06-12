@@ -50,11 +50,15 @@ def get_data(arg):
     #geting product id from url
     def product_id_getter(wrd):
         try:
-            pattern = re.compile(r".+\/([a-zA-Z-]+)\/([a-zA-Z0-9]+)|.+")
+            pattern = re.compile(r".+\/([a-zA-Z-]+)\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
             matches = pattern.search(str(wrd))
             match=matches.group(2)
-            return match
-        
+
+            if match == None:
+                raise Exception(
+                    'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
+            else:
+                return match
         except AttributeError:
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
@@ -74,7 +78,7 @@ def get_data(arg):
     for match in matches:
         main_dict[match.text] = ' '.join(map(str, match.absolute_links))
     if len(main_dict) == 0:
-        raise Exception("Application not found in servers, make sure you selected the application properly. Please try again!")
+        raise Exception("Sorry, Application not found. Please try again!")
     return main_dict
 
 def parse_dict(args):
