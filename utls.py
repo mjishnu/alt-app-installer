@@ -4,6 +4,7 @@ import re
 import platform
 from datetime import datetime
 from requests_html import HTMLSession
+import time
 
 
 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
@@ -59,12 +60,17 @@ def get_data(arg):
     url = "https://store.rg-adguard.net/api/GetFiles"
     data = {"type":"ProductId","url":"product_id_url","ring":"RP","lang":"en-EN"}
     data["url"]= product_id_getter(str(arg))
-    session = HTMLSession()
-    r = session.post(url,data = data)
-    
-    #getting all the files from the html
-    matches = r.html.find("a")
-    
+    for i in range(3):
+        try:
+            session = HTMLSession()
+            r = session.post(url,data = data)
+            #getting all the files from the html
+            matches = r.html.find("a")
+            break
+        except:
+            time.sleep(3)
+            print("error occured!")
+            continue
     #parsing the results
     main_dict = dict()
     for match in matches:
