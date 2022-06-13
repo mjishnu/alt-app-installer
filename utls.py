@@ -103,6 +103,7 @@ def parse_dict(args):
     bad_data = list()
     data_link = list()
     final_data = list()
+    fav_type = ['appx','msix'] #fav_type is a list of extensions that are easy to install without admin privileges
     full_data = [keys for keys in main_dict.keys()]
 
     # using regular expression
@@ -162,41 +163,58 @@ def parse_dict(args):
 
 
     # get the data according to device architecture
-    app_data = dict()
+    app_data = dict() #{(name,version,type):full_name}
+    final_data_get = dict() #{(name,version):full_name}
     for key, value in dict_data.items():
         if value[2] == os_arc():
-            app_data[(value[0],value[1])] = key
+            app_data[(value[0],value[1],value[-1].split('.')[1])] = key
+            final_data_get[(value[0],value[1])] = key
         elif value[2] == "neutral":
-            app_data[(value[0],value[1])] = key
-    
+            app_data[(value[0],value[1],value[-1].split('.')[1])] = key
+            final_data_get[(value[0],value[1])] = key
     #getting the latest version  of the app
-    name_ver_list  = list()
-    name_list = list()
-    repeated_name_dict = dict()
+    name_ver_list  = list() #(name,version,type)
+    name_list = list() #[name]
+    repeated_name_dict = dict() #{name:(version,type)} --> {name:version}
     for key, value in app_data.items():
         name_ver_list.append(key)
         
     for name_ver in name_ver_list:
         name = name_ver[0]
         version = name_ver[1]
+        type_ = name_ver[2]
         if name not in name_list:
             name_list.append(name)
-            repeated_name_dict[name]=[version]
+            repeated_name_dict[name]=[(version,type_)]
         
         else:
             old_value = repeated_name_dict[name]
-            old_value.append(version)
+            old_value.append((version,type_))
             repeated_name_dict[name] = old_value
-            
+
     for name in name_list:
-        if len(repeated_name_dict[name]) > 1:
-            versions = repeated_name_dict[name]
+        versions = list()#[version1,version2,version3,version4,version5,version6]
+        indicator = None
+        for name_ver in repeated_name_dict[name]: #for checking if there are any fav_type in the data
+            if name_ver[1] in fav_type:
+                indicator = 1  #if a fav_type is found stop letting the none fav_type in the list
+            else:
+                continue
+        for name_ver in repeated_name_dict[name]:
+            #[(version,type_),(version,type_)]
+            if name_ver[1] in fav_type: 
+                versions.append(name_ver[0])
+            else:
+                if indicator:
+                    continue
+                else:
+                    versions.append(name_ver[0])
+        if len(versions) > 1:
             repeated_name_dict[name] = latest_version(versions)
         else:
-            repeated_name_dict[name] = repeated_name_dict[name][0]
-    
+            repeated_name_dict[name] = versions[0]
+
     for key, value in repeated_name_dict.items():
-        final_data.append(app_data[(key,value)])
-        
+        final_data.append(final_data_get[(key,value)])
     # parsing end ----------------------------------
     return (main_dict, final_data)
