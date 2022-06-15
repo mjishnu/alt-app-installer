@@ -2,7 +2,7 @@ import os
 import shutil
 import sys
 import traceback
-from urllib import request
+import time
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
@@ -10,7 +10,7 @@ from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from get_url import url_window
 from Gui import Ui_MainProgram
 from utls import install, open_browser, get_data,parse_dict,current_time
-
+from pySmartDL import SmartDL
 
 class WorkerSignals(QObject):
     '''
@@ -279,11 +279,11 @@ class MainWindowGui(Ui_MainProgram):
         main_dict, final_data = data
         dwnpath = './Downloads/'
 
-        def Handle_Progress(blocknum, blocksize, totalsize):
+        def Handle_Progress():
             # calculate the progress
-            readed_data = blocknum * blocksize
-            if totalsize > 0:
-                download_percentage = readed_data * 100 / totalsize
+            while not obj.isFinished():
+                download_percentage = round(obj.get_progress()*100,2)
+                time.sleep(0.2)
                 progress_current.emit(download_percentage)
 
         if not os.path.exists(dwnpath):
@@ -296,8 +296,10 @@ class MainWindowGui(Ui_MainProgram):
             remote_url = main_dict[f_name]
             # Download remote and save locally
             path = f"{dwnpath}{f_name}"
-            if not os.path.exists(path):  # simple cache for same version downloads
-                request.urlretrieve(remote_url, path, Handle_Progress)
+            if not os.path.exists(path):
+                obj = SmartDL(remote_url, path,progress_bar=False)# simple cache for same version downloads
+                obj.start(blocking=False)
+                Handle_Progress()
                 progress_main.emit(2)
             path_lst.append(path)
         progress_main.emit(100)
