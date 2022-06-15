@@ -12,6 +12,10 @@ from get_url import url_window
 from Gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
 
+try:
+    os.chdir(sys._MEIPASS)
+except Exception:
+    pass
 
 class WorkerSignals(QObject):
     '''

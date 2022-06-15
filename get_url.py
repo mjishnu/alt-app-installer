@@ -1,6 +1,4 @@
 # importing required libraries
-import os
-import sys
 import warnings
 
 from PyQt6.QtCore import QUrl, pyqtSignal
@@ -11,15 +9,8 @@ from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
 
 # ignoring unwanted warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-try:
-    # PyInstaller creates a temp folder and stores path in _MEIPASS
-    base_path = sys._MEIPASS
-except Exception:
-    base_path = os.path.abspath(".")
 
 # creating main window class
-
-
 class url_window(QMainWindow):
 
     # creating a signal varable to signal if code execution completed
