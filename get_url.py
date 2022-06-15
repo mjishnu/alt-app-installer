@@ -1,14 +1,10 @@
 # importing required libraries
-import warnings
-
 from PyQt6.QtCore import QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
                              QPushButton, QStatusBar, QToolBar)
 
-# ignoring unwanted warning
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # creating main window class
 class url_window(QMainWindow):
