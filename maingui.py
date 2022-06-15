@@ -1,16 +1,17 @@
 import os
 import shutil
 import sys
-import traceback
 import time
+import traceback
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from pySmartDL import SmartDL
 
 from get_url import url_window
 from Gui import Ui_MainProgram
-from utls import install, open_browser, get_data,parse_dict,current_time
-from pySmartDL import SmartDL
+from utls import current_time, get_data, install, open_browser, parse_dict
+
 
 class WorkerSignals(QObject):
     '''

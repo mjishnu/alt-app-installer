@@ -1,13 +1,21 @@
 # importing required libraries
+import os
+import sys
 import warnings
 
-from PyQt6.QtCore import pyqtSignal, QUrl
+from PyQt6.QtCore import QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import QApplication, QStatusBar, QToolBar, QLabel, QLineEdit, QPushButton,QMainWindow
+from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
+                             QPushButton, QStatusBar, QToolBar)
+
 # ignoring unwanted warning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
+try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_path = sys._MEIPASS
+except Exception:
+    base_path = os.path.abspath(".")
 
 # creating main window class
 
@@ -56,7 +64,7 @@ class url_window(QMainWindow):
 
         # setting status tip
         back_btn.setStatusTip("Back to previous page")
-        back_btn.setIcon(QIcon('./Images/Back.png'))
+        back_btn.setIcon(QIcon('Images/Back.png'))
 
         # adding action to the back button
         # making browser go back
@@ -68,7 +76,7 @@ class url_window(QMainWindow):
         # similarly for forward action
         next_btn = QAction("", self)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.setIcon(QIcon('./Images/forward.png'))
+        next_btn.setIcon(QIcon('Images/forward.png'))
 
         # adding action to the next button
         # making browser go forward
@@ -82,7 +90,7 @@ class url_window(QMainWindow):
         # similarly for reload action
         reload_btn = QAction("", self)
         reload_btn.setStatusTip("Reload page")
-        reload_btn.setIcon(QIcon('./Images/reload.png'))
+        reload_btn.setIcon(QIcon('Images/reload.png'))
 
         # adding action to the reload button
         # making browser to reload
@@ -107,7 +115,7 @@ class url_window(QMainWindow):
         self.b1 = QPushButton(self)
         self.b1.setText("Select")
         self.b1.setStatusTip("Select The File To Download")
-        self.b1.setIcon(QIcon('./Images/ok.png'))
+        self.b1.setIcon(QIcon('Images/ok.png'))
         self.b1.clicked.connect(self.current_url)
         navtb.addWidget(self.b1)
         self.urlbar.returnPressed.connect(self.navigate_to_url)
@@ -144,6 +152,7 @@ class url_window(QMainWindow):
 
 def url_grabber():
     import sys
+
     # creating a pyQt5 application
     app = QApplication(sys.argv)
 
