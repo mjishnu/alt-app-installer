@@ -297,7 +297,7 @@ class MainWindowGui(Ui_MainProgram):
             # Download remote and save locally
             path = f"{dwnpath}{f_name}"
             if not os.path.exists(path):
-                obj = SmartDL(remote_url, path,progress_bar=False,threads=7)# simple cache for same version downloads
+                obj = SmartDL(remote_url, path,progress_bar=False)# simple cache for same version downloads
                 obj.start(blocking=False)
                 Handle_Progress()
                 progress_main.emit(2)

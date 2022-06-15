@@ -1,3 +1,4 @@
 pyqt6
 requests_html
 PyQt6-WebEngine
+pySmartDL
