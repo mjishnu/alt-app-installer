@@ -35,3 +35,9 @@ https://bit.ly/3LPHfu8
 # FAQ
 
 You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
+
+# Limitation and future plans
+
+- The current Major Limitation is the download link provided by "store.rg-adguard.net", It has an expire time of 10-15 min.The downloader used in the app address this issue by removing the bandwidth limitations but it isn't a full fix since if the user has a slow internet then after the expire time the download will fail.
+
+- To solve this we would need to make a custom downloader which not only downloads in chunks but when an error is occured requests for new link from the "store.rg-adguard.net" api and resumes the download while using the previously downloaded data.
