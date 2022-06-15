@@ -69,7 +69,7 @@ def get_data(arg):
             break
         except:
             time.sleep(3)
-            print("error occured!")
+            print(f"errorin getting the files from the api retry:{i}")
             continue
     #parsing the results
     main_dict = dict()
