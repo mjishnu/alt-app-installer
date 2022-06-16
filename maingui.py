@@ -287,9 +287,9 @@ class MainWindowGui(Ui_MainProgram):
         def Handle_Progress():
             # calculate the progress
             while not obj.isFinished():
-                download_percentage = round(obj.get_progress()*100,2)
-                time.sleep(0.2)
+                download_percentage = int(obj.get_progress()*100)
                 progress_current.emit(download_percentage)
+                time.sleep(0.2)
 
         if not os.path.exists(dwnpath):
             os.makedirs(dwnpath)
