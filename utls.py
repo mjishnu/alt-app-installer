@@ -45,7 +45,7 @@ def get_data(arg):
         try:
             pattern = re.compile(r".+\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
             matches = pattern.search(str(wrd))
-            match=matches.group(2)
+            match=matches.group(1)
 
             if match == None:
                 raise Exception(
