@@ -43,7 +43,7 @@ def get_data(arg):
     #geting product id from url
     def product_id_getter(wrd):
         try:
-            pattern = re.compile(r".+\/([a-zA-Z-]+)\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
+            pattern = re.compile(r".+\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
             matches = pattern.search(str(wrd))
             match=matches.group(2)
 
