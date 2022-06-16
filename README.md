@@ -16,7 +16,8 @@ This Program basically automates the process of getting the file from https://st
 - An internet connection
 
 # How to use the app
-- Download the alt_app_installer.exe and run it(the first run can take time) or build it from source
+- Download the alt_app_installer.exe and run it or build it from source
+- Now open the alt_app_installer.exe file in the extracted folder (alt_app_installer folder) and run it (the first run can take time)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
 - you can also install already downloaded apps via "install from file" in "Options" 
