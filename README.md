@@ -1,5 +1,11 @@
 # Alt App Installer
-A Simple Program To  Download And Install Windows Store Apps, This program can download and install microsoft store apps (.appx,msix...) without needing microsoft store or App installer
+
+- A Program To  Download And Install Windows Store Apps
+- This program can download and install microsoft store apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
+- Auto downloads the latest app according to your system architecture (x64/x32)
+- Priorty for downloading Appx,Msix over other encrypted format like Eappx which needs admin permision to install
+- Uses Parrel/chunk downloader for fast downloading
+- Downloads and install app along with all dependencies 
 
 # How it works
 This Program basically automates the process of getting the file from https://store.rg-adguard.net/ by using the store.rg-adguard api and installs the app for the user, so credit goes to the creator of https://store.rg-adguard.net/
