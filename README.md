@@ -1,9 +1,12 @@
 # Alt App Installer
 
-- A Program To  Download And Install Windows Store Apps
+A Program To  Download And Install Windows Store Apps
+
+# Features
+
 - This program can download and install microsoft store apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
 - Auto downloads the latest app according to your system architecture (x64/x32)
-- Priorty for downloading Appx,Msix over other encrypted format like Eappx which needs admin permision to install
+- Priority for downloading Appx,Msix over other encrypted format like Eappx which needs admin permision to install
 - Uses Parrel/chunk downloader for fast downloading
 - Downloads and install app along with all dependencies 
 
