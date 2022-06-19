@@ -109,7 +109,7 @@ def parse_dict(args):
     bad_data = list()
     data_link = list()
     final_data = list()
-    fav_type = ['appx','msix'] #fav_type is a list of extensions that are easy to install without admin privileges
+    fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
     full_data = [keys for keys in main_dict.keys()]
 
     # using regular expression
