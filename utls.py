@@ -13,6 +13,7 @@ def open_browser(arg):
     
 def install(path):    
     flag = 0
+    main_prog_error = 0
     if type(path)==str:
         all_paths = f'Add-AppPackage "{path}"'
         output = subprocess.run(
@@ -23,21 +24,30 @@ def install(path):
         detail_msg = f'Command Execution Failed: {output.args[1]}'
         detail_msg+='\nThe Installation has failed, try again!'
         endresult = (msg,detail_msg,"Error",True)
-    elif type(path) == list:
+    elif type(path) == dict:
         outputs = list()
-        for s_path in path:
+        for s_path in path.keys():
             all_paths = f'Add-AppPackage "{s_path}"'
             output = subprocess.run(
             ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+            outputs.append(output.args[1])
             if output.returncode != 0:
                 flag = 1
-            outputs.append(output.args[1])
-        msg = 'Failed To Install Dependencies!'
-        detail_msg = f'Command Execution Failed: {outputs}'
+                if path[s_path] == 1:
+                    main_prog_error = 1
+                    break
+        if main_prog_error == 1:
+            msg = 'Failed To Install The Application!'
+            detail_msg = f'Command Execution Failed: {outputs}'
+            detail_msg+='\nThe Installation has failed, try again!'
+            endresult = (msg,detail_msg,"Error",True)
         
-        detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
-        detail_msg+='So check wheather the program is installed in start menu if not, try again!'
-        endresult = (msg,detail_msg,"Warning")
+        else:
+            msg = 'Failed To Install Dependencies!'
+            detail_msg = f'Command Execution Failed: {outputs}'
+            detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
+            detail_msg+='So check wheather the program is installed in start menu if not, try again!'
+            endresult = (msg,detail_msg,"Warning")
          
     if flag != 0:
             return endresult
@@ -51,12 +61,17 @@ def get_data(arg):
             pattern = re.compile(r".+\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
             matches = pattern.search(str(wrd))
             match=matches.group(1)
-
+            
+            #getting name from url
+            pattern_n = re.compile(r".+\/([a-zA-Z-]+)\/|.+")
+            matches_n = pattern_n.search(str(wrd))
+            name=matches_n.group(1)
+            
             if match == None:
                 raise Exception(
                     'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
             else:
-                return match
+                return match,name
         except AttributeError:
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
@@ -64,7 +79,7 @@ def get_data(arg):
     #using the api from store.adguard
     url = "https://store.rg-adguard.net/api/GetFiles"
     data = {"type":"ProductId","url":"product_id_url","ring":"RP","lang":"en-EN"}
-    data["url"]= product_id_getter(str(arg))
+    data["url"],file_name= product_id_getter(str(arg))
     for i in range(3):
         try:
             session = HTMLSession()
@@ -74,7 +89,7 @@ def get_data(arg):
             break
         except:
             time.sleep(3)
-            print(f"errorin getting the files from the api retry:{i}")
+            print(f"error in getting the files from the api retry:{i}")
             continue
     #parsing the results
     main_dict = dict()
@@ -82,7 +97,7 @@ def get_data(arg):
         main_dict[match.text] = ' '.join(map(str, match.absolute_links))
     if len(main_dict) == 0:
         raise Exception("Sorry, Application not found. Please try again!")
-    return main_dict
+    return (main_dict,file_name)
 
 def greater_ver(arg, n):
     first = arg.split(".")
@@ -106,10 +121,9 @@ def greater_ver(arg, n):
             return n
     else:
         return n
-    
-def parse_dict(args):
-    
-    main_dict = args
+def parse_dict(args):  
+    main_dict,file_name = args
+    file_name = file_name.split("-")[0]
     data = list()
     bad_data = list()
     data_link = list()
@@ -228,4 +242,4 @@ def parse_dict(args):
     for key, value in repeated_name_dict.items():
         final_data.append(final_data_get[(key,value)])
     # parsing end ----------------------------------
-    return (main_dict, final_data)
+    return (main_dict, final_data,file_name)

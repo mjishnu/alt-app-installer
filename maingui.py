@@ -127,10 +127,10 @@ class MainWindowGui(Ui_MainProgram):
             self.pushButton.setEnabled(True)
             msg.exec()
             
-    def show_error_popup(self):
+    def show_error_popup(self,txt="An Error Has Occured Try Again!"):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle('Error')
-        msg.setText('An Error Has Occured Try Again!     ')
+        msg.setText(f'{txt}     ')
         msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         self.set_bar_0()
         self.show_bar(False)
@@ -207,7 +207,7 @@ class MainWindowGui(Ui_MainProgram):
         if os.path.exists(path):
             os.startfile(path)
         else:
-            self.show_error_popup()
+            self.show_error_popup(txt="No Logs Found!")
 
     def clear_cache(self):
         def remove_file():
@@ -271,9 +271,8 @@ class MainWindowGui(Ui_MainProgram):
 
     def parser(self, data_args, progress_current, progress_main, progress):
         progress_main.emit(20)
-        
         progress_current.emit(10)
-        data_dict = dict(get_data(data_args))
+        data_dict = get_data(str(data_args))
         progress.emit(40)
         parse_data = parse_dict(data_dict)
         progress.emit(50)
@@ -281,7 +280,7 @@ class MainWindowGui(Ui_MainProgram):
         
 
     def installer(self, data,  progress_current, progress_main, progress):
-        main_dict, final_data = data
+        main_dict, final_data,file_name = data
         dwnpath = './Downloads/'
 
         def Handle_Progress():
@@ -295,7 +294,7 @@ class MainWindowGui(Ui_MainProgram):
             os.makedirs(dwnpath)
 
         progress_main.emit(40)
-        path_lst = list()
+        path_lst = dict()
         for f_name in final_data:
             # Define the remote file to retrieve
             remote_url = main_dict[f_name]
@@ -306,7 +305,11 @@ class MainWindowGui(Ui_MainProgram):
                 obj.start(blocking=False)
                 Handle_Progress()
                 progress_main.emit(2)
-            path_lst.append(path)
+            fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
+            if file_name in fname_lower:
+                path_lst[path]=1
+            else:
+                path_lst[path]=0
         progress_main.emit(100)
         return install(path_lst)
 
