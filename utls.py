@@ -11,32 +11,37 @@ current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
 def open_browser(arg):
     webbrowser.open(arg)
     
-def install(path=None, lst=None):    
-    if lst:
-        all_paths = str()
-        for path in lst:
-            all_paths += f'Add-AppPackage "{path}";'
-    elif path:
+def install(path):    
+    flag = 0
+    if type(path)==str:
         all_paths = f'Add-AppPackage "{path}"'
-
-    output = subprocess.run(
-        ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
-    with open('log.txt', 'a') as f:
-        f.write(f'[installer.py, powershell command logs] \n{current_time}\n')
-        f.write(f'command: {output.args[1]}\n\n')    
-        f.write(output.stderr.decode("utf-8"))           
-        f.write(f'{82*"-"}\n')
+        output = subprocess.run(
+            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+        if output.returncode != 0:
+            flag = 1
         msg = 'Failed To Install The Application!'
         detail_msg = f'Command Execution Failed: {output.args[1]}'
-        if output.returncode != 0:
-            if lst != None:
-                detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
-                detail_msg+='So check wheather the program is installed in start menu if not, try again!'
-                return (msg,detail_msg,"Warning")
-            elif path != None:
-                detail_msg+='\nThe Installation has failed, try again!'
-                return (msg,detail_msg,"Error",True)
-        return 0
+        detail_msg+='\nThe Installation has failed, try again!'
+        endresult = (msg,detail_msg,"Error",True)
+    elif type(path) == list:
+        outputs = list()
+        for s_path in path:
+            all_paths = f'Add-AppPackage "{s_path}"'
+            output = subprocess.run(
+            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+            if output.returncode != 0:
+                flag = 1
+            outputs.append(output.args[1])
+        msg = 'Failed To Install Dependencies!'
+        detail_msg = f'Command Execution Failed: {outputs}'
+        
+        detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
+        detail_msg+='So check wheather the program is installed in start menu if not, try again!'
+        endresult = (msg,detail_msg,"Warning")
+         
+    if flag != 0:
+            return endresult
+    return 0
 
 def get_data(arg):
     

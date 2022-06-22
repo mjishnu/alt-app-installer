@@ -239,7 +239,7 @@ class MainWindowGui(Ui_MainProgram):
 
     def run_installer(self):
         fname = QtWidgets.QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args,**kwargs: install(path=fname[0][0]))
+        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
 
@@ -308,7 +308,7 @@ class MainWindowGui(Ui_MainProgram):
                 progress_main.emit(2)
             path_lst.append(path)
         progress_main.emit(100)
-        return install(lst=path_lst)
+        return install(path_lst)
 
 
 def main():
