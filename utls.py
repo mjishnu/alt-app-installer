@@ -18,6 +18,11 @@ def install(path):
         all_paths = f'Add-AppPackage "{path}"'
         output = subprocess.run(
             ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+        with open('log.txt', 'a') as f:
+            f.write(f'[installer.py, powershell command logs] \n{current_time}\n')
+            f.write(f'command: {output.args[1]}\n\n')    
+            f.write(output.stderr.decode("utf-8"))           
+            f.write(f'{82*"-"}\n')
         if output.returncode != 0:
             flag = 1
         msg = 'Failed To Install The Application!'
@@ -30,6 +35,11 @@ def install(path):
             all_paths = f'Add-AppPackage "{s_path}"'
             output = subprocess.run(
             ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+            with open('log.txt', 'a') as f:
+                f.write(f'[installer.py, powershell command logs] \n{current_time}\n')
+                f.write(f'command: {output.args[1]}\n\n')    
+                f.write(output.stderr.decode("utf-8"))           
+                f.write(f'{82*"-"}\n')
             outputs.append(output.args[1])
             if output.returncode != 0:
                 flag = 1
