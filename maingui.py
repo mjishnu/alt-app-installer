@@ -113,7 +113,7 @@ class MainWindowGui(Ui_MainProgram):
         self.actionHelp.triggered.connect(lambda: open_browser(
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
-        iconpath = "./Images/main.ico"
+
 
     def error_msg(self, text,msg_details,title="Error",critical = False):
             msg = QtWidgets.QMessageBox()
@@ -121,8 +121,10 @@ class MainWindowGui(Ui_MainProgram):
             msg.setText(f'{str(text)}     ')
             if critical:
                 msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+                msg.setWindowIcon(QIcon('./Images/error_r.png'))
             else:
                 msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+                msg.setWindowIcon(QIcon('./Images/error_y.png'))
             msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
             self.set_bar_0()
             self.show_bar(False)
@@ -132,6 +134,7 @@ class MainWindowGui(Ui_MainProgram):
     def show_error_popup(self,txt="An Error Has Occured Try Again!"):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle('Error')
+        msg.setWindowIcon(QIcon('./Images/error_r.png'))
         msg.setText(f'{txt}     ')
         msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         self.set_bar_0()
@@ -142,6 +145,7 @@ class MainWindowGui(Ui_MainProgram):
     def show_success_popup(self,text=None):
         msg = QtWidgets.QMessageBox()
         msg.setWindowTitle('Success')
+        msg.setWindowIcon(QIcon('./Images/success.png'))
         if text:
             msg.setText(f'{text}     ')
         else:
