@@ -5,12 +5,13 @@ import time
 import traceback
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,QFileInfo
 from pySmartDL import SmartDL
 
 from get_url import url_window
 from Gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
+from PyQt6.QtGui import QIcon
 
 try:
     os.chdir(sys._MEIPASS)
@@ -112,6 +113,7 @@ class MainWindowGui(Ui_MainProgram):
         self.actionHelp.triggered.connect(lambda: open_browser(
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
+        iconpath = "./Images/main.ico"
 
     def error_msg(self, text,msg_details,title="Error",critical = False):
             msg = QtWidgets.QMessageBox()
@@ -245,6 +247,7 @@ class MainWindowGui(Ui_MainProgram):
 
     def openWindow(self):
         self.window = QtWidgets.QMainWindow()
+        self.window.setWindowIcon(QIcon('./Images/search.png'))
         newWindow = url_window(self.window)
         newWindow.closed.connect(self.runner)
             
@@ -319,6 +322,7 @@ def main():
     MainProgram = QtWidgets.QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
+    MainProgram.setWindowIcon(QIcon('./Images/main.ico'))
     MainProgram.show()
     sys.exit(app.exec())
 
