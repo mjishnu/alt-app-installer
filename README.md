@@ -17,8 +17,8 @@ This Program basically automates the process of getting the file from https://st
 - The url parsed and the product key is send to the api via requests-html which then finds and returns the appropriate download links(contains both the app and the dependencies) if file is not found then it retries 3 time.Then the links are further parsed based on the system architecture of the user then checked if they are of favorable type(these are decrpted file formats easy to install and doesnt need admin privilage to install) and latest version available
 - Then the app downlads the file via pySmartDL(which allows for concurrent downloading in chunks this makes download faster) and finally installs it via subprocess
 
-<img width="1041" alt="image" src="https://user-images.githubusercontent.com/83004520/169115064-b1cf9080-5ef1-425b-b81e-ea69114ae926.png">
-<img width="893" alt="image" src="https://user-images.githubusercontent.com/83004520/169115417-15624c09-923d-4be2-a1be-ecdf47c04f24.png">
+<img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
+<img width="800" alt="image" src="https://user-images.githubusercontent.com/83004520/175317872-295f6430-066e-4f34-b14a-8b6fef36b634.png">
 
 # Requirements
 - windows 10/11
