@@ -97,7 +97,8 @@ class Worker(QRunnable):
 class MainWindowGui(Ui_MainProgram):
     def __init__(self):
         self.threadpool = QThreadPool()
-
+        self.url = None
+            
     def setupUi(self, *args, **kwargs):
         Ui_MainProgram.setupUi(self, *args, **kwargs)
         self.set_bar_0()
@@ -253,7 +254,11 @@ class MainWindowGui(Ui_MainProgram):
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowIcon(QIcon('./Images/search.png'))
         newWindow = url_window(self.window)
-        newWindow.closed.connect(self.runner)
+        newWindow.closed.connect(self.pre_runner)
+        
+    def pre_runner(self, arg):
+        self.url = arg
+        self.runner(self.url)
             
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
@@ -302,9 +307,10 @@ class MainWindowGui(Ui_MainProgram):
 
         progress_main.emit(40)
         path_lst = dict()
+        print(f"the url is {self.url}")
         for f_name in final_data:
             # Define the remote file to retrieve
-            remote_url = main_dict[f_name]
+            remote_url = [main_dict[f_name]]
             # Download remote and save locally
             path = f"{dwnpath}{f_name}"
             if not os.path.exists(path):
