@@ -1,4 +1,9 @@
 pyqt6
 requests_html
 PyQt6-WebEngine
-pySmartDL
+validators
+ping3
+reprint
+win32gui
+win32process
+pywin32
