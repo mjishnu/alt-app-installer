@@ -99,12 +99,12 @@ class url_window(QMainWindow):
         self.label.setStyleSheet("QLabel{font-size: 10pt;}")
         navtb.addWidget(self.label)
 
-        self.b1 = QPushButton(self)
-        self.b1.setText("Select")
-        self.b1.setStatusTip("Select The File To Download")
-        self.b1.setIcon(QIcon('Images/ok.png'))
-        self.b1.clicked.connect(self.current_url)
-        navtb.addWidget(self.b1)
+        self.select_btn = QPushButton(self)
+        self.select_btn.setText("Select")
+        self.select_btn.setStatusTip("Select The File To Download")
+        self.select_btn.setIcon(QIcon('Images/ok.png'))
+        self.select_btn.clicked.connect(self.current_url)
+        navtb.addWidget(self.select_btn)
         self.urlbar.returnPressed.connect(self.navigate_to_url)
         # showing all the components
         self.show()

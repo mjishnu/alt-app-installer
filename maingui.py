@@ -8,6 +8,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,QFileInfo
 from pySmartDL import SmartDL
 
+from downloader import Downloader
 from get_url import url_window
 from Gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
@@ -293,31 +294,42 @@ class MainWindowGui(Ui_MainProgram):
 
     def installer(self, data,  progress_current, progress_main, progress):
         main_dict, final_data,file_name = data
-        dwnpath = './Downloads/'
-
-        def Handle_Progress():
-            # calculate the progress
-            while not obj.isFinished():
-                download_percentage = int(obj.get_progress()*100)
-                progress_current.emit(download_percentage)
-                time.sleep(0.2)
-
+        abs = os.getcwd()
+        dwnpath = f'{abs}/Downloads/'
         if not os.path.exists(dwnpath):
             os.makedirs(dwnpath)
 
         progress_main.emit(40)
         path_lst = dict()
-        print(f"the url is {self.url}")
         for f_name in final_data:
             # Define the remote file to retrieve
-            remote_url = [main_dict[f_name]]
+            remote_url = main_dict[f_name] # ,get_data(self.url)[0][f_name] #(main_dict,f_name)[0] = main_dict ={f_name:url}
             # Download remote and save locally
             path = f"{dwnpath}{f_name}"
-            if not os.path.exists(path):
-                obj = SmartDL(remote_url, path,progress_bar=False)# simple cache for same version downloads
-                obj.start(blocking=False)
-                Handle_Progress()
+            if not os.path.exists(path): #don't download if it exists already
+                
+                d = Downloader()
+                def f_download(url,path,size,func):
+                    try:
+                        d.download(url,path,num_connections)
+                    except (TimeoutError,PermissionError):
+                        while True:
+                            try:
+                                d.download(func(),path,num_connections)
+                                break       # as soon as it works, break out of the loop
+                            except (TimeoutError,PermissionError) as e:
+                                print(e)
+                                continue
+                            
+                worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,size,get_data(self.url)[0][f_name])) #concurrent download so we can get the download progress
+                self.threadpool.start(worker)
+                
+                while d.progress !=100:
+                    download_percentage = int(d.progress)
+                    progress_current.emit(download_percentage)
+                    time.sleep(0.2)
                 progress_main.emit(2)
+                
             fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
             if file_name in fname_lower:
                 path_lst[path]=1
@@ -325,7 +337,6 @@ class MainWindowGui(Ui_MainProgram):
                 path_lst[path]=0
         progress_main.emit(100)
         return install(path_lst)
-
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

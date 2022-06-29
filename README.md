@@ -18,7 +18,7 @@ This Program basically automates the process of getting the file from https://st
 - Then the app downlads the file via pySmartDL(which allows for concurrent downloading in chunks this makes download faster) and finally installs it via subprocess
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
-<img width="800" alt="image" src="https://user-images.githubusercontent.com/83004520/175317872-295f6430-066e-4f34-b14a-8b6fef36b634.png">
+<img width="800" alt="image" src="https://user-images.githubusercontent.com/83004520/175317872-295f6430-066e-4f34-select_btn4a-8b6fef36b634.png">
 
 # Requirements
 - windows 10/11
