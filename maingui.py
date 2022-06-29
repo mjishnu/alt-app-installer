@@ -309,19 +309,22 @@ class MainWindowGui(Ui_MainProgram):
             if not os.path.exists(path): #don't download if it exists already
                 
                 d = Downloader()
-                def f_download(url,path,size,func):
+                def f_download(url,path,threads):
+                    time.sleep(2)
                     try:
-                        d.download(url,path,num_connections)
-                    except (TimeoutError,PermissionError):
-                        while True:
+                        d.download(url,path,threads)
+                    except (TimeoutError,PermissionError,ConnectionError):
+                        for _ in range(10):
+                            time.sleep(4)
                             try:
-                                d.download(func(),path,num_connections)
-                                break       # as soon as it works, break out of the loop
-                            except (TimeoutError,PermissionError) as e:
-                                print(e)
+                                url = get_data(self.url)[0][f_name]     #getting the new url from the api
+                                d.download(url,path,threads)
+                                break      # as soon as it works, break out of the loop
+                            except (TimeoutError,PermissionError,ConnectionError) as e:
+                                print("Error Captured: ",e)
                                 continue
                             
-                worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,size,get_data(self.url)[0][f_name])) #concurrent download so we can get the download progress
+                worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress
                 self.threadpool.start(worker)
                 
                 while d.progress !=100:

@@ -237,6 +237,10 @@ class Downloader:
         self.progress = 0
 
     def download(self, url, filepath, num_connections=32, overwrite=False):
+        info = requests.head(url)
+        size = int(int(info.headers["Content-Length"])/1000000) #1MB = 1,000,000 bytes
+        if size < 50:
+            num_connections = 5
         bcontinue = Path(filepath + '.progress.json').exists()
         singlethread = False
         threads = []
@@ -360,7 +364,7 @@ class Downloader:
                     BLOCKS = 1024
                     CHUNKSIZE = BLOCKSIZE * BLOCKS
                     with path.open('wb') as dest:
-                        for i in range(32):
+                        for i in range(num_connections):
                             file = filepath + '.' + str(i).zfill(2) + '.part'
                             with Path(file).open('rb') as f:
                                 while (chunk := f.read(CHUNKSIZE)):
