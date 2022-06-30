@@ -8,6 +8,8 @@ A Program To  Download And Install Windows Store Apps
 - Auto downloads the latest app according to your system architecture (x64/x32)
 - Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin permision to install
 - Uses multi-part/chunk downloader for fast downloading
+- Can resume interrupted downloads
+- Automatically use a new url in case current one expires
 - Downloads and install app along with all dependencies 
 
 # How it works
@@ -18,7 +20,8 @@ This Program basically automates the process of getting the file from https://st
 - Then the app downlads the file via pySmartDL(which allows for concurrent downloading in chunks this makes download faster) and finally installs it via subprocess
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
-<img width="800" alt="image" src="https://user-images.githubusercontent.com/83004520/175317872-295f6430-066e-4f34-select_btn4a-8b6fef36b634.png">
+<img width="952" alt="image" src="https://user-images.githubusercontent.com/83004520/176722809-dbafa2a0-56c6-4cbc-ba8b-fe964a73e029.png">
+
 
 # Requirements
 - windows 10/11
@@ -46,8 +49,6 @@ https://bit.ly/3LPHfu8
 
 You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
 
-# Limitation and future plans
+# Future plans
 
-- The current Major Limitation is the download link provided by "store.rg-adguard.net", It has an expire time of 10-15 min.The downloader used in the app address this issue by removing the bandwidth limitations but it isn't a full fix since if the user has a slow internet then after the expire time the download will fail.
-
-- To solve this we would need to make a custom downloader which not only downloads in chunks but when an error is occured requests for new link from the "store.rg-adguard.net" api and resumes the download while using the previously downloaded data.
+- Add pause/resume functionality
