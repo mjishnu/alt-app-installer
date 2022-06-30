@@ -5,9 +5,7 @@ import time
 import traceback
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,QFileInfo
-import requests
-
+from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
 from downloader import Downloader
 from get_url import url_window
 from Gui import Ui_MainProgram

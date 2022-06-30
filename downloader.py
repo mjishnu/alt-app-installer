@@ -1,7 +1,6 @@
 import json
 import random
 import time
-from collections import deque
 from math import inf
 from pathlib import Path
 from threading import Thread
@@ -10,17 +9,6 @@ import psutil
 import requests
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
-from win32gui import GetForegroundWindow
-from win32process import GetWindowThreadProcessId
-
-
-def is_active():
-    active = GetWindowThreadProcessId(GetForegroundWindow())[1]
-    parents = psutil.Process().parents()
-    for p in parents:
-        if p.pid == active:
-            return True
-    return False
 class Port_Getter:
     @staticmethod
     def busyports():
@@ -41,7 +29,7 @@ class Adapter(HTTPAdapter):
     def __init__(self, port, *args, **kwargs):
         self._source_port = port
         super().__init__(*args, **kwargs)
-        
+
 class UserSession(Session):
     portassigner = Port_Getter()
 
@@ -64,10 +52,10 @@ class Multidown:
         self.id = id
         self.dic = dic
         self.position = self.getval('position')
-    
+
     def getval(self, key):
         return self.dic[self.id][key]
-    
+
     def setval(self, key, val):
         self.dic[self.id][key] = val
 
@@ -118,13 +106,13 @@ class Singledown:
                         file.write(chunk)
 class Downloader:
     def __init__(self):
-        self.recent = deque([0] * 12, maxlen=12)
-        self.recentspeeds = deque([0] * 200, maxlen=200)
         self.dic = dict()
         self.workers = []
         self.progress = 0
         self.alive = True
-        
+        self.resume = False
+        self.dic['paused'] = False
+
     def download(self, url, filepath, num_connections=32):
         f_path = filepath + '.progress.json'
         bcontinue = Path(f_path).exists()
@@ -132,11 +120,11 @@ class Downloader:
         threads = []
         path = Path(filepath)
         head = requests.head(url)
-        
+
         size = int(int(head.headers["Content-Length"])/1000000) #1MB = 1,000,000 bytes
         if size < 50:
             num_connections = 5
-        
+
         folder = '/'.join(filepath.split('/')[:-1])
         Path(folder).mkdir(parents=True, exist_ok=True)
         headers = head.headers
@@ -164,13 +152,12 @@ class Downloader:
                 singlethread = True
             else:
                 if bcontinue:
-                    progress = json.loads(Path(f_path).read_text(), 
+                    progress = json.loads(Path(f_path).read_text(),
                                         object_hook=lambda d: {int(k) if k.isdigit() else k: v for k, v in d.items()})
                 segment = total / num_connections
                 print('Download started!')
                 self.dic['total'] = total
                 self.dic['connections'] = num_connections
-                self.dic['paused'] = False
                 for i in range(num_connections):
                     if not bcontinue:
                         start = int(segment * i)
@@ -192,38 +179,36 @@ class Downloader:
                         'url': url,
                         'completed': False
                     }
-                
+
                 for i in range(num_connections):
                     md = Multidown(self.dic, i)
                     th = Thread(target=md.worker)
                     threads.append(th)
                     th.start()
                     self.workers.append(md)
-                
+
                 Path(f_path).write_text(json.dumps(self.dic, indent=4))
         downloaded = 0
         totalMiB = total / 1048576
-        speeds = []
-        interval = 0.04
         while True:
             Path(f_path).write_text(json.dumps(self.dic, indent=4))
             status = sum([i.completed for i in self.workers])
             downloaded = sum(i.count for i in self.workers)
-            self.recent.append(downloaded)
             doneMiB = downloaded / 1048576
-            gt0 = len([i for i in self.recent if i])
-            if not gt0:
-                speed = 0
-            else:
-                recent = list(self.recent)[12 - gt0:]
-                if len(recent) == 1:
-                    speed = recent[0] / 1048576 / interval
-                else:
-                    diff = [b - a for a, b in zip(recent, recent[1:])]
-                    speed = sum(diff) / len(diff) / 1048576 / interval
-            speeds.append(speed)
-            self.recentspeeds.append(speed)
             self.progress = (doneMiB * 100)/ totalMiB
+            if not singlethread:
+                    if self.resume:
+                        for md in self.workers:
+                            if not md.completed:
+                                th = Thread(target=md.worker)
+                                th.start()
+                                threads.append(th)
+                    elif self.dic['paused']:
+                        time.sleep(0.1)
+                        while threads:
+                            th = threads.pop(0)
+                            th.join()
+
             if status == len(self.workers):
                 if not singlethread:
                     BLOCKSIZE = 4096
@@ -237,15 +222,15 @@ class Downloader:
                                     dest.write(chunk)
                             Path(file).unlink()
                 break
-            time.sleep(interval)
+            time.sleep(0.04)
         status = sum([i.completed for i in self.workers])
         if status == len(self.workers):
             print('Download completed!')
             Path(f_path).unlink()
         else:
             print('Download interrupted!')
-        
-if __name__ == "__main__":
-    d = Downloader()
-    url = r"http://tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/91cdd58d-e0a5-473c-83d4-734e2c084a2e?P1=1656590541&P2=404&P3=2&P4=IZaWsN0m7UGjZ4oyrqfAcSfiAQXL4GOjylHBhhtH8XMjZlry8rWdgmFlJRaGxUMHG2P9Adk2RWNjqPbUV%2bh3mA%3d%3d"
-    d.download(url,"./Downloads/Test.appx",6)
+
+# if __name__ == "__main__":
+    # d = Downloader()
+    # url = r"http://tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/91cdd58d-e0a5-473c-83d4-734e2c084a2e?P1=1656590541&P2=404&P3=2&P4=IZaWsN0m7UGjZ4oyrqfAcSfiAQXL4GOjylHBhhtH8XMjZlry8rWdgmFlJRaGxUMHG2P9Adk2RWNjqPbUV%2bh3mA%3d%3d"
+    # d.download(url,"./Downloads/Test.appx",6)
