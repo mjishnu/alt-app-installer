@@ -97,18 +97,15 @@ class MainWindowGui(Ui_MainProgram):
     def __init__(self):
         self.threadpool = QThreadPool()
         self.url = None
-        self.pause = False
-        self.resume = False
+        self.stop = False
             
     def setupUi(self, *args, **kwargs):
         Ui_MainProgram.setupUi(self, *args, **kwargs)
         self.set_bar_0()
         self.show_bar(False)
         self.pushButton.clicked.connect(self.openWindow)
-        self.resume_btn.clicked.connect(self.resume_func)
-        self.resume_btn.hide()
-        self.pause_btn.hide()
-        self.pause_btn.clicked.connect(self.pause_func)
+        self.stop_btn.clicked.connect(self.stop_func)
+        self.stop_btn.hide()
         self.actioninstall_From_File.triggered.connect(
             self.run_installer)
         self.actionclear_cache.triggered.connect(self.clear_cache)
@@ -134,8 +131,7 @@ class MainWindowGui(Ui_MainProgram):
             msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
             self.set_bar_0()
             self.show_bar(False)
-            self.pause_btn.hide()
-            self.resume_btn.hide()
+            self.stop_btn.hide()
             self.pushButton.setEnabled(True)
             self.pushButton.show()
             msg.exec()
@@ -148,8 +144,7 @@ class MainWindowGui(Ui_MainProgram):
         msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
         self.set_bar_0()
         self.show_bar(False)
-        self.pause_btn.hide()
-        self.resume_btn.hide()
+        self.stop_btn.hide()
         self.pushButton.setEnabled(True)
         self.pushButton.show()      
         msg.exec()
@@ -165,13 +160,12 @@ class MainWindowGui(Ui_MainProgram):
         msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
         self.set_bar_0()
         self.show_bar(False)
-        self.pause_btn.hide()
-        self.resume_btn.hide()
+        self.stop_btn.hide()
         self.pushButton.setEnabled(True)
         self.pushButton.show() 
         msg.exec()
         
-    def error_handler(self, n,normal=True):
+    def error_handler(self, n,normal=True,msg = None):
         if os.path.exists('log.txt'):
             mode = 'a'
         else:
@@ -183,7 +177,10 @@ class MainWindowGui(Ui_MainProgram):
         if normal:
             self.show_error_popup()
         else:
-            msg = 'An Error Has Occured Try Again!'
+            if msg == None:
+                msg = 'An Error Has Occured Try Again!'
+            else:
+                msg = f'{n[1]}'
             msg_details = f'{n[1]}'
             self.error_msg(msg,msg_details,"Error",True)
 
@@ -226,6 +223,14 @@ class MainWindowGui(Ui_MainProgram):
             self.mainprogressBar.show()
             self.Current_bar.show()
             self.Main_bar.show()
+            
+    def stop_func(self):
+        self.stop=True
+        self.stop_btn.hide()
+        self.pushButton.show()
+        self.pushButton.setEnabled(True)
+        self.show_bar(False)
+    
 
     def open_Logs(self):
         path = 'log.txt'
@@ -261,18 +266,7 @@ class MainWindowGui(Ui_MainProgram):
         
         self.threadpool.start(worker)
         worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
-        
-    def pause_func(self):
-        self.pause=True
-        self.pause_btn.hide()
-        self.resume_btn.show()
-
-    def resume_func(self):
-        self.pause = False
-        self.resume = True
-        self.resume_btn.hide()
-        self.pause_btn.show()
-        
+    
     def run_installer(self):
         fname = QtWidgets.QFileDialog.getOpenFileNames()
         worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
@@ -280,6 +274,7 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.result.connect(self.run_success)
 
     def openWindow(self):
+        self.stop = False
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowIcon(QIcon('./Images/search.png'))
         newWindow = url_window(self.window)
@@ -307,11 +302,10 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(self.error_handler)
+        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,msg=True))
         self.threadpool.start(worker)
         
-        self.pushButton.hide()
-        self.pause_btn.show()
+        self.stop_btn.show()
        
 
     def parser(self, data_args, progress_current, progress_main, progress):
@@ -364,9 +358,14 @@ class MainWindowGui(Ui_MainProgram):
                 while d.progress !=100 and d.alive == True:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
-                    d.dic['paused'] = self.pause
+                    if self.stop:
+                        d.dic['paused'] = self.stop
+                        break
                     time.sleep(0.2)
                 progress_main.emit(2)
+                
+                if self.stop:
+                    raise Exception("Stoped By User!")
                 
                 if d.alive ==False:
                     raise Exception("Download Error Occured Try again Later!")
