@@ -6,7 +6,7 @@ import traceback
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,QFileInfo
-from pySmartDL import SmartDL
+import requests
 
 from downloader import Downloader
 from get_url import url_window
@@ -313,15 +313,15 @@ class MainWindowGui(Ui_MainProgram):
                     time.sleep(2)
                     try:
                         d.download(url,path,threads)
-                    except (TimeoutError,PermissionError,ConnectionError):
+                    except (TimeoutError,PermissionError,requests.exceptions.ConnectionError):
                         for _ in range(10):
                             time.sleep(4)
                             try:
                                 url = get_data(self.url)[0][f_name]     #getting the new url from the api
                                 d.download(url,path,threads)
                                 break      # as soon as it works, break out of the loop
-                            except (TimeoutError,PermissionError,ConnectionError) as e:
-                                print("Error Captured: ",e)
+                            except (TimeoutError,PermissionError,requests.exceptions.ConnectionError) as e:
+                                print("Error Captured {i}: ",e)
                                 continue
                             
                 worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress

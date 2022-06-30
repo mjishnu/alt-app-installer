@@ -284,7 +284,7 @@ class Downloader:
                 print(
                     'Server does not support the `range` parameter, the file will be downloaded using a single thread.')
                 started = datetime.now()
-                print('Task started on %s.' %
+                print('Download started on %s.' %
                         started.strftime('%Y-%m-%d %H:%M:%S'))
                 sd = self.Singledown()
                 th = Thread(target=sd.singledown, args=(url, path))
@@ -377,9 +377,9 @@ class Downloader:
         meanspeed = total / time_spent / 1048576
         status = sum([i.completed for i in self.workers])
         if status == len(self.workers):
-            print('Task completed on {0}, total time elapsed: {1}, average speed: {2:.2f} MiB/s'.format(
+            print('Download completed on {0}, total time elapsed: {1}, average speed: {2:.2f} MiB/s'.format(
                 ended.strftime('%Y-%m-%d %H:%M:%S'), timestring(time_spent), meanspeed))
             Path(filepath + '.progress.json').unlink()
         else:
-            print('Task interrupted on {0}, total time elapsed: {1}, average speed: {2:.2f} MiB/s'.format(
+            print('Download interrupted on {0}, total time elapsed: {1}, average speed: {2:.2f} MiB/s'.format(
                 ended.strftime('%Y-%m-%d %H:%M:%S'), timestring(time_spent), meanspeed))
