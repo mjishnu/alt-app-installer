@@ -358,10 +358,10 @@ class MainWindowGui(Ui_MainProgram):
                 while d.progress !=100 and d.alive == True:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
+                    time.sleep(0.2)
                     if self.stop:
                         d.dic['paused'] = self.stop
                         break
-                    time.sleep(0.2)
                 progress_main.emit(2)
                 
                 if self.stop:
