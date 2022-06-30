@@ -159,7 +159,11 @@ class MainWindowGui(Ui_MainProgram):
         msg.exec()
         
     def error_handler(self, n,normal=True):
-        with open('log.txt', 'a') as f:
+        if os.path.exists('log.txt'):
+            mode = 'a'
+        else:
+            mode = 'w'
+        with open('log.txt', mode) as f:
             f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
             f.write(n[2])
             f.write(f'{82*"-"}\n')
@@ -313,25 +317,30 @@ class MainWindowGui(Ui_MainProgram):
                     time.sleep(2)
                     try:
                         d.download(url,path,threads)
-                    except (TimeoutError,PermissionError,requests.exceptions.ConnectionError):
+                    except:
+                        print("download failed getting new url directly!")
                         for _ in range(10):
                             time.sleep(4)
                             try:
                                 url = get_data(self.url)[0][f_name]     #getting the new url from the api
                                 d.download(url,path,threads)
                                 break      # as soon as it works, break out of the loop
-                            except (TimeoutError,PermissionError,requests.exceptions.ConnectionError) as e:
-                                print("Error Captured {i}: ",e)
+                            except:
+                                print("exception occured: ",_)
                                 continue
+                        d.alive = False
                             
                 worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress
                 self.threadpool.start(worker)
                 
-                while d.progress !=100:
+                while d.progress !=100 and d.alive == True:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
                     time.sleep(0.2)
                 progress_main.emit(2)
+                
+                if d.alive ==False:
+                    raise Exception("Download Error Occured Try again Later!")
                 
             fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
             if file_name in fname_lower:
