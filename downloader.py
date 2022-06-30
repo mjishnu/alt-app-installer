@@ -110,7 +110,6 @@ class Downloader:
         self.workers = []
         self.progress = 0
         self.alive = True
-        self.resume = False
         self.dic['paused'] = False
 
     def download(self, url, filepath, num_connections=32):
@@ -196,19 +195,8 @@ class Downloader:
             downloaded = sum(i.count for i in self.workers)
             doneMiB = downloaded / 1048576
             self.progress = (doneMiB * 100)/ totalMiB
-            if not singlethread:
-                    if self.resume: #pause/resume
-                        for md in self.workers:
-                            if not md.completed:
-                                th = Thread(target=md.worker)
-                                th.start()
-                                threads.append(th)
-                    elif self.dic['paused']:
-                        time.sleep(0.1)
-                        while threads:
-                            th = threads.pop(0)
-                            th.join()
-
+            if self.dic['paused'] == True:
+                break
             if status == len(self.workers):
                 if not singlethread:
                     BLOCKSIZE = 4096

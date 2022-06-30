@@ -90,7 +90,7 @@ def get_data(arg):
     url = "https://store.rg-adguard.net/api/GetFiles"
     data = {"type":"ProductId","url":"product_id_url","ring":"RP","lang":"en-EN"}
     data["url"],file_name= product_id_getter(str(arg))
-    for i in range(3):
+    for i in range(5):
         try:
             session = HTMLSession()
             r = session.post(url,data = data)
