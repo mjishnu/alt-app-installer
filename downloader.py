@@ -197,7 +197,7 @@ class Downloader:
             doneMiB = downloaded / 1048576
             self.progress = (doneMiB * 100)/ totalMiB
             if not singlethread:
-                    if self.resume:
+                    if self.resume: #pause/resume
                         for md in self.workers:
                             if not md.completed:
                                 th = Thread(target=md.worker)
