@@ -159,7 +159,11 @@ class MainWindowGui(Ui_MainProgram):
         msg.exec()
         
     def error_handler(self, n,normal=True):
-        with open('log.txt', 'a') as f:
+        if os.path.exists('log.txt'):
+            mode = 'a'
+        else:
+            mode = 'w'
+        with open('log.txt', mode) as f:
             f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
             f.write(n[2])
             f.write(f'{82*"-"}\n')
@@ -310,21 +314,10 @@ class MainWindowGui(Ui_MainProgram):
                 
                 d = Downloader()
                 def f_download(url,path,threads):
-                    time.sleep(2)
-                    try:
-                        d.download(url,path,threads)
-                    except (TimeoutError,PermissionError,requests.exceptions.ConnectionError):
-                        for _ in range(10):
-                            time.sleep(4)
-                            try:
-                                url = get_data(self.url)[0][f_name]     #getting the new url from the api
-                                d.download(url,path,threads)
-                                break      # as soon as it works, break out of the loop
-                            except (TimeoutError,PermissionError,requests.exceptions.ConnectionError) as e:
-                                print("Error Captured {i}: ",e)
-                                continue
+                    d.download(url,path,threads)
                             
                 worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress
+                worker.signals.error.connect(self.error_handler)
                 self.threadpool.start(worker)
                 
                 while d.progress !=100:
