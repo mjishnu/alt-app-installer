@@ -42,13 +42,7 @@ class Adapter(HTTPAdapter):
     def __init__(self, port, *args, **kwargs):
         self._source_port = port
         super().__init__(*args, **kwargs)
-    def init_poolmanager(self, connections, maxsize, block=False):
-        self.poolmanager = PoolManager(
-            num_pools=connections, maxsize=maxsize,
-            block=block, source_address=('', self._source_port))
-
-
-
+        
 class UserSession(Session):
     portassigner = Port_Getter()
 
@@ -79,7 +73,6 @@ class Multidown:
         self.dic[self.id][key] = val
 
     def worker(self):
-        interrupted = True
         filepath = self.getval('filepath')
         path = Path(filepath)
         end = self.getval('end')
@@ -131,17 +124,20 @@ class Downloader:
         self.dic = dict()
         self.workers = []
         self.progress = 0
+        self.alive = True
+        
     def download(self, url, filepath, num_connections=32):
-        info = requests.head(url)
-        size = int(int(info.headers["Content-Length"])/1000000) #1MB = 1,000,000 bytes
-        if size < 50:
-            num_connections = 5
         f_path = filepath + '.progress.json'
         bcontinue = Path(f_path).exists()
         singlethread = False
         threads = []
         path = Path(filepath)
         head = requests.head(url)
+        
+        size = int(int(head.headers["Content-Length"])/1000000) #1MB = 1,000,000 bytes
+        if size < 50:
+            num_connections = 5
+        
         folder = '/'.join(filepath.split('/')[:-1])
         Path(folder).mkdir(parents=True, exist_ok=True)
         headers = head.headers
@@ -249,3 +245,8 @@ class Downloader:
             Path(f_path).unlink()
         else:
             print('Download interrupted!')
+        
+if __name__ == "__main__":
+    d = Downloader()
+    url = r"http://tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/91cdd58d-e0a5-473c-83d4-734e2c084a2e?P1=1656590541&P2=404&P3=2&P4=IZaWsN0m7UGjZ4oyrqfAcSfiAQXL4GOjylHBhhtH8XMjZlry8rWdgmFlJRaGxUMHG2P9Adk2RWNjqPbUV%2bh3mA%3d%3d"
+    d.download(url,"./Downloads/y.appx",100)

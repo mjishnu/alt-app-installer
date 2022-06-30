@@ -314,17 +314,33 @@ class MainWindowGui(Ui_MainProgram):
                 
                 d = Downloader()
                 def f_download(url,path,threads):
-                    d.download(url,path,threads)
+                    time.sleep(2)
+                    try:
+                        d.download(url,path,threads)
+                    except:
+                        print("download failed getting new url directly!")
+                        for _ in range(10):
+                            time.sleep(4)
+                            try:
+                                url = get_data(self.url)[0][f_name]     #getting the new url from the api
+                                d.download(url,path,threads)
+                                break      # as soon as it works, break out of the loop
+                            except:
+                                print("exception occured: ",_)
+                                continue
+                        d.alive = False
                             
                 worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress
-                worker.signals.error.connect(self.error_handler)
                 self.threadpool.start(worker)
                 
-                while d.progress !=100:
+                while d.progress !=100 and d.alive == True:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
                     time.sleep(0.2)
                 progress_main.emit(2)
+                
+                if d.alive ==False:
+                    raise Exception("Download Error Occured Try again Later!")
                 
             fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
             if file_name in fname_lower:
