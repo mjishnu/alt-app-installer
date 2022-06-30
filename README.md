@@ -17,7 +17,8 @@ This Program basically automates the process of getting the file from https://st
 
 - The app open an browser which allows the user to select the file(application/games) they want and returns its url
 - The url parsed and the product key is send to the api via requests-html which then finds and returns the appropriate download links(contains both the app and the dependencies) if file is not found then it retries 3 time.Then the links are further parsed based on the system architecture of the user then checked if they are of favorable type(these are decrpted file formats easy to install and doesnt need admin privilage to install) and latest version available
-- Then the app downlads the file via pySmartDL(which allows for concurrent downloading in chunks this makes download faster) and finally installs it via subprocess
+- Then the app downlads the file via custom downloader, which allows for concurrent/multi-part/parrel downloading in chunks this makes download faster.It also has the ability to resume interrupted downloads.The app can also automatically use a new url in case current one expires.
+- Finally it installs the downloaded files via subprocess
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
 <img width="952" alt="image" src="https://user-images.githubusercontent.com/83004520/176722809-dbafa2a0-56c6-4cbc-ba8b-fe964a73e029.png">
@@ -51,4 +52,4 @@ You can open an issue or ask me directly in [discord](https://discord.com/invite
 
 # Future plans
 
-- Add pause/resume functionality
+- Add pause/resume download functionality
