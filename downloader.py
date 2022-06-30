@@ -249,4 +249,4 @@ class Downloader:
 if __name__ == "__main__":
     d = Downloader()
     url = r"http://tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/91cdd58d-e0a5-473c-83d4-734e2c084a2e?P1=1656590541&P2=404&P3=2&P4=IZaWsN0m7UGjZ4oyrqfAcSfiAQXL4GOjylHBhhtH8XMjZlry8rWdgmFlJRaGxUMHG2P9Adk2RWNjqPbUV%2bh3mA%3d%3d"
-    d.download(url,"./Downloads/y.appx",100)
+    d.download(url,"./Downloads/Test.appx",6)
