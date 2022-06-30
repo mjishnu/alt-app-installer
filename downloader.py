@@ -10,7 +10,6 @@ import psutil
 import requests
 from requests.adapters import HTTPAdapter
 from requests.sessions import Session
-from urllib3.poolmanager import PoolManager
 from win32gui import GetForegroundWindow
 from win32process import GetWindowThreadProcessId
 
