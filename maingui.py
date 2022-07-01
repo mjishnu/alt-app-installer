@@ -180,9 +180,8 @@ class MainWindowGui(Ui_MainProgram):
             if msg == None:
                 msg = 'An Error Has Occured Try Again!'
             else:
-                msg = f'{n[1]}'
-            msg_details = f'{n[1]}'
-            self.error_msg(msg,msg_details,"Error",True)
+                if 'Stoped By User!' == f'{n[1]}':
+                    self.show_success_popup("Download Stopped!")
 
     def run_success(self,value):
         if value == 0:
@@ -227,11 +226,7 @@ class MainWindowGui(Ui_MainProgram):
     def stop_func(self):
         self.stop=True
         self.stop_btn.hide()
-        self.pushButton.show()
-        self.pushButton.setEnabled(True)
-        self.show_bar(False)
     
-
     def open_Logs(self):
         path = 'log.txt'
         if os.path.exists(path):
@@ -267,18 +262,18 @@ class MainWindowGui(Ui_MainProgram):
         self.threadpool.start(worker)
         worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
     
-    def run_installer(self):
-        fname = QtWidgets.QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
-        self.threadpool.start(worker)
-        worker.signals.result.connect(self.run_success)
-
     def openWindow(self):
         self.stop = False
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowIcon(QIcon('./Images/search.png'))
         newWindow = url_window(self.window)
         newWindow.closed.connect(self.pre_runner)
+
+    def run_installer(self):
+        fname = QtWidgets.QFileDialog.getOpenFileNames()
+        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
+        self.threadpool.start(worker)
+        worker.signals.result.connect(self.run_success)
         
     def pre_runner(self, arg):
         self.url = arg
@@ -361,6 +356,7 @@ class MainWindowGui(Ui_MainProgram):
                     time.sleep(0.2)
                     if self.stop:
                         d.dic['paused'] = self.stop
+                        time.sleep(3)
                         break
                 progress_main.emit(2)
                 
