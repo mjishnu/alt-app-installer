@@ -49,7 +49,3 @@ https://bit.ly/3LPHfu8
 # FAQ
 
 You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
-
-# Future plans
-
-- Add pause/resume download functionality
