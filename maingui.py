@@ -6,11 +6,12 @@ import traceback
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QIcon
+
 from downloader import Downloader
 from get_url import url_window
 from gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
-from PyQt6.QtGui import QIcon
 
 try:
     os.chdir(sys._MEIPASS)
