@@ -194,7 +194,10 @@ class Downloader:
             status = sum([i.completed for i in self.workers])
             downloaded = sum(i.count for i in self.workers)
             doneMiB = downloaded / 1048576
-            self.progress = (doneMiB * 100)/ totalMiB
+            try:
+                self.progress = (doneMiB * 100)/ totalMiB
+            except ZeroDivisionError:
+                print("zero division error")
             if self.dic['paused'] == True:
                 break
             if status == len(self.workers):
@@ -219,6 +222,6 @@ class Downloader:
             print('Download interrupted!')
 
 # if __name__ == "__main__":
-    # d = Downloader()
-    # url = r"http://tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/91cdd58d-e0a5-473c-83d4-734e2c084a2e?P1=1656590541&P2=404&P3=2&P4=IZaWsN0m7UGjZ4oyrqfAcSfiAQXL4GOjylHBhhtH8XMjZlry8rWdgmFlJRaGxUMHG2P9Adk2RWNjqPbUV%2bh3mA%3d%3d"
-    # d.download(url,"./Downloads/Test.appx",6)
+#     d = Downloader()
+#     url = "https://gamedownloads.rockstargames.com/public/installer/Rockstar-Games-Launcher.exe"
+#     d.download(url,"./Downloads/rockstar.exe",4)

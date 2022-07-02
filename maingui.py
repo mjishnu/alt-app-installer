@@ -1,3 +1,5 @@
+from distutils.command.clean import clean
+from hashlib import new
 import os
 import shutil
 import sys
@@ -178,10 +180,12 @@ class MainWindowGui(Ui_MainProgram):
         if normal:
             self.show_error_popup()
         else:
+            msg_details = f'{n[1]}'
             if msg == None:
                 msg = 'An Error Has Occured Try Again!'
+                self.error_msg(msg,msg_details,"Error",True)
             else:
-                if 'Stoped By User!' == f'{n[1]}':
+                if 'Stoped By User!' == msg_details:
                     self.show_success_popup("Download Stopped!")
 
     def run_success(self,value):
@@ -270,7 +274,7 @@ class MainWindowGui(Ui_MainProgram):
         newWindow = url_window(self.window)
         newWindow.closed.connect(self.pre_runner)
 
-    def run_installer(self):
+    def run_installer(self): #standalone installer for predownloaded files
         fname = QtWidgets.QFileDialog.getOpenFileNames()
         worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
         self.threadpool.start(worker)
@@ -279,7 +283,8 @@ class MainWindowGui(Ui_MainProgram):
     def pre_runner(self, arg):
         self.url = arg
         self.runner(self.url)
-            
+        self.window.deleteLater()
+                    
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
         worker.signals.result.connect(self.post_runner)
@@ -372,6 +377,7 @@ class MainWindowGui(Ui_MainProgram):
                 path_lst[path]=1
             else:
                 path_lst[path]=0
+        self.stop_btn.hide()
         progress_main.emit(100)
         return install(path_lst)
 
