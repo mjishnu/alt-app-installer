@@ -44,7 +44,7 @@ This Program basically automates the process of getting the file from https://st
 
 # Video Guide
 
-https://bit.ly/3LPHfu8
+https://youtu.be/ayIilTc-6u4
 
 # FAQ
 
