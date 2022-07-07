@@ -14,7 +14,7 @@ class url_window(QMainWindow):
     # constructor
 
     def __init__(self, *args, **kwargs):
-        super(url_window, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # creating a signal to to get run next code after this executes
 
         # set the title
