@@ -14,6 +14,7 @@ from gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
 
 try:
+    #changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
     os.chdir(sys._MEIPASS)
 except Exception:
     pass
