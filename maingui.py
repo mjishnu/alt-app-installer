@@ -1,5 +1,3 @@
-from distutils.command.clean import clean
-from hashlib import new
 import os
 import shutil
 import sys
@@ -284,6 +282,7 @@ class MainWindowGui(Ui_MainProgram):
         self.url = arg
         self.runner(self.url)
         self.window.deleteLater()
+        self.window.close()
                     
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
