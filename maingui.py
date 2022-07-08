@@ -10,6 +10,7 @@ from PyQt6.QtGui import QIcon
 
 from downloader import Downloader
 from get_url import url_window
+from test import Ui_MainWindow
 from gui import Ui_MainProgram
 from utls import current_time, get_data, install, open_browser, parse_dict
 
@@ -270,8 +271,10 @@ class MainWindowGui(Ui_MainProgram):
         self.stop = False
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowIcon(QIcon('./Images/search.png'))
-        newWindow = url_window(self.window)
-        newWindow.closed.connect(self.pre_runner)
+        newwindow = url_window()
+        newwindow.setupUi(self.window)
+        self.window.show()
+        # self.window.closed.connect(self.pre_runner)
 
     def run_installer(self): #standalone installer for predownloaded files
         fname = QtWidgets.QFileDialog.getOpenFileNames()
