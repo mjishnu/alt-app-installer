@@ -19,7 +19,7 @@ class url_window(object):
         
         def setupUi(self,MainProgram):
         # set the title
-            MainProgram.setWindowTitle("App Selector")
+            MainProgram.setWindowTitle("App Selector") #so on 
 
             # creating a QWebEngineView
             self.browser = QWebEngineView()
