@@ -5,9 +5,8 @@ import time
 import traceback
 
 from PyQt6 import QtWidgets
-from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,Qt
 from PyQt6.QtGui import QIcon
-
 from downloader import Downloader
 from get_url import url_window
 from test import Ui_MainWindow
@@ -98,10 +97,12 @@ class Worker(QRunnable):
 
 class MainWindowGui(Ui_MainProgram):
     def __init__(self):
+        super().__init__()
         self.threadpool = QThreadPool()
         self.url = None
         self.stop = False
-            
+        self.window_open = True
+        
     def setupUi(self, *args, **kwargs):
         Ui_MainProgram.setupUi(self, *args, **kwargs)
         self.set_bar_0()
@@ -269,12 +270,26 @@ class MainWindowGui(Ui_MainProgram):
     
     def openWindow(self):
         self.stop = False
-        self.window = QtWidgets.QMainWindow()
-        self.window.setWindowIcon(QIcon('./Images/search.png'))
-        newwindow = url_window()
-        newwindow.setupUi(self.window)
-        self.window.show()
-        # self.window.closed.connect(self.pre_runner)
+        if self.window_open: #checking if window_func has been called
+            try: 
+                self.window  #checking if self.window already has a value
+            except:
+                self.window = False #if not set it to false aka the window is not open
+                
+            if self.window:  #if it has value then block the choose app button
+                pass
+            else:
+                self.window_open = False #if not then its safe to create a new window
+            
+        if self.window_open == False:
+            self.window_open = True
+            self.window = QtWidgets.QMainWindow()
+            self.window.setWindowIcon(QIcon('./Images/search.png'))
+            newwindow = url_window()
+            newwindow.setupUi(self.window)
+            self.window.show()
+            self.window.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+            newwindow.closed.connect(self.pre_runner)
 
     def run_installer(self): #standalone installer for predownloaded files
         fname = QtWidgets.QFileDialog.getOpenFileNames()
@@ -286,7 +301,7 @@ class MainWindowGui(Ui_MainProgram):
         self.url = arg
         self.runner(self.url)
         self.window.deleteLater()
-        self.window.close()
+        self.window_open = False
                     
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))

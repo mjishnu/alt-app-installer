@@ -8,19 +8,16 @@ from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
 
 # creating main window class
 class url_window(QObject):
-
     # creating a signal varable to signal if code execution completed
-    def __init__(self):
-        super().QObject.__init__()
-        self.closed = pyqtSignal(object)
-    # constructor
-
-    # creating a signal to to get run next code after this executes
+    closed = pyqtSignal(object)
     
+    def __init__(self):
+        super().__init__()
+        
+        
     def setupUi(self,qt_window):
-    # set the title
-        qt_window.setWindowTitle("App Selector") #so on 
-
+        # set the title
+        qt_window.setWindowTitle("App Selector")
         # creating a QWebEngineView
         qt_window.browser = QWebEngineView()
 
@@ -135,7 +132,6 @@ class url_window(QObject):
         qt_window.close()
         self.closed.emit(str(qt_window.urlbar.text()))
 
-
 def url_grabber():
     import sys
 
@@ -154,4 +150,3 @@ def url_grabber():
 
 if __name__ == "__main__":
     url_grabber()
-#needs to change all to mainwindow ....
