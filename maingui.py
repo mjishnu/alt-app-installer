@@ -393,14 +393,20 @@ class MainWindowGui(Ui_MainProgram):
         return install(path_lst)
 
     def closeEvent(self, event):
-        print("triggered")
         close = QMessageBox()
-        close.setText("You sure?")
-        close.setStandardButtons(QMessageBox.Yes | QMessageBox.Cancel)
+        close.setWindowTitle("Confirm")
+        close.setWindowIcon(QIcon('./Images/error_y.png'))
+        close.setText("Are you sure you want to exit?     ")
+        close.setIcon(QMessageBox.Icon.Warning)
+        close.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
         close = close.exec()
 
-        if close == QMessageBox.Yes:
-            self.window.deleteLater()
+        if close == QMessageBox.StandardButton.Yes:
+            try:
+                self.window.deleteLater()
+                del self.window
+            except:
+                pass
             event.accept()
         else:
             event.ignore()
@@ -410,6 +416,7 @@ def main():
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
     MainProgram.setWindowIcon(QIcon('./Images/main.ico'))
+    MainProgram.closeEvent = ui.closeEvent #overiding close event
     MainProgram.show()
     sys.exit(app.exec())
 
