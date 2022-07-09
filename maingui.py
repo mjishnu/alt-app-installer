@@ -268,7 +268,13 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
     
     def openWindow(self):
-        self.stop = False
+        self.stop = False  
+        
+        def close(event):
+            self.window.deleteLater()
+            del self.window
+            event.accept()
+                  
         try: 
             self.window  #checking if self.window already exist
         except:
@@ -280,10 +286,11 @@ class MainWindowGui(Ui_MainProgram):
         else: #open a new window
             self.window = QMainWindow()
             self.window.setWindowIcon(QIcon('./Images/search.png'))
-            newwindow = url_window()
-            newwindow.setupUi(self.window)
+            search_app = url_window()
+            search_app.setupUi(self.window)
             self.window.show()
-            newwindow.closed.connect(self.pre_runner)
+            self.window.closeEvent = close #overiding close event for effictive memory management
+            search_app.closed.connect(self.pre_runner)
 
     def run_installer(self): #standalone installer for predownloaded files
         fname = QFileDialog.getOpenFileNames()
@@ -294,7 +301,6 @@ class MainWindowGui(Ui_MainProgram):
     def pre_runner(self, arg):
         self.url = arg
         self.runner(self.url)
-        self.window.deleteLater()
                     
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
@@ -403,8 +409,7 @@ class MainWindowGui(Ui_MainProgram):
 
         if close == QMessageBox.StandardButton.Yes:
             try:
-                self.window.deleteLater()
-                del self.window
+                self.window.close()
             except:
                 pass
             event.accept()
