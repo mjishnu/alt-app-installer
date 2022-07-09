@@ -1,5 +1,5 @@
 # importing required libraries
-from PyQt6.QtCore import QUrl, pyqtSignal
+from PyQt6.QtCore import QUrl, pyqtSignal,QObject
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
@@ -7,47 +7,45 @@ from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
 
 
 # creating main window class
-class url_window(QMainWindow):
-
+class url_window(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
-    # constructor
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # creating a signal to to get run next code after this executes
-
+    
+    def __init__(self):
+        super().__init__()
+        
+        
+    def setupUi(self,qt_window):
         # set the title
-        self.setWindowTitle("App Selector")
-
+        qt_window.setWindowTitle("App Selector")
         # creating a QWebEngineView
-        self.browser = QWebEngineView()
+        qt_window.browser = QWebEngineView()
 
         # setting default browser url as google
-        self.browser.setUrl(
+        qt_window.browser.setUrl(
             QUrl("https://apps.microsoft.com/"))
 
         # adding action when url get changed
-        self.browser.urlChanged.connect(self.update_urlbar)
+        qt_window.browser.urlChanged.connect(lambda arg:self.update_urlbar(qt_window,arg))
 
         # set this browser as central widget or main window
-        self.setCentralWidget(self.browser)
+        qt_window.setCentralWidget(qt_window.browser)
 
         # creating a status bar object
-        self.status = QStatusBar()
+        qt_window.status = QStatusBar()
 
         # adding status bar to the main window
-        self.setStatusBar(self.status)
+        qt_window.setStatusBar(qt_window.status)
 
         # creating QToolBar for navigation
         navtb = QToolBar("Navigation")
 
         # adding this tool bar tot he main window
-        self.addToolBar(navtb)
+        qt_window.addToolBar(navtb)
 
         # adding actions to the tool bar
         # creating a action for back
-        back_btn = QAction("", self)
+        back_btn = QAction("", qt_window)
 
         # setting status tip
         back_btn.setStatusTip("Back to previous page")
@@ -55,64 +53,62 @@ class url_window(QMainWindow):
 
         # adding action to the back button
         # making browser go back
-        back_btn.triggered.connect(self.browser.back)
+        back_btn.triggered.connect(qt_window.browser.back)
 
         # adding this action to tool bar
         navtb.addAction(back_btn)
 
         # similarly for forward action
-        next_btn = QAction("", self)
+        next_btn = QAction("", qt_window)
         next_btn.setStatusTip("Forward to next page")
         next_btn.setIcon(QIcon('Images/forward.png'))
 
         # adding action to the next button
         # making browser go forward
-        next_btn.triggered.connect(self.browser.forward)
+        next_btn.triggered.connect(qt_window.browser.forward)
         navtb.addAction(next_btn)
 
-        self.label1 = QLabel(self)
-        self.label1.setText("  ")
-        navtb.addWidget(self.label1)
+        qt_window.label1 = QLabel(qt_window)
+        qt_window.label1.setText("  ")
+        navtb.addWidget(qt_window.label1)
 
         # similarly for reload action
-        reload_btn = QAction("", self)
+        reload_btn = QAction("", qt_window)
         reload_btn.setStatusTip("Reload page")
         reload_btn.setIcon(QIcon('Images/reload.png'))
 
         # adding action to the reload button
         # making browser to reload
-        reload_btn.triggered.connect(self.browser.reload)
+        reload_btn.triggered.connect(qt_window.browser.reload)
         navtb.addAction(reload_btn)
 
-        self.label2 = QLabel(self)
-        self.label2.setText(" ")
-        navtb.addWidget(self.label2)
+        qt_window.label2 = QLabel(qt_window)
+        qt_window.label2.setText(" ")
+        navtb.addWidget(qt_window.label2)
 
         # creating a line edit for the url
-        self.urlbar = QLineEdit()
+        qt_window.urlbar = QLineEdit()
 
         # adding this to the tool bar
-        navtb.addWidget(self.urlbar)
-        self.label = QLabel(self)
-        self.label.setText(
+        navtb.addWidget(qt_window.urlbar)
+        qt_window.label = QLabel(qt_window)
+        qt_window.label.setText(
             "  Select The App ")
-        self.label.setStyleSheet("QLabel{font-size: 10pt;}")
-        navtb.addWidget(self.label)
+        qt_window.label.setStyleSheet("QLabel{font-size: 10pt;}")
+        navtb.addWidget(qt_window.label)
 
-        self.select_btn = QPushButton(self)
-        self.select_btn.setText("Select")
-        self.select_btn.setStatusTip("Select The File To Download")
-        self.select_btn.setIcon(QIcon('Images/ok.png'))
-        self.select_btn.clicked.connect(self.current_url)
-        navtb.addWidget(self.select_btn)
-        self.urlbar.returnPressed.connect(self.navigate_to_url)
-        # showing all the components
-        self.show()
+        qt_window.select_btn = QPushButton(qt_window)
+        qt_window.select_btn.setText("Select")
+        qt_window.select_btn.setStatusTip("Select The File To Download")
+        qt_window.select_btn.setIcon(QIcon('Images/ok.png'))
+        qt_window.select_btn.clicked.connect(lambda arg:self.current_url(qt_window))
+        navtb.addWidget(qt_window.select_btn)
+        qt_window.urlbar.returnPressed.connect(lambda arg: self.navigate_to_url(qt_window))
 
-    def navigate_to_url(self):
+    def navigate_to_url(self,qt_window):
 
         # getting url and converting it to QUrl object
-        q = QUrl(self.urlbar.text())
+        q = QUrl(qt_window.urlbar.text())
 
         # if url is scheme is blank
         if q.scheme() == "":
@@ -120,22 +116,21 @@ class url_window(QMainWindow):
             q.setScheme("http")
 
         # set the url to the browser
-        self.browser.setUrl(q)
+        qt_window.browser.setUrl(q)
 
     # method for updating url
     # this method is called by the QWebEngineView object
-    def update_urlbar(self, q):
+    def update_urlbar(self,qt_window,q):
 
         # setting text to the url bar
-        self.urlbar.setText(q.toString())
+        qt_window.urlbar.setText(q.toString())
 
         # setting cursor position of the url bar
-        self.urlbar.setCursorPosition(0)
+        qt_window.urlbar.setCursorPosition(0)
 
-    def current_url(self):
-        self.close()
-        self.closed.emit(str(self.urlbar.text()))
-
+    def current_url(self,qt_window):
+        qt_window.close()
+        self.closed.emit(str(qt_window.urlbar.text()))
 
 def url_grabber():
     import sys
@@ -143,7 +138,11 @@ def url_grabber():
     # creating a pyQt5 application
     app = QApplication(sys.argv)
 
-    window = url_window()
+    window = QMainWindow()
+    window.setWindowIcon(QIcon('./Images/search.png'))
+    newwindow = url_window()
+    newwindow.setupUi(window)
+    window.show()
     # window.resize(600, 400)
     # loop
     app.exec()

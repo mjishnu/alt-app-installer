@@ -4,10 +4,9 @@ import sys
 import time
 import traceback
 
-from PyQt6 import QtWidgets
-from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt6.QtWidgets import QApplication, QMessageBox, QMainWindow,QFileDialog
+from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,Qt
 from PyQt6.QtGui import QIcon
-
 from downloader import Downloader
 from get_url import url_window
 from gui import Ui_MainProgram
@@ -97,10 +96,12 @@ class Worker(QRunnable):
 
 class MainWindowGui(Ui_MainProgram):
     def __init__(self):
+        super().__init__()
         self.threadpool = QThreadPool()
         self.url = None
         self.stop = False
-            
+        self.window_open = True
+        
     def setupUi(self, *args, **kwargs):
         Ui_MainProgram.setupUi(self, *args, **kwargs)
         self.set_bar_0()
@@ -121,14 +122,14 @@ class MainWindowGui(Ui_MainProgram):
 
 
     def error_msg(self, text,msg_details,title="Error",critical = False):
-            msg = QtWidgets.QMessageBox()
+            msg = QMessageBox()
             msg.setWindowTitle(title)
             msg.setText(f'{str(text)}     ')
             if critical:
-                msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+                msg.setIcon(QMessageBox.Icon.Critical)
                 msg.setWindowIcon(QIcon('./Images/error_r.png'))
             else:
-                msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
+                msg.setIcon(QMessageBox.Icon.Warning)
                 msg.setWindowIcon(QIcon('./Images/error_y.png'))
             msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
             self.set_bar_0()
@@ -139,11 +140,11 @@ class MainWindowGui(Ui_MainProgram):
             msg.exec()
             
     def show_error_popup(self,txt="An Error Has Occured Try Again!"):
-        msg = QtWidgets.QMessageBox()
+        msg = QMessageBox()
         msg.setWindowTitle('Error')
         msg.setWindowIcon(QIcon('./Images/error_r.png'))
         msg.setText(f'{txt}     ')
-        msg.setIcon(QtWidgets.QMessageBox.Icon.Critical)
+        msg.setIcon(QMessageBox.Icon.Critical)
         self.set_bar_0()
         self.show_bar(False)
         self.stop_btn.hide()
@@ -152,14 +153,14 @@ class MainWindowGui(Ui_MainProgram):
         msg.exec()
         
     def show_success_popup(self,text=None):
-        msg = QtWidgets.QMessageBox()
+        msg = QMessageBox()
         msg.setWindowTitle('Success')
         msg.setWindowIcon(QIcon('./Images/success.png'))
         if text:
             msg.setText(f'{text}     ')
         else:
             msg.setText('Installation completed!     ')
-        msg.setIcon(QtWidgets.QMessageBox.Icon.Information)
+        msg.setIcon(QMessageBox.Icon.Information)
         self.set_bar_0()
         self.show_bar(False)
         self.stop_btn.hide()
@@ -268,13 +269,24 @@ class MainWindowGui(Ui_MainProgram):
     
     def openWindow(self):
         self.stop = False
-        self.window = QtWidgets.QMainWindow()
-        self.window.setWindowIcon(QIcon('./Images/search.png'))
-        newWindow = url_window(self.window)
-        newWindow.closed.connect(self.pre_runner)
+        try: 
+            self.window  #checking if self.window already exist
+        except:
+            self.window = False #if not set it to false aka the window is not open
+            
+        if self.window:  #if it has value then change focus to the already open window
+            self.window.setWindowState(self.window.windowState() & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive ) #if minimized then unminimize
+            self.window.activateWindow() #set focus to the currently open window
+        else: #open a new window
+            self.window = QMainWindow()
+            self.window.setWindowIcon(QIcon('./Images/search.png'))
+            newwindow = url_window()
+            newwindow.setupUi(self.window)
+            self.window.show()
+            newwindow.closed.connect(self.pre_runner)
 
     def run_installer(self): #standalone installer for predownloaded files
-        fname = QtWidgets.QFileDialog.getOpenFileNames()
+        fname = QFileDialog.getOpenFileNames()
         worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
@@ -283,7 +295,6 @@ class MainWindowGui(Ui_MainProgram):
         self.url = arg
         self.runner(self.url)
         self.window.deleteLater()
-        self.window.close()
                     
     def runner(self, arg):
         worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
@@ -381,12 +392,31 @@ class MainWindowGui(Ui_MainProgram):
         progress_main.emit(100)
         return install(path_lst)
 
+    def closeEvent(self, event):
+        close = QMessageBox()
+        close.setWindowTitle("Confirm")
+        close.setWindowIcon(QIcon('./Images/error_y.png'))
+        close.setText("Are you sure you want to exit?     ")
+        close.setIcon(QMessageBox.Icon.Warning)
+        close.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+        close = close.exec()
+
+        if close == QMessageBox.StandardButton.Yes:
+            try:
+                self.window.deleteLater()
+                del self.window
+            except:
+                pass
+            event.accept()
+        else:
+            event.ignore()
 def main():
-    app = QtWidgets.QApplication(sys.argv)
-    MainProgram = QtWidgets.QMainWindow()
+    app = QApplication(sys.argv)
+    MainProgram = QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
     MainProgram.setWindowIcon(QIcon('./Images/main.ico'))
+    MainProgram.closeEvent = ui.closeEvent #overiding close event
     MainProgram.show()
     sys.exit(app.exec())
 

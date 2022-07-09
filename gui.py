@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainProgram(object):
+class Ui_MainProgram(QtCore.QObject):
     def setupUi(self, MainProgram):
         MainProgram.setObjectName("MainProgram")
         MainProgram.setEnabled(True)
