@@ -16,6 +16,34 @@ class url_window(QObject):
         
         
     def setupUi(self,qt_window):
+        #all helper functions
+        def navigate_to_url():
+
+            # getting url and converting it to QUrl object
+            q = QUrl(qt_window.urlbar.text())
+
+            # if url is scheme is blank
+            if q.scheme() == "":
+                # set url scheme to html
+                q.setScheme("http")
+
+            # set the url to the browser
+            qt_window.browser.setUrl(q)
+
+        # method for updating url
+        # this method is called by the QWebEngineView object
+        def update_urlbar(q):
+
+            # setting text to the url bar
+            qt_window.urlbar.setText(q.toString())
+
+            # setting cursor position of the url bar
+            qt_window.urlbar.setCursorPosition(0)
+
+        def current_url():
+            qt_window.close()
+            self.closed.emit(str(qt_window.urlbar.text()))
+
         # set the title
         qt_window.setWindowTitle("App Selector")
         # creating a QWebEngineView
@@ -26,7 +54,7 @@ class url_window(QObject):
             QUrl("https://apps.microsoft.com/"))
 
         # adding action when url get changed
-        qt_window.browser.urlChanged.connect(lambda arg:self.update_urlbar(qt_window,arg))
+        qt_window.browser.urlChanged.connect(update_urlbar)
 
         # set this browser as central widget or main window
         qt_window.setCentralWidget(qt_window.browser)
@@ -101,37 +129,9 @@ class url_window(QObject):
         qt_window.select_btn.setText("Select")
         qt_window.select_btn.setStatusTip("Select The File To Download")
         qt_window.select_btn.setIcon(QIcon('Images/ok.png'))
-        qt_window.select_btn.clicked.connect(lambda arg:self.current_url(qt_window))
+        qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
-        qt_window.urlbar.returnPressed.connect(lambda arg: self.navigate_to_url(qt_window))
-
-    def navigate_to_url(self,qt_window):
-
-        # getting url and converting it to QUrl object
-        q = QUrl(qt_window.urlbar.text())
-
-        # if url is scheme is blank
-        if q.scheme() == "":
-            # set url scheme to html
-            q.setScheme("http")
-
-        # set the url to the browser
-        qt_window.browser.setUrl(q)
-
-    # method for updating url
-    # this method is called by the QWebEngineView object
-    def update_urlbar(self,qt_window,q):
-
-        # setting text to the url bar
-        qt_window.urlbar.setText(q.toString())
-
-        # setting cursor position of the url bar
-        qt_window.urlbar.setCursorPosition(0)
-
-    def current_url(self,qt_window):
-        qt_window.close()
-        self.closed.emit(str(qt_window.urlbar.text()))
-
+        qt_window.urlbar.returnPressed.connect(navigate_to_url)
 def url_grabber():
     import sys
 
