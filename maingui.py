@@ -253,12 +253,11 @@ class MainWindowGui(Ui_MainProgram):
                         shutil.rmtree(path)
 
                     except OSError as e:
+                        print(e)
                         pass
 
             remove_('log.txt')
             remove_('Downloads', 'dir')
-            remove_('__pycache__', 'dir')
-            remove_('.qt_for_python', 'dir')
             
             
         worker = Worker(lambda *ars, **kwargs: remove_file())
