@@ -42,7 +42,7 @@ This Program basically automates the process of getting the file from [store.rg-
 
 - first open a terminal run the command `git clone https://github.com/m-jishnu/Windows-Store-App-Installer`
 - now install python3 and pip, go to the cloned folder and run the command `pip install -r requirement.txt`
-- run the "run.bat", open the clone folder and run the command  `.\run` 
+- run the "run.bat" or run the command `.\run` in the terminal from the cloned folder
 - enjoy!
 
 # Video Guide
