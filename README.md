@@ -6,8 +6,8 @@ A Program To  Download And Install Windows Store Apps
 
 - This program can download and install microsoft store apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
 - Auto downloads the latest app according to your system architecture (x64/x32)
-- Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin permision to install
-- Uses multi-part/chunk downloader for fast downloading
+- Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin privilage to install
+- Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) for fast downloading
 - Can resume interrupted downloads
 - Automatically use a new url in case current one expires
 - Downloads and install app along with all dependencies 
