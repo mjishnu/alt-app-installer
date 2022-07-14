@@ -17,9 +17,9 @@ This Program basically automates the process of getting the file from [store.rg-
 
 - The app open an browser which allows the user to select the file(application/games) they want to install and returns its url
 - The url is parsed and the product key is send to the api via [requests-html](https://pypi.org/project/requests-html/) which then finds and returns the appropriate download data(contains both the app and the dependencies) if file is not found then it retries 5 time.Then the returned data are further parsed based on 
-    - system architecture of the user(x64/x32)
-    - favorable type(these are decrpted file formats, which doesnt need admin privilage to install)
-    - latest version
+    - System architecture of the user(x64/x32)
+    - Favorable type(these are decrpted file formats, which doesn't need admin privilage to install)
+    - Latest version
 - Then the app downlads the file via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via [subprocess](https://docs.python.org/3/library/subprocess.html)
 
