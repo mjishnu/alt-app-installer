@@ -3,9 +3,11 @@ import subprocess
 import re
 import platform
 from datetime import datetime
-from requests_html import HTMLSession
 import time
 
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
 
 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
 def open_browser(arg):
@@ -63,8 +65,7 @@ def install(path):
             return endresult
     return 0
 
-def get_data(arg):
-    
+def get_data(arg):   
     #geting product id from url
     def product_id_getter(wrd):
         try:
@@ -85,28 +86,72 @@ def get_data(arg):
         except AttributeError:
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
-            
-    #using the api from store.adguard
-    url = "https://store.rg-adguard.net/api/GetFiles"
-    data = {"type":"ProductId","url":"product_id_url","ring":"RP","lang":"en-EN"}
-    data["url"],file_name= product_id_getter(str(arg))
-    for i in range(5):
+    
+    # adding option to hide browser window
+    product_id,file_name= product_id_getter(str(arg))
+    opts = uc.ChromeOptions()
+    # opts.add_argument("--headless") #doesn't work
+    opts.add_argument("--log-level=3")  # fatal
+
+    # path of driver
+    driver = uc.Chrome(options=opts)
+    driver.get("https://store.rg-adguard.net/")
+    times = 100
+    # inputing data
+    # selecting type from the options [url,productId etc] here we choose productid
+    for i in range(times):
         try:
-            session = HTMLSession()
-            r = session.post(url,data = data)
-            #getting all the files from the html
-            matches = r.html.find("a")
-            break
+            select = Select(driver.find_element(
+                by=By.XPATH, value=r"/html/body/div[1]/select[1]"))
+            select.select_by_value("ProductId")
         except:
-            time.sleep(3)
-            print(f"error in getting the files from the api retry:{i}")
+            print(f"Wating for page to load: {i}s")
+            time.sleep(1)
             continue
-    #parsing the results
-    main_dict = dict()
-    for match in matches:
-        main_dict[match.text] = ' '.join(map(str, match.absolute_links))
-    if len(main_dict) == 0:
-        raise Exception("Sorry, Application not found. Please try again!")
+        
+    # selecting the box field and passing data to it
+    box_field = driver.find_element(
+        by=By.XPATH, value=r"/html/body/div[1]/input[1]")
+    box_field.send_keys(product_id)
+
+    # click on the submit button
+    submit_button = driver.find_element(
+        By.CSS_SELECTOR, r"body > div.center > input[type=button]:nth-child(8)"
+    )
+    submit_button.click()
+    # inputing data end --------------------------
+
+    # get contents from site
+    main_dict = {}
+    for i in range(times):
+        try:
+            file = driver.find_element(
+                by=By.XPATH, value="/html/body/div[1]/div/table/tbody"
+            ).text.split("\n")
+        except:
+            print(f"waiting to get data: {i}s")
+            if i % 25 ==0:
+                submit_button.click()
+            time.sleep(1)
+            continue
+        
+
+    # geting length of the table
+    length = len(file)
+
+    # getting size of files
+    splited = [i.split(" ") for i in file]
+    size = dict()
+    for i in splited:
+        size[i[0]] = (i[-2], i[-1])
+
+    # looping to get all elements and adding them to a dict with {name:url}
+    for i in range(length):
+        file = driver.find_element(by=By.XPATH, 
+                                   value=f"/html/body/div[1]/div/table/tbody/tr[{i+1}]/td[1]/a")
+
+        main_dict[file.text] = file.get_attribute("href")
+    driver.quit()
     return (main_dict,file_name)
 
 def greater_ver(arg, n):

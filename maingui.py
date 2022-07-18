@@ -365,7 +365,7 @@ class MainWindowGui(Ui_MainProgram):
                                 d.download(url,path,threads)
                                 break      # as soon as it works, break out of the loop
                             except:
-                                print("exception occured: ",_)
+                                print("retries to get new: ",_)
                                 continue
                         d.alive = False
                             
@@ -412,6 +412,7 @@ class MainWindowGui(Ui_MainProgram):
             except:
                 pass
             event.accept()
+            #raise(Exception("Closed the program!"))
         else:
             event.ignore()
 def main():
