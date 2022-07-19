@@ -10,7 +10,12 @@ from PyQt6.QtGui import QIcon
 from downloader import Downloader
 from get_url import url_window
 from gui import Ui_MainProgram
-from utls import current_time, get_data, install, open_browser, parse_dict
+from utls import current_time, install, open_browser, parse_dict
+
+import re
+import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
 
 try:
     #changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -161,14 +166,17 @@ class MainWindowGui(Ui_MainProgram):
         else:
             msg.setText('Installation completed!     ')
         msg.setIcon(QMessageBox.Icon.Information)
-        self.set_bar_0()
-        self.show_bar(False)
-        self.stop_btn.hide()
-        self.pushButton.setEnabled(True)
-        self.pushButton.show() 
-        msg.exec()
         
-    def error_handler(self, n,normal=True,msg = None):
+        if text =="Cache Files Cleared Successfully!":
+            print("Cache Files Cleared")
+        else:
+            self.set_bar_0()
+            self.show_bar(False)
+            self.stop_btn.hide()
+            self.pushButton.setEnabled(True)
+            self.pushButton.show() 
+        msg.exec()
+    def error_handler(self, n=None,normal=True,msg = None):
         if os.path.exists('log.txt'):
             mode = 'a'
         else:
@@ -186,7 +194,7 @@ class MainWindowGui(Ui_MainProgram):
                 self.error_msg(msg,msg_details,"Error",True)
             else:
                 if 'Stoped By User!' == msg_details:
-                    self.show_success_popup("Download Stopped!")
+                    self.show_success_popup("Stoped By User!")
 
     def run_success(self,value):
         if value == 0:
@@ -231,6 +239,10 @@ class MainWindowGui(Ui_MainProgram):
     def stop_func(self):
         self.stop=True
         self.stop_btn.hide()
+        try:
+            self.driver.quit()
+        except:
+            print("chrome driver not running!")
     
     def open_Logs(self):
         path = 'log.txt'
@@ -307,12 +319,29 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,**kwargs))
+        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,msg=True))
         self.threadpool.start(worker)
         
         self.pushButton.setEnabled(False)
         self.show_bar(True)
+        self.stop_helper()
 
+    def stop_helper(self):
+        def stop_button_show():
+            for i in range(101):
+                try:
+                    if self.driver:
+                        self.stop_btn.show()
+                except:
+                    print(f"wating for driver to load: {i}s")
+                    time.sleep(1)
+                    if (i+1) == 101:
+                        self.stop = True
+                        self.show_error_popup()
+                        
+        worker = Worker(lambda *args,**kwargs: stop_button_show())
+        self.threadpool.start(worker)
+        
     def post_runner(self, arg):
         worker = Worker(lambda **kwargs: self.installer(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
@@ -322,13 +351,103 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,msg=True))
         self.threadpool.start(worker)
         
-        self.stop_btn.show()
-       
+    def get_data(self,arg):   
+        #geting product id from url
+        def product_id_getter(wrd):
+            try:
+                pattern = re.compile(r".+\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
+                matches = pattern.search(str(wrd))
+                match=matches.group(1)
+                
+                #getting name from url
+                pattern_n = re.compile(r".+\/([a-zA-Z-]+)\/|.+")
+                matches_n = pattern_n.search(str(wrd))
+                name=matches_n.group(1)
+                
+                if match == None:
+                    raise Exception(
+                        'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
+                else:
+                    return match,name
+            except AttributeError:
+                raise Exception(
+                    'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
+        
+        # adding option to hide browser window
+        product_id,file_name= product_id_getter(str(arg))
+        opts = uc.ChromeOptions()
+        # opts.add_argument("--headless") #doesn't work
+        opts.add_argument("--log-level=3")  # fatal
+
+        # path of self.driver
+        self.driver = uc.Chrome(options=opts)
+        self.driver.get("https://store.rg-adguard.net/")
+        times = 100
+        # inputing data
+        # selecting type from the options [url,productId etc] here we choose productid
+        for i in range(times):
+            if self.stop == True:
+                raise(Exception("Stoped By User!"))
+            try:
+                select = Select(self.driver.find_element(
+                    by=By.XPATH, value=r"/html/body/div[1]/select[1]"))
+                select.select_by_value("ProductId")
+            except:
+                print(f"Wating for page to load: {i}s")
+                time.sleep(1)
+                continue
+            
+        # selecting the box field and passing data to it
+        box_field = self.driver.find_element(
+            by=By.XPATH, value=r"/html/body/div[1]/input[1]")
+        box_field.send_keys(product_id)
+
+        # click on the submit button
+        submit_button = self.driver.find_element(
+            By.CSS_SELECTOR, r"body > div.center > input[type=button]:nth-child(8)"
+        )
+        submit_button.click()
+        # inputing data end --------------------------
+
+        # get contents from site
+        main_dict = {}
+        for i in range(times):
+            if self.stop == True:
+                raise(Exception("Stoped By User!"))
+            try:
+                file = self.driver.find_element(
+                    by=By.XPATH, value="/html/body/div[1]/div/table/tbody"
+                ).text.split("\n")
+            except:
+                print(f"waiting to get data: {i}s")
+                if i % 25 ==0:
+                    submit_button.click()
+                time.sleep(1)
+                continue
+            
+
+        # geting length of the table
+        length = len(file)
+
+        # getting size of files
+        splited = [i.split(" ") for i in file]
+        size = dict()
+        for i in splited:
+            size[i[0]] = (i[-2], i[-1])
+
+        # looping to get all elements and adding them to a dict with {name:url}
+        for i in range(length):
+            file = self.driver.find_element(by=By.XPATH, 
+                                    value=f"/html/body/div[1]/div/table/tbody/tr[{i+1}]/td[1]/a")
+
+            main_dict[file.text] = file.get_attribute("href")
+        self.driver.quit()
+        return (main_dict,file_name)
 
     def parser(self, data_args, progress_current, progress_main, progress):
         progress_main.emit(20)
         progress_current.emit(10)
-        data_dict = get_data(str(data_args))
+        data_dict = self.get_data(str(data_args))
         progress.emit(40)
         parse_data = parse_dict(data_dict)
         progress.emit(50)
@@ -346,7 +465,7 @@ class MainWindowGui(Ui_MainProgram):
         path_lst = dict()
         for f_name in final_data:
             # Define the remote file to retrieve
-            remote_url = main_dict[f_name] # ,get_data(self.url)[0][f_name] #(main_dict,f_name)[0] = main_dict ={f_name:url}
+            remote_url = main_dict[f_name] # ,self.get_data(self.url)[0][f_name] #(main_dict,f_name)[0] = main_dict ={f_name:url}
             # Download remote and save locally
             path = f"{dwnpath}{f_name}"
             if not os.path.exists(path): #don't download if it exists already
@@ -361,7 +480,7 @@ class MainWindowGui(Ui_MainProgram):
                         for _ in range(10):
                             time.sleep(4)
                             try:
-                                url = get_data(self.url)[0][f_name]     #getting the new url from the api
+                                url = self.get_data(self.url)[0][f_name]     #getting the new url from the api
                                 d.download(url,path,threads)
                                 break      # as soon as it works, break out of the loop
                             except:
@@ -410,9 +529,12 @@ class MainWindowGui(Ui_MainProgram):
             try:
                 self.window.close()
             except:
-                pass
-            event.accept()
-            #raise(Exception("Closed the program!"))
+                try:
+                    self.driver.quit()
+                except: 
+                    pass
+            # event.accept()
+            raise(Exception("Closed the program!"))
         else:
             event.ignore()
 def main():
