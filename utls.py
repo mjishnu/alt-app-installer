@@ -3,11 +3,6 @@ import subprocess
 import re
 import platform
 from datetime import datetime
-import time
-
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import Select
 
 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
 def open_browser(arg):
