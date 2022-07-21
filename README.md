@@ -30,12 +30,13 @@ This Program basically automates the process of getting the file from [store.rg-
 # Requirements
 - Windows 10/11
 - An internet connection
-- [Chrome](https://www.google.com/intl/en_us/chrome/) (latest version)
+- [Chrome](https://www.google.com/intl/en_us/chrome/) (Latest version)
 
 # How to use the app
 - build it from [source](https://github.com/m-jishnu/alt-app-installer/edit/bypass_cf/README.md#how-to-build-from-source)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
-- Wait for the process to complete, afterwards check for the app in start menu
+- Wait for the process to complete ( **Note: Don't close the chrome window which has opened or the terminal** )
+- Afterwards check for the app in start menu
 - you can also install already downloaded apps via "install from file" in "Options" 
 
 # How to build from source
