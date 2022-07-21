@@ -16,7 +16,7 @@ A Program To  Download And Install Windows Store Apps
 This Program basically automates the process of getting the file from [store.rg-adguard](https://store.rg-adguard.net/) using its api and installs the app for the user, so credit goes to the creator of [store.rg-adguard](https://store.rg-adguard.net/)
 
 - The app open an browser which allows the user to select the file(application/games) they want to install and returns its url
-- The url is parsed and the product key is send to the api via [requests-html](https://pypi.org/project/requests-html/) which then finds and returns the appropriate download data(contains both the app and the dependencies) if file is not found then it retries 5 time.Then the returned data are further parsed based on 
+- The url is parsed and the product key is send via selenium to the site using [undetected-chromedriver](https://github.com/ultrafunkamsterdam/undetected-chromedriver) to bypass cloudflare protection and the appropriate download data(contains both the app and the dependencies) is retrieved.Then the returned data are further parsed based on 
     - System architecture of the user(x64/x32)
     - Favorable type(these are decrpted file formats, which doesn't need admin privilage to install)
     - Latest version
@@ -28,14 +28,15 @@ This Program basically automates the process of getting the file from [store.rg-
 
 
 # Requirements
-- windows 10/11
+- Windows 10/11
 - An internet connection
+- [Chrome](https://www.google.com/intl/en_us/chrome/) (Latest version)
 
 # How to use the app
-- Download the alt_app_installer.exe and run it or build it from source
-- Now open the alt_app_installer.exe file in the extracted folder (alt_app_installer folder) and run it (the first run can take time)
+- build it from [source](https://github.com/m-jishnu/alt-app-installer/edit/bypass_cf/README.md#how-to-build-from-source)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
-- Wait for the process to complete, afterwards check for the app in start menu
+- Wait for the process to complete ( **Note: Don't close the chrome window which has opened or the terminal** )
+- Afterwards check for the app in start menu
 - you can also install already downloaded apps via "install from file" in "Options" 
 
 # How to build from source
