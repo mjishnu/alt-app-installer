@@ -161,6 +161,7 @@ class MainWindowGui(Ui_MainProgram):
         else:
             msg.setText('Installation completed!     ')
         msg.setIcon(QMessageBox.Icon.Information)
+        
         if text =="Cache Files Cleared Successfully!":
             print("Cache Files Cleared")
         else:
