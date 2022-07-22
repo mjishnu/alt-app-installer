@@ -33,7 +33,7 @@ This Program basically automates the process of getting the file from [store.rg-
 - [Chrome](https://www.google.com/intl/en_us/chrome/) (Latest version)
 
 # How to use the app
-- build it from [source](https://github.com/m-jishnu/alt-app-installer/edit/bypass_cf/README.md#how-to-build-from-source)
+- build it from [source](https://github.com/m-jishnu/alt-app-installer/tree/bypass_cf#how-to-build-from-source)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete ( **Note: Don't close the chrome window which has opened or the terminal** )
 - Afterwards check for the app in start menu
@@ -41,10 +41,11 @@ This Program basically automates the process of getting the file from [store.rg-
 
 # How to build from source
 
-- first open a terminal run the command `git clone https://github.com/m-jishnu/Windows-Store-App-Installer`
-- now install python3 and pip, go to the cloned folder and run the command `pip install -r requirement.txt`
+- install [git](https://git-scm.com/download/win)
+- Open a git bash terminal run the command `git clone -b bypass_cf https://github.com/m-jishnu/alt-app-installer`
+- Now install python3 and pip, go to the cloned folder and run the command `pip install -r requirement.txt`
 - run the "run.bat" or run the command `.\run` in the terminal from the cloned folder
-- enjoy!
+- Enjoy!
 
 # Video Guide
 
