@@ -161,11 +161,14 @@ class MainWindowGui(Ui_MainProgram):
         else:
             msg.setText('Installation completed!     ')
         msg.setIcon(QMessageBox.Icon.Information)
-        self.set_bar_0()
-        self.show_bar(False)
-        self.stop_btn.hide()
-        self.pushButton.setEnabled(True)
-        self.pushButton.show() 
+        if text =="Cache Files Cleared Successfully!":
+            print("Cache Files Cleared")
+        else:
+            self.set_bar_0()
+            self.show_bar(False)
+            self.stop_btn.hide()
+            self.pushButton.setEnabled(True)
+            self.pushButton.show() 
         msg.exec()
         
     def error_handler(self, n,normal=True,msg = None):
