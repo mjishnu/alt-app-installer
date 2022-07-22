@@ -137,11 +137,14 @@ class MainWindowGui(Ui_MainProgram):
                 msg.setIcon(QMessageBox.Icon.Warning)
                 msg.setWindowIcon(QIcon('./Images/error_y.png'))
             msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
-            self.set_bar_0()
-            self.show_bar(False)
-            self.stop_btn.hide()
-            self.pushButton.setEnabled(True)
-            self.pushButton.show()
+            if text == "Failed To Clear Cache Files!":
+                print("Failed to clear cache")
+            else:
+                self.set_bar_0()
+                self.show_bar(False)
+                self.stop_btn.hide()
+                self.pushButton.setEnabled(True)
+                self.pushButton.show()
             msg.exec()
             
     def show_error_popup(self,txt="An Error Has Occured Try Again!"):
@@ -176,26 +179,30 @@ class MainWindowGui(Ui_MainProgram):
             self.pushButton.setEnabled(True)
             self.pushButton.show() 
         msg.exec()
-    def error_handler(self, n=None,normal=True,msg = None):
+        
+    def error_handler(self, n,normal=True,msg = None,critical=True):
+        # if path exits or not
         if os.path.exists('log.txt'):
             mode = 'a'
         else:
             mode = 'w'
+        # write to the log file 
         with open('log.txt', mode) as f:
             f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
             f.write(n[2])
             f.write(f'{82*"-"}\n')
+            
+        #if normal show a simple popup
         if normal:
             self.show_error_popup()
         else:
             msg_details = f'{n[1]}'
-            if msg == None:
-                msg = 'An Error Has Occured Try Again!'
-                self.error_msg(msg,msg_details,"Error",True)
+            if 'Stoped By User!' == msg_details:
+                self.show_success_popup("Stoped By User!")
             else:
-                if 'Stoped By User!' == msg_details:
-                    self.show_success_popup("Stoped By User!")
-
+                if msg == None:
+                    msg = 'An Error Has Occured Try Again!'
+                self.error_msg(msg,msg_details,"Error",critical)
     def run_success(self,value):
         if value == 0:
             self.show_success_popup()
@@ -261,22 +268,17 @@ class MainWindowGui(Ui_MainProgram):
                         pass
 
                 elif mode == 'dir':
-                    try:
-                        shutil.rmtree(path)
-
-                    except OSError as e:
-                        print(e)
-                        pass
+                    shutil.rmtree(path)
 
             remove_('log.txt')
             remove_('Downloads', 'dir')
             
             
         worker = Worker(lambda *ars, **kwargs: remove_file())
-        worker.signals.error.connect(self.error_handler)
+        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False,msg = "Failed To Clear Cache Files!",critical=False))
         
         self.threadpool.start(worker)
-        worker.signals.finished.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
+        worker.signals.result.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
     
     def openWindow(self):
         self.stop = False  
@@ -319,7 +321,7 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,msg=True))
+        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False))
         self.threadpool.start(worker)
         
         self.pushButton.setEnabled(False)
@@ -348,7 +350,7 @@ class MainWindowGui(Ui_MainProgram):
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(lambda *arg,**kwargs: self.error_handler(normal=False,*arg,msg=True))
+        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False))
         self.threadpool.start(worker)
         
     def get_data(self,arg):   
