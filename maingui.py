@@ -4,13 +4,15 @@ import sys
 import time
 import traceback
 
-from PyQt6.QtWidgets import QApplication, QMessageBox, QMainWindow,QFileDialog
-from PyQt6.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal, pyqtSlot,Qt
+from PyQt6.QtCore import (QObject, QRunnable, Qt, QThreadPool, pyqtSignal,
+                          pyqtSlot)
 from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+
 from downloader import Downloader
 from get_url import url_window
-from gui import Ui_MainProgram
-from utls import current_time, get_data, install, open_browser, parse_dict
+from misc import Miscellaneous
+from utls import get_data, install, open_browser, parse_dict
 
 try:
     #changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -94,7 +96,7 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()  # Done
 
-class MainWindowGui(Ui_MainProgram):
+class MainWindowGui(Miscellaneous):
     def __init__(self):
         super().__init__()
         self.threadpool = QThreadPool()
@@ -103,145 +105,22 @@ class MainWindowGui(Ui_MainProgram):
         self.window_open = True
         
     def setupUi(self, *args, **kwargs):
-        Ui_MainProgram.setupUi(self, *args, **kwargs)
+        Miscellaneous.setupUi(self, *args, **kwargs)
         self.set_bar_0()
         self.show_bar(False)
         self.pushButton.clicked.connect(self.openWindow)
         self.stop_btn.clicked.connect(self.stop_func)
         self.stop_btn.hide()
         self.actioninstall_From_File.triggered.connect(
-            self.run_installer)
+            self.standalone_installer)
         self.actionclear_cache.triggered.connect(self.clear_cache)
         self.actionCheck_For_Updates.triggered.connect(lambda: open_browser(
-            'https://github.com/m-jishnu/Windows-Store-App-Installer/releases'))
+            'https://github.com/m-jishnu/alt-app-installer/releases'))
         self.actionAbout.triggered.connect(lambda: open_browser(
-            'https://github.com/m-jishnu/Windows-Store-App-Installer'))
+            'https://github.com/m-jishnu/alt-app-installer'))
         self.actionHelp.triggered.connect(lambda: open_browser(
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
-
-
-    def error_msg(self, text,msg_details,title="Error",critical = False):
-            msg = QMessageBox()
-            msg.setWindowTitle(title)
-            msg.setText(f'{str(text)}     ')
-            if critical:
-                msg.setIcon(QMessageBox.Icon.Critical)
-                msg.setWindowIcon(QIcon('./Images/error_r.png'))
-            else:
-                msg.setIcon(QMessageBox.Icon.Warning)
-                msg.setWindowIcon(QIcon('./Images/error_y.png'))
-            msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
-            if text == "Failed To Clear Cache Files!":
-                print("Failed to clear cache")
-            else:
-                self.set_bar_0()
-                self.show_bar(False)
-                self.stop_btn.hide()
-                self.pushButton.setEnabled(True)
-                self.pushButton.show()
-            msg.exec()
-            
-    def show_error_popup(self,txt="An Error Has Occured Try Again!"):
-        msg = QMessageBox()
-        msg.setWindowTitle('Error')
-        msg.setWindowIcon(QIcon('./Images/error_r.png'))
-        msg.setText(f'{txt}     ')
-        msg.setIcon(QMessageBox.Icon.Critical)
-        self.set_bar_0()
-        self.show_bar(False)
-        self.stop_btn.hide()
-        self.pushButton.setEnabled(True)
-        self.pushButton.show()      
-        msg.exec()
-        
-    def show_success_popup(self,text=None):
-        msg = QMessageBox()
-        msg.setWindowTitle('Success')
-        msg.setWindowIcon(QIcon('./Images/success.png'))
-        if text:
-            msg.setText(f'{text}     ')
-        else:
-            msg.setText('Installation completed!     ')
-        msg.setIcon(QMessageBox.Icon.Information)
-        
-        if text =="Cache Files Cleared Successfully!":
-            print("Cache Files Cleared")
-        else:
-            self.set_bar_0()
-            self.show_bar(False)
-            self.stop_btn.hide()
-            self.pushButton.setEnabled(True)
-            self.pushButton.show() 
-        msg.exec()
-        
-    def error_handler(self, n,normal=True,msg = None,critical=True):
-        # if path exits or not
-        if os.path.exists('log.txt'):
-            mode = 'a'
-        else:
-            mode = 'w'
-        # write to the log file 
-        with open('log.txt', mode) as f:
-            f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
-            f.write(n[2])
-            f.write(f'{82*"-"}\n')
-            
-        #if normal show a simple popup
-        if normal:
-            self.show_error_popup()
-        else:
-            msg_details = f'{n[1]}'
-            if 'Stoped By User!' == msg_details:
-                self.show_success_popup("Download Stopped!")
-            else:
-                if msg == None:
-                    msg = 'An Error Has Occured Try Again!'
-                self.error_msg(msg,msg_details,"Error",critical)
-
-    def run_success(self,value):
-        if value == 0:
-            self.show_success_popup()
-        else:
-            self.error_msg(*value)
-
-    def main_Progress(self, n):
-        total = self.mainprogressBar.value()
-        if total + n < 100:
-            total += n
-        else:
-            total = 99
-        self.mainprogressBar.setValue(total)
-
-    def cur_Progress(self, n):
-        self.currentprogressBar.setValue(n)
-
-    def progress(self, n):
-        total = self.currentprogressBar.value()
-        total += n
-        self.currentprogressBar.setValue(total)
-        if total == 100:
-            self.main_Progress(20)
- 
-    def set_bar_0(self):
-        self.mainprogressBar.setValue(0)
-        self.currentprogressBar.setValue(0)
-
-    def show_bar(self, val=True):
-        if val is False:
-            self.currentprogressBar.hide()
-            self.mainprogressBar.hide()
-            self.Current_bar.hide()
-            self.Main_bar.hide()
-        elif val is True:
-            self.currentprogressBar.show()
-            self.mainprogressBar.show()
-            self.Current_bar.show()
-            self.Main_bar.show()
-            
-    def stop_func(self):
-        self.stop=True
-        self.stop_btn.hide()
     
     def open_Logs(self):
         path = 'log.txt'
@@ -295,21 +174,29 @@ class MainWindowGui(Ui_MainProgram):
             search_app.setupUi(self.window)
             self.window.show()
             self.window.closeEvent = close #overiding close event for effictive memory management
-            search_app.closed.connect(self.pre_runner)
+            search_app.closed.connect(self.parser)
 
-    def run_installer(self): #standalone installer for predownloaded files
+    #standalone installer for predownloaded files
+    def standalone_installer(self): 
         fname = QFileDialog.getOpenFileNames()
         worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
-        
-    def pre_runner(self, arg):
-        self.url = arg
-        self.runner(self.url)
                     
-    def runner(self, arg):
-        worker = Worker(lambda **kwargs: self.parser(arg, **kwargs))
-        worker.signals.result.connect(self.post_runner)
+    def parser(self, arg):
+        
+        def parser_thread(data_args, progress_current, progress_main, progress):
+            progress_main.emit(20)
+            progress_current.emit(10)
+            data_dict = get_data(str(data_args))
+            progress.emit(40)
+            parse_data = parse_dict(data_dict)
+            progress.emit(50)
+            return parse_data
+        
+        self.url = arg #saving the url for future uses
+        worker = Worker(lambda **kwargs: parser_thread(arg, **kwargs))
+        worker.signals.result.connect(self.download_install)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.progress.connect(self.progress)
@@ -319,8 +206,74 @@ class MainWindowGui(Ui_MainProgram):
         self.pushButton.setEnabled(False)
         self.show_bar(True)
 
-    def post_runner(self, arg):
-        worker = Worker(lambda **kwargs: self.installer(arg, **kwargs))
+    def download_install(self, arg):    
+        
+        def download_install_thread(data,  progress_current, progress_main, progress):
+            main_dict, final_data,file_name = data
+            abs = os.getcwd()
+            dwnpath = f'{abs}/Downloads/'
+            if not os.path.exists(dwnpath):
+                os.makedirs(dwnpath)
+
+            progress_main.emit(40)
+            path_lst = dict()
+            for f_name in final_data:
+                # Define the remote file to retrieve
+                remote_url = main_dict[f_name] #{f_name:url}
+                # Download remote and save locally
+                path = f"{dwnpath}{f_name}"
+                if not os.path.exists(path): #don't download if it exists already
+                    
+                    d = Downloader()
+                    def f_download(url,path,threads):
+                        time.sleep(2)
+                        try:
+                            d.download(url,path,threads)
+                        except:
+                            print("download failed getting new url directly!")
+                            for _ in range(10):
+                                time.sleep(4)
+                                try:
+                                    url = get_data(self.url)[0][f_name] #getting the new url from the api
+                                    d.download(url,path,threads)
+                                    success = True
+                                    break      # as soon as it works, break out of the loop
+                                except:
+                                    print("exception occured: ",_)
+                                    continue
+                            if success != True:
+                                d.alive = False
+                                
+                    worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,20)) #concurrent download so we can get the download progress
+                    self.threadpool.start(worker)
+                    
+                    while d.progress !=100 and d.alive == True:
+                        download_percentage = int(d.progress)
+                        progress_current.emit(download_percentage)
+                        time.sleep(0.2)
+                        if self.stop:
+                            d.dic['paused'] = self.stop
+                            time.sleep(3)
+                            break
+                    progress_main.emit(2)
+                    
+                    if self.stop:
+                        raise Exception("Stoped By User!")
+                    
+                    if d.alive ==False:
+                        raise Exception("Download Error Occured Try again Later!")
+                    
+                fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
+                if file_name in fname_lower:
+                    path_lst[path]=1
+                else:
+                    path_lst[path]=0
+                    
+            self.stop_btn.hide()
+            progress_main.emit(100)
+            return install(path_lst) #install the apps'
+        
+        worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
@@ -329,79 +282,6 @@ class MainWindowGui(Ui_MainProgram):
         self.threadpool.start(worker)
         
         self.stop_btn.show()
-       
-
-    def parser(self, data_args, progress_current, progress_main, progress):
-        progress_main.emit(20)
-        progress_current.emit(10)
-        data_dict = get_data(str(data_args))
-        progress.emit(40)
-        parse_data = parse_dict(data_dict)
-        progress.emit(50)
-        return parse_data
-        
-
-    def installer(self, data,  progress_current, progress_main, progress):
-        main_dict, final_data,file_name = data
-        abs = os.getcwd()
-        dwnpath = f'{abs}/Downloads/'
-        if not os.path.exists(dwnpath):
-            os.makedirs(dwnpath)
-
-        progress_main.emit(40)
-        path_lst = dict()
-        for f_name in final_data:
-            # Define the remote file to retrieve
-            remote_url = main_dict[f_name] # ,get_data(self.url)[0][f_name] #(main_dict,f_name)[0] = main_dict ={f_name:url}
-            # Download remote and save locally
-            path = f"{dwnpath}{f_name}"
-            if not os.path.exists(path): #don't download if it exists already
-                
-                d = Downloader()
-                def f_download(url,path,threads):
-                    time.sleep(2)
-                    try:
-                        d.download(url,path,threads)
-                    except:
-                        print("download failed getting new url directly!")
-                        for _ in range(10):
-                            time.sleep(4)
-                            try:
-                                url = get_data(self.url)[0][f_name]     #getting the new url from the api
-                                d.download(url,path,threads)
-                                break      # as soon as it works, break out of the loop
-                            except:
-                                print("exception occured: ",_)
-                                continue
-                        d.alive = False
-                            
-                worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,10)) #concurrent download so we can get the download progress
-                self.threadpool.start(worker)
-                
-                while d.progress !=100 and d.alive == True:
-                    download_percentage = int(d.progress)
-                    progress_current.emit(download_percentage)
-                    time.sleep(0.2)
-                    if self.stop:
-                        d.dic['paused'] = self.stop
-                        time.sleep(3)
-                        break
-                progress_main.emit(2)
-                
-                if self.stop:
-                    raise Exception("Stoped By User!")
-                
-                if d.alive ==False:
-                    raise Exception("Download Error Occured Try again Later!")
-                
-            fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
-            if file_name in fname_lower:
-                path_lst[path]=1
-            else:
-                path_lst[path]=0
-        self.stop_btn.hide()
-        progress_main.emit(100)
-        return install(path_lst)
 
     def closeEvent(self, event):
         close = QMessageBox()
@@ -420,16 +300,3 @@ class MainWindowGui(Ui_MainProgram):
             event.accept()
         else:
             event.ignore()
-def main():
-    app = QApplication(sys.argv)
-    MainProgram = QMainWindow()
-    ui = MainWindowGui()
-    ui.setupUi(MainProgram)
-    MainProgram.setWindowIcon(QIcon('./Images/main.ico'))
-    MainProgram.closeEvent = ui.closeEvent #overiding close event
-    MainProgram.show()
-    sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()

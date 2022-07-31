@@ -1,11 +1,11 @@
-import webbrowser
-import subprocess
-import re
 import platform
-from datetime import datetime
-from requests_html import HTMLSession
+import re
+import subprocess
 import time
+import webbrowser
+from datetime import datetime
 
+from requests_html import HTMLSession
 
 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
 def open_browser(arg):
@@ -41,8 +41,10 @@ def install(path):
                 f.write(output.stderr.decode("utf-8"))           
                 f.write(f'{82*"-"}\n')
             outputs.append(output.args[1])
+            #if command failed
             if output.returncode != 0:
                 flag = 1
+                #if the failed commands include the application package then show app not installed
                 if path[s_path] == 1:
                     main_prog_error = 1
                     break

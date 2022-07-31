@@ -112,7 +112,7 @@ class Downloader:
         self.alive = True
         self.dic['paused'] = False
 
-    def download(self, url, filepath, num_connections=32):
+    def download(self, url, filepath, num_connections):
         f_path = filepath + '.progress.json'
         bcontinue = Path(f_path).exists()
         singlethread = False
