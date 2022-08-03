@@ -132,10 +132,11 @@ class url_window(QObject):
         qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
+        
 def url_grabber():
     import sys
 
-    # creating a pyQt5 application
+    # creating a pyQt application
     app = QApplication(sys.argv)
 
     window = QMainWindow()
