@@ -130,3 +130,21 @@ class Miscellaneous(Ui_MainProgram):
     def stop_func(self):
         self.stop=True
         self.stop_btn.hide()
+        
+    def closeEvent(self, event):
+        close = QMessageBox()
+        close.setWindowTitle("Confirm")
+        close.setWindowIcon(QIcon('./Images/error_y.png'))
+        close.setText("Are you sure you want to exit?     ")
+        close.setIcon(QMessageBox.Icon.Warning)
+        close.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+        close = close.exec()
+
+        if close == QMessageBox.StandardButton.Yes:
+            try:
+                self.window.close()
+            except:
+                pass
+            event.accept()
+        else:
+            event.ignore()

@@ -7,7 +7,7 @@ import traceback
 from PyQt6.QtCore import (QObject, QRunnable, Qt, QThreadPool, pyqtSignal,
                           pyqtSlot)
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QFileDialog, QMainWindow, QMessageBox
+from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
 from downloader import Downloader
 from get_url import url_window
@@ -46,7 +46,6 @@ class WorkerSignals(QObject):
     cur_progress = pyqtSignal(int)
     main_progress = pyqtSignal(int)
     progress = pyqtSignal(int)
-
 
 class Worker(QRunnable):
     '''
@@ -151,6 +150,13 @@ class MainWindowGui(Miscellaneous):
         self.threadpool.start(worker)
         worker.signals.result.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
     
+    #standalone installer for predownloaded files
+    def standalone_installer(self): 
+        fname = QFileDialog.getOpenFileNames()
+        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
+        self.threadpool.start(worker)
+        worker.signals.result.connect(self.run_success)
+                    
     def openWindow(self):
         self.stop = False  
         
@@ -176,13 +182,6 @@ class MainWindowGui(Miscellaneous):
             self.window.closeEvent = close #overiding close event for effictive memory management
             search_app.closed.connect(self.parser)
 
-    #standalone installer for predownloaded files
-    def standalone_installer(self): 
-        fname = QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
-        self.threadpool.start(worker)
-        worker.signals.result.connect(self.run_success)
-                    
     def parser(self, arg):
         
         def parser_thread(data_args, progress_current, progress_main, progress):
@@ -282,21 +281,3 @@ class MainWindowGui(Miscellaneous):
         self.threadpool.start(worker)
         
         self.stop_btn.show()
-
-    def closeEvent(self, event):
-        close = QMessageBox()
-        close.setWindowTitle("Confirm")
-        close.setWindowIcon(QIcon('./Images/error_y.png'))
-        close.setText("Are you sure you want to exit?     ")
-        close.setIcon(QMessageBox.Icon.Warning)
-        close.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
-        close = close.exec()
-
-        if close == QMessageBox.StandardButton.Yes:
-            try:
-                self.window.close()
-            except:
-                pass
-            event.accept()
-        else:
-            event.ignore()
