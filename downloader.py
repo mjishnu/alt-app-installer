@@ -112,7 +112,7 @@ class Downloader:
         self.alive = True
         self.dic['paused'] = False
 
-    def download(self, url, filepath, num_connections):
+    def download(self, url, filepath, num_connections=20):
         f_path = filepath + '.progress.json'
         bcontinue = Path(f_path).exists()
         singlethread = False
@@ -182,6 +182,7 @@ class Downloader:
                 for i in range(num_connections):
                     md = Multidown(self.dic, i)
                     th = Thread(target=md.worker)
+                    th.daemon = True
                     threads.append(th)
                     th.start()
                     self.workers.append(md)
@@ -220,8 +221,3 @@ class Downloader:
             Path(f_path).unlink()
         else:
             print('Download interrupted!')
-
-# if __name__ == "__main__":
-#     d = Downloader()
-#     url = "https://gamedownloads.rockstargames.com/public/installer/Rockstar-Games-Launcher.exe"
-#     d.download(url,"./Downloads/rockstar.exe",4)
