@@ -322,6 +322,7 @@
      <string>Options</string>
     </property>
     <addaction name="actioninstall_From_File"/>
+    <addaction name="actionDownloads"/>
     <addaction name="actionclear_cache"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -429,6 +430,11 @@
    </property>
    <property name="statusTip">
     <string>Set Wait Time ( Use If Slow Internet Speed,Default: 5)</string>
+   </property>
+  </action>
+  <action name="actionDownloads">
+   <property name="text">
+    <string>Downloads</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'Appinstaller.ui'
+# Form implementation generated from reading ui file 'altinstaller.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
@@ -9,7 +9,7 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainProgram(QtCore.QObject):
+class Ui_MainProgram(object):
     def setupUi(self, MainProgram):
         MainProgram.setObjectName("MainProgram")
         MainProgram.setEnabled(True)
@@ -199,7 +199,10 @@ class Ui_MainProgram(QtCore.QObject):
         self.actioninstall_From_File.setObjectName("actioninstall_From_File")
         self.actionSet_Wait_Time = QtGui.QAction(MainProgram)
         self.actionSet_Wait_Time.setObjectName("actionSet_Wait_Time")
+        self.actionDownloads = QtGui.QAction(MainProgram)
+        self.actionDownloads.setObjectName("actionDownloads")
         self.menuOptions.addAction(self.actioninstall_From_File)
+        self.menuOptions.addAction(self.actionDownloads)
         self.menuOptions.addAction(self.actionclear_cache)
         self.menuAbout.addAction(self.actionCheck_For_Updates)
         self.menuAbout.addAction(self.actionOpen_Logs)
@@ -245,3 +248,4 @@ class Ui_MainProgram(QtCore.QObject):
         self.actioninstall_From_File.setStatusTip(_translate("MainProgram", "Install App (Appx,Msix..etc) From Local File "))
         self.actionSet_Wait_Time.setText(_translate("MainProgram", "Set Wait Time"))
         self.actionSet_Wait_Time.setStatusTip(_translate("MainProgram", "Set Wait Time ( Use If Slow Internet Speed,Default: 5)"))
+        self.actionDownloads.setText(_translate("MainProgram", "Downloads"))

@@ -120,6 +120,7 @@ class MainWindowGui(Miscellaneous):
         self.actionHelp.triggered.connect(lambda: open_browser(
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
+        self.actionDownloads.triggered.connect(self.open_downloads)
     
     def open_Logs(self):
         path = 'log.txt'
@@ -150,6 +151,13 @@ class MainWindowGui(Miscellaneous):
         self.threadpool.start(worker)
         worker.signals.result.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
     
+    def open_downloads(self):
+        path = os.path.realpath("./Downloads")
+        if os.path.exists(path):
+            os.startfile(path)
+        else:
+            self.show_error_popup(txt="No Downloads Found!")
+
     #standalone installer for predownloaded files
     def standalone_installer(self): 
         fname = QFileDialog.getOpenFileNames()
