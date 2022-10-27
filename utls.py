@@ -136,7 +136,7 @@ def greater_ver(arg, n):
 
 #main function for getting the right links
 def parse_dict(args):  
-    main_dict,file_name = get_data(args)
+    main_dict,file_name = args
     file_name = file_name.split("-")[0]
 
     data = list() 
