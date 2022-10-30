@@ -305,5 +305,3 @@ def parse_dict(args):
     # parsing end ----------------------------------
 
     return (main_dict, final_data,file_name)
-    
-print(parse_dict(get_data("https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701")))
