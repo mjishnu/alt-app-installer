@@ -252,9 +252,10 @@ def parse_dict(args):
     app_data = dict() #{(name,version,type):full_name}
     final_data_get = dict() #{(name,version):full_name}
     for key, value in dict_data.items():
-        if arch and value[2] == arch:
-            app_data[(value[0],value[1],value[-1].split('.')[1])] = key
-            final_data_get[(value[0],value[1])] = key
+        if arch: 
+            if value[2] == arch:
+                app_data[(value[0],value[1],value[-1].split('.')[1])] = key
+                final_data_get[(value[0],value[1])] = key
         else:
             app_data[(value[0],value[1],value[-1].split('.')[1])] = key
             final_data_get[(value[0],value[1])] = key
