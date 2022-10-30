@@ -60,7 +60,6 @@ def install(path):
             detail_msg+='\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
             detail_msg+='So check wheather the program is installed in start menu if not, try again!'
             endresult = (msg,detail_msg,"Warning")
-         
     if flag != 0:
             return endresult
     return 0
@@ -221,7 +220,7 @@ def parse_dict(args):
                 main_files_ver[version] = i #{version:name}
             
             versions = [] #[versions...]
-            for i in main_files_ver.values():
+            for i in main_files_ver.keys():
                 versions.append(i)
             
             file_name = main_files_ver[latest_version(versions)] #got the latest_version
@@ -307,3 +306,4 @@ def parse_dict(args):
 
     return (main_dict, final_data,file_name)
     
+print(parse_dict(get_data("https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701")))
