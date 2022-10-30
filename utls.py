@@ -238,10 +238,12 @@ def parse_dict(args):
             
             file_name = main_files_ver[latest_version(versions)]
     else:
-        arch = None #do a blind download of both architectures latest_version since main-file name not accessible 
+        arch = None #do a blind download of both architectures latest_version since main-file name not accessible
 
     if file_name_list: #if we got the real name of the main file
         arch = dict_data[file_name][2]
+        if arch == "neutral":
+            arch = os_arc()
         final_data.append(file_name) #adding the main file to the final list
         for i in file_name_list:
             del dict_data[i] #removing the main files from the list
@@ -258,7 +260,7 @@ def parse_dict(args):
             final_data_get[(value[0],value[1])] = key
 
     #getting the latest version  of the app
-    name_ver_list  = list() #(name,version,type)
+    name_ver_list  = list() #(name,version,arch)
     name_list = list() #[name]
     repeated_name_dict = dict() #{name:(version,type)} --> {name:version}
     for key, value in app_data.items():
