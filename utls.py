@@ -244,7 +244,6 @@ def parse_dict(args):
         arch = dict_data[file_name][2]
         if arch == "neutral":
             arch = os_arc()
-        final_data.append(file_name) #adding the main file to the final list
         for i in file_name_list:
             del dict_data[i] #removing the main files from the list
 
@@ -304,6 +303,9 @@ def parse_dict(args):
 
     for key, value in repeated_name_dict.items():
         final_data.append(final_data_get[(key,value)])
+    
+    if file_name_list:
+        final_data.append(file_name) #adding the main file to the final list at the end so installed at the end
 
     # parsing end ----------------------------------
 
