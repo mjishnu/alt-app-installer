@@ -253,11 +253,19 @@ def parse_dict(args):
     for key, value in dict_data.items():
         if arch: 
             if value[2] == arch:
-                app_data[(value[0],value[1],value[-1].split('.')[1])] = key
-                final_data_get[(value[0],value[1])] = key
+                #removing the version text sometimes included in name of files
+                badname = value[0]
+                name = str()
+                for i in badname.split("."):
+                    try:
+                        int(i)
+                    except:
+                        name += i
+                app_data[(name,value[1],value[-1].split('.')[1])] = key #value[1] = version,value[-1] = type
+                final_data_get[(name,value[1])] = key
         else:
-            app_data[(value[0],value[1],value[-1].split('.')[1])] = key
-            final_data_get[(value[0],value[1])] = key
+            app_data[(name,value[1],value[-1].split('.')[1])] = key
+            final_data_get[(name,value[1])] = key
 
     #getting the latest version  of the app
     name_ver_list  = list() #(name,version,arch)
@@ -283,13 +291,13 @@ def parse_dict(args):
         versions = list()#[version1,version2,version3,version4,version5,version6]
         indicator = None
         for name_ver in repeated_name_dict[name]: #for checking if there are any fav_type in the data
-            if name_ver[1] in fav_type:
+            if name_ver[1].lower() in fav_type:
                 indicator = 1  #if a fav_type is found stop letting the none fav_type in the list
             else:
                 continue
         for name_ver in repeated_name_dict[name]:
             #[(version,type_),(version,type_)]
-            if name_ver[1] in fav_type: 
+            if name_ver[1].lower() in fav_type: 
                 versions.append(name_ver[0])
             else:
                 if indicator:
