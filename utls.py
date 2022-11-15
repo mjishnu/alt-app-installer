@@ -137,36 +137,28 @@ def greater_ver(arg, n):
 def parse_dict(args):  
     main_dict,file_name = args
     file_name = file_name.split("-")[0]
-
-    data = list() 
-    bad_data = list() #contains blockmap
-    data_link = list() #contains links
-
-    final_data = list() #final list after doing all the steps
     fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
-    full_data = [keys for keys in main_dict.keys()]
+    
+    full_data = [keys for keys in main_dict.keys()] #[file_name including blockmaps]
+    data = list()  #[name,version,arch,filetype]
+    fullnames = list() #[fullnames]
 
     # using regular expression to get block map files in the list and remove them
     pattern = re.compile(r".+\.BlockMap")
     for i in full_data:
-
         matches = pattern.search(str(i))
-
-        try:
-            bad_data.append(matches.group(0))
-        except AttributeError:
-            pass
-
-        if i not in bad_data:
-            data_link.append(i)
+        # removing block map files
+        if not matches:
+            fullnames.append(i)
             data.append(i.split("_"))
 
     for str_list in data:
         while "" in str_list:
             str_list.remove("")
 
+
     # making dict to store the cleaned data
-    zip_obj = zip(data_link, data)
+    zip_obj = zip(fullnames, data)
     dict_data = dict(zip_obj) #{fullname:[name,version,arch,filetype]}
 
     # get the full file name of the main file (eg: spotify.appx, minecraft.appx)
@@ -308,7 +300,7 @@ def parse_dict(args):
             repeated_name_dict[name] = latest_version(versions)
         else:
             repeated_name_dict[name] = versions[0]
-
+    final_data = [] #list of end results
     for key, value in repeated_name_dict.items():
         final_data.append(final_data_get[(key,value)])
     
