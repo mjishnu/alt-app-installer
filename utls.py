@@ -243,16 +243,18 @@ def parse_dict(args):
     app_data = dict() #{(name,version,type):full_name}
     final_data_get = dict() #{(name,version):full_name}
     for key, value in dict_data.items():
+        
+        #removing the version text sometimes included in name of files
+        badname = value[0]
+        name = str()
+        for i in badname.split("."):
+            try:
+                int(i)
+            except:
+                name += i
+
         if arch: 
             if value[2] == arch:
-                #removing the version text sometimes included in name of files
-                badname = value[0]
-                name = str()
-                for i in badname.split("."):
-                    try:
-                        int(i)
-                    except:
-                        name += i
                 app_data[(name,value[1],value[-1].split('.')[1])] = key #value[1] = version,value[-1] = type
                 final_data_get[(name,value[1])] = key
         else:
