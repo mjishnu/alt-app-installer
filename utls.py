@@ -110,67 +110,44 @@ def get_data(arg):
         raise Exception("Sorry, Application not found. Please try again!")
     return (main_dict,file_name)
 
-def greater_ver(arg, n):
-    first = arg.split(".")
-    second = n.split(".")
-    if first[0] > second[0]:
-        return arg
-    elif first[0] == second[0]:
-        if first[1] > second[1]:
-            return arg
-        elif first[1] == second[1]:
-            if first[2] > second[2]:
-                return arg
-            elif first[2] == second[2]:
-                if first[3] > second[3]:
-                    return arg
-                else:
-                    return n
-            else:
-                return n
-        else:
-            return n
-    else:
-        return n
-
 #main function for getting the right links
 def parse_dict(args):  
+    
     main_dict,file_name = args
     file_name = file_name.split("-")[0]
-    fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
-    
-    full_data = [keys for keys in main_dict.keys()] #[file_name including blockmaps]
-    data = list()  #[name,version,arch,filetype]
-    fullnames = list() #[fullnames]
 
-    # using regular expression to get block map files in the list and remove them
-    pattern = re.compile(r".+\.BlockMap")
-    for i in full_data:
-        matches = pattern.search(str(i))
-        # removing block map files
-        if not matches:
-            fullnames.append(i)
-            data.append(i.split("_"))
+    def greater_ver(arg1, arg2):
+        first = arg1.split(".")
+        second = arg2.split(".")
+        if first[0] > second[0]:
+            return arg1
+        elif first[0] == second[0]:
+            if first[1] > second[1]:
+                return arg1
+            elif first[1] == second[1]:
+                if first[2] > second[2]:
+                    return arg1
+                elif first[2] == second[2]:
+                    if first[3] > second[3]:
+                        return arg1
+                    else:
+                        return arg2
+                else:
+                    return arg2
+            else:
+                return arg2
+        else:
+            return arg2
 
-    for str_list in data:
-        while "" in str_list:
-            str_list.remove("")
-
-
-    # making dict to store the cleaned data
-    zip_obj = zip(fullnames, data)
-    dict_data = dict(zip_obj) #{fullname:[name,version,arch,filetype]}
-
-    # get the full file name of the main file (eg: spotify.appx, minecraft.appx)
-    file_name_list = []
-    pattern = re.compile(file_name.lower())
-
-    #getting the name of the file 
-    for key in dict_data.keys():
-        matches = pattern.search(key.lower())
-        if matches:
-            file_name_list.append(key)
-            matches = None
+    #cleans My.name.1.2 -> myname
+    def clean_name(badname):
+        name = ''
+        for i in badname.split("."):
+            try:
+                int(i)
+            except:
+                name += i
+        return name.lower()
 
 
     def os_arc():
@@ -182,133 +159,92 @@ def parse_dict(args):
             ################################ 
             return "arm" #not sure wheather work or not, needs testing 
             ################################ 
-    def latest_version(lst):
-        max = lst[0]
-        for i in lst:
-            if greater_ver(i,max) == i:
-                max = i
-        return max
 
-    # check device archtecture
-    if len(file_name_list) == 1: 
-        file_name =  file_name_list[0]
+    pattern = re.compile(r".+\.BlockMap")
+    full_data = {} #{(name,arch,type,version):full_name}
 
-    elif len(file_name_list) > 1:
-        main_files_arch = []
-        for i in file_name_list:
-            values = dict_data[i]
-            if values[2] == "neutral" or values[2] == os_arc():
-                main_files_arch.append(i)
+    for key in main_dict.keys():
+        matches = pattern.search(str(key))
+        # removing block map files
+        if not matches:
+            #['Microsoft.VCLibs.140.00', '14.0.30704.0', 'x86', '', '8wekyb3d8bbwe.appx']
+            temp =  key.split("_")
 
-        #selecting using device arch
-        if len(main_files_arch) ==1:
-            file_name = main_files_arch[0]
+            #contains [name,arch,type,version]
+            content_lst = (clean_name(temp[0]),temp[2],temp[-1].split(".")[1],temp[1]) #temp[-1].split(".")[1] = type[appx,msix, etc]
+            full_data[content_lst] = key
 
-        elif len(main_files_arch) > 1:
-            #more than 1 file so selecting the latest_version
-            main_files_ver = {}
-            for i in main_files_arch:
-                version = dict_data[i][1]
-                main_files_ver[version] = i #{version:name}
-            
-            versions = [] #[versions...]
-            for i in main_files_ver.keys():
-                versions.append(i)
-            
-            file_name = main_files_ver[latest_version(versions)] #got the latest_version
+    names_dict = {} # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]} 
+    for value in full_data.keys():
+        if value[0] not in names_dict:
+            names_dict[value[0]] = [value[1:]]
         else:
+            names_dict[value[0]] += [value[1:]]
 
-            #not found for current device arch so downloading availables latest_version
-            main_files_ver = {}
-            for i in file_name_list:
-                version = dict_data[i][1]
-                main_files_ver[version] = i #{version:name}
-            
-            versions = [] #[versions...]
-            for i in main_files_ver.keys():
-                versions.append(i)
-            
-            file_name = main_files_ver[latest_version(versions)]
-    else:
-        arch = None #do a blind download of both architectures latest_version since main-file name not accessible
+    final_arch  = None #arch of main file
+    fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
 
-    if file_name_list: #if we got the real name of the main file
-        arch = dict_data[file_name][2]
-        if arch == "neutral":
-            arch = os_arc()
-        for i in file_name_list:
-            del dict_data[i] #removing the main files from the list
+    # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
+    pattern = re.compile(file_name.lower())
+    #getting the name of the main_appx file 
+    for key in names_dict.keys():
+        matches = pattern.search(key)
+        if matches:
+            #all the contents of the main file [ver1,ver2,ver3,ver4]
+            content_list = names_dict[key]
+            del names_dict[key]
 
-    # get the data according to device architecture
-    app_data = dict() #{(name,version,type):full_name}
-    final_data_get = dict() #{(name,version):full_name}
-    for key, value in dict_data.items():
+            arch = content_list[0][0]
+            _type = content_list[0][1]
+            ver = content_list[0][2]
+
+            if len(content_list) > 1:
+                for data in content_list[1:]:
+                        if data[0] != arch and data[0] == "neutral" or data[0] == os_arc():
+                            arch = data[0]
+                            _type = data[1]
+                            ver = data[2]
+                        else:
+                            if data[1] != _type and data[1] in fav_type:
+                                _type = data[1]
+                                ver = data[2]
+                            else:
+                                if data[2] != ver:
+                                    ver = greater_ver(ver,data[2])
+
+            file_name = full_data[(key,arch,_type,ver)]
+            final_arch = arch
+            break
+
+    final_list = []
+    #checking for dependencies
+    #################################################################
+    for key in names_dict.keys():
+        #all the contents of the main file [ver1,ver2,ver3,ver4]
+        content_list = names_dict[key]
+
+        arch = content_list[0][0]
+        _type = content_list[0][1]
+        ver = content_list[0][2]
+
+        if len(content_list) > 1:
+            for data in content_list[1:]:
+                    #checking arch is same as main file
+                    if data[0] != arch and data[0] == final_arch:
+                        arch = data[0]
+                        _type = data[1]
+                        ver = data[2]
+                    else:
+                        if data[1] != _type and data[1] in fav_type:
+                            _type = data[1]
+                            ver = data[2]
+                        else:
+                            if data[2] != ver:
+                                ver = greater_ver(ver,data[2])
+
+        final_list.append(full_data[(key,arch,_type,ver)])
         
-        #removing the version text sometimes included in name of files
-        badname = value[0]
-        name = str()
-        for i in badname.split("."):
-            try:
-                int(i)
-            except:
-                name += i
+    final_list.append(file_name)
 
-        if arch: 
-            if value[2] == arch:
-                app_data[(name,value[1],value[-1].split('.')[1])] = key #value[1] = version,value[-1] = type
-                final_data_get[(name,value[1])] = key
-        else:
-            app_data[(name,value[1],value[-1].split('.')[1])] = key
-            final_data_get[(name,value[1])] = key
-
-    #getting the latest version  of the app
-    name_ver_list  = list() #(name,version,arch)
-    name_list = list() #[name]
-    repeated_name_dict = dict() #{name:(version,type)} --> {name:version}
-    for key, value in app_data.items():
-        name_ver_list.append(key)
-        
-    for name_ver in name_ver_list:
-        name = name_ver[0]
-        version = name_ver[1]
-        type_ = name_ver[2]
-        if name not in name_list:
-            name_list.append(name)
-            repeated_name_dict[name]=[(version,type_)]
-        
-        else:
-            old_value = repeated_name_dict[name]
-            old_value.append((version,type_))
-            repeated_name_dict[name] = old_value
-
-    for name in name_list:
-        versions = list()#[version1,version2,version3,version4,version5,version6]
-        indicator = None
-        for name_ver in repeated_name_dict[name]: #for checking if there are any fav_type in the data
-            if name_ver[1].lower() in fav_type:
-                indicator = 1  #if a fav_type is found stop letting the none fav_type in the list
-            else:
-                continue
-        for name_ver in repeated_name_dict[name]:
-            #[(version,type_),(version,type_)]
-            if name_ver[1].lower() in fav_type: 
-                versions.append(name_ver[0])
-            else:
-                if indicator:
-                    continue
-                else:
-                    versions.append(name_ver[0])
-        if len(versions) > 1:
-            repeated_name_dict[name] = latest_version(versions)
-        else:
-            repeated_name_dict[name] = versions[0]
-    final_data = [] #list of end results
-    for key, value in repeated_name_dict.items():
-        final_data.append(final_data_get[(key,value)])
+    return (main_dict, final_list,file_name)
     
-    if file_name_list:
-        final_data.append(file_name) #adding the main file to the final list at the end so installed at the end
-
-    # parsing end ----------------------------------
-
-    return (main_dict, final_data,file_name)
