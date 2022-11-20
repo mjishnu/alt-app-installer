@@ -183,7 +183,7 @@ def parse_dict(args):
 
     final_arch  = None #arch of main file
     fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
-
+    main_file_name = None
     # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
     pattern = re.compile(file_name.lower())
     #getting the name of the main_appx file 
@@ -212,7 +212,7 @@ def parse_dict(args):
                                 if data[0] == arch and data[1] == _type and data[2] != ver:
                                     ver = greater_ver(ver,data[2])
 
-            file_name = full_data[(key,arch,_type,ver)]
+            main_file_name = full_data[(key,arch,_type,ver)]
             final_arch = os_arc() if arch == "neutral" else arch
             break
 
@@ -243,8 +243,8 @@ def parse_dict(args):
                                 ver = greater_ver(ver,data[2])
 
         final_list.append(full_data[(key,arch,_type,ver)])
-        
-    final_list.append(file_name)
+    if main_file_name:
+        final_list.append(main_file_name)
 
     return (main_dict, final_list,file_name)
     
