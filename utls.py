@@ -200,20 +200,20 @@ def parse_dict(args):
 
             if len(content_list) > 1:
                 for data in content_list[1:]:
-                        if data[0] != arch and data[0] == "neutral" or data[0] == os_arc():
+                        if data[0] != arch and (data[0] == "neutral" or data[0] == os_arc()):
                             arch = data[0]
                             _type = data[1]
                             ver = data[2]
                         else:
-                            if data[1] != _type and data[1] in fav_type:
+                            if data[0] == arch and data[1] != _type and data[1] in fav_type:
                                 _type = data[1]
                                 ver = data[2]
                             else:
-                                if data[2] != ver:
+                                if data[0] == arch and data[1] == _type and data[2] != ver:
                                     ver = greater_ver(ver,data[2])
 
             file_name = full_data[(key,arch,_type,ver)]
-            final_arch = arch
+            final_arch = os_arc() if arch == "neutral" else arch
             break
 
     final_list = []
@@ -235,11 +235,11 @@ def parse_dict(args):
                         _type = data[1]
                         ver = data[2]
                     else:
-                        if data[1] != _type and data[1] in fav_type:
+                        if data[0] == arch and data[1] != _type and data[1] in fav_type:
                             _type = data[1]
                             ver = data[2]
                         else:
-                            if data[2] != ver:
+                            if data[0] == arch and data[1] == _type and data[2] != ver:
                                 ver = greater_ver(ver,data[2])
 
         final_list.append(full_data[(key,arch,_type,ver)])
