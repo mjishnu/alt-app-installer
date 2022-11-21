@@ -74,9 +74,7 @@ def get_data(arg):
             match=matches.group(1)
             
             #getting name from url
-            pattern_n = re.compile(r".+\/([a-zA-Z-]+)\/|.+")
-            matches_n = pattern_n.search(str(wrd))
-            name=matches_n.group(1)
+            name = wrd.split("/")[5]
             
             if match == None:
                 raise Exception(
@@ -113,9 +111,6 @@ def get_data(arg):
 #main function for getting the right links
 def parse_dict(args):  
     
-    main_dict,file_name = args
-    file_name = file_name.split("-")[0]
-
     def greater_ver(arg1, arg2):
         first = arg1.split(".")
         second = arg2.split(".")
@@ -141,12 +136,7 @@ def parse_dict(args):
 
     #cleans My.name.1.2 -> myname
     def clean_name(badname):
-        name = ''
-        for i in badname.split("."):
-            try:
-                int(i)
-            except:
-                name += i
+        name = "".join([(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "" ) for i in badname])
         return name.lower()
 
 
@@ -159,6 +149,11 @@ def parse_dict(args):
             ################################ 
             return "arm" #not sure wheather work or not, needs testing 
             ################################ 
+
+
+    main_dict,file_name = args
+    #removing all non string elements
+    file_name = clean_name(file_name.split("-")[0])
 
     pattern = re.compile(r".+\.BlockMap")
     full_data = {} #{(name,arch,type,version):full_name}
@@ -185,7 +180,7 @@ def parse_dict(args):
     fav_type = ['appx','msix','msixbundle','appxbundle'] #fav_type is a list of extensions that are easy to install without admin privileges
     main_file_name = None
     # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
-    pattern = re.compile(file_name.lower())
+    pattern = re.compile(file_name)
     #getting the name of the main_appx file 
     for key in names_dict.keys():
         matches = pattern.search(key)
@@ -243,8 +238,13 @@ def parse_dict(args):
                                 ver = greater_ver(ver,data[2])
 
         final_list.append(full_data[(key,arch,_type,ver)])
+        
     if main_file_name:
         final_list.append(main_file_name)
+        file_name = main_file_name
+    else:
+        #since unable to detect the main file assuming it to be the first file, since its true in most cases
+        file_name = final_list[0]
 
     return (main_dict, final_list,file_name)
     
