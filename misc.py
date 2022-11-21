@@ -64,25 +64,28 @@ class Miscellaneous(Ui_MainProgram):
         msg.exec()
         
     def error_handler(self, n,normal=True,msg = None,critical=True):
-        # if path exits or not
-        if os.path.exists('log.txt'):
-            mode = 'a'
-        else:
-            mode = 'w'
-        # write to the log file 
-        with open('log.txt', mode) as f:
-            f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
-            f.write(n[2])
-            f.write(f'{82*"-"}\n')
+        def log_error():
+            # if path exits or not
+            if os.path.exists('log.txt'):
+                mode = 'a'
+            else:
+                mode = 'w'
+            # write to the log file 
+            with open('log.txt', mode) as f:
+                f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
+                f.write(n[2])
+                f.write(f'{82*"-"}\n')
             
         #if normal show a simple popup
         if normal:
+            log_error()
             self.show_error_popup()
         else:
             msg_details = f'{n[1]}'
             if 'Stoped By User!' == msg_details:
                 self.show_success_popup("Download Stopped!")
             else:
+                log_error()
                 if msg == None:
                     msg = 'An Error Has Occured Try Again!'
                 self.error_msg(msg,msg_details,"Error",critical)
