@@ -166,7 +166,7 @@ def parse_dict(args):
             temp =  key.split("_")
 
             #contains [name,arch,type,version]
-            content_lst = (clean_name(temp[0]),temp[2],temp[-1].split(".")[1],temp[1]) #temp[-1].split(".")[1] = type[appx,msix, etc]
+            content_lst = (clean_name(temp[0]),temp[2].lower(),temp[-1].split(".")[1].lower(),temp[1]) #temp[-1].split(".")[1] = type[appx,msix, etc]
             full_data[content_lst] = key
 
     names_dict = {} # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]} 
