@@ -104,6 +104,7 @@ def get_data(arg):
                 time.sleep(3)
                 print(f"error in getting the files from the rg.adguard api retry:{i}")
                 continue
+            
         #parsing the results
         if data_list:
             for data in data_list:
