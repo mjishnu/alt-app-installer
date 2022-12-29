@@ -277,6 +277,7 @@ class MainWindowGui(Miscellaneous):
                     path_lst[path]=0
                     
             self.stop_btn.hide()
+            self.pushButton.show()
             progress_main.emit(100)
             return install(path_lst) #install the apps'
         
@@ -287,5 +288,5 @@ class MainWindowGui(Miscellaneous):
         worker.signals.progress.connect(self.progress)
         worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False))
         self.threadpool.start(worker)
-        
+        self.pushButton.hide()
         self.stop_btn.show()
