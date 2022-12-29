@@ -133,6 +133,7 @@ class Miscellaneous(Ui_MainProgram):
     def stop_func(self):
         self.stop=True
         self.stop_btn.hide()
+        self.pushButton.show()
         
     def closeEvent(self, event):
         close = QMessageBox()
