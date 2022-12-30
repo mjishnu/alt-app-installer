@@ -1,5 +1,5 @@
 # importing required libraries
-from PyQt6.QtCore import QUrl, pyqtSignal,QObject
+from PyQt6.QtCore import QUrl, pyqtSignal, QObject
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
@@ -10,13 +10,12 @@ from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
 class url_window(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
-    
+
     def __init__(self):
         super().__init__()
-        
-        
-    def setupUi(self,qt_window):
-        #all helper functions
+
+    def setupUi(self, qt_window):
+        # all helper functions
         def navigate_to_url():
 
             # getting url and converting it to QUrl object
@@ -132,7 +131,8 @@ class url_window(QObject):
         qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
-        
+
+
 def url_grabber():
     import sys
 

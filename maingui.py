@@ -15,10 +15,11 @@ from misc import Miscellaneous
 from utls import get_data, install, open_browser, parse_dict
 
 try:
-    #changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
+    # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
     os.chdir(sys._MEIPASS)
 except Exception:
     pass
+
 
 class WorkerSignals(QObject):
     '''
@@ -46,6 +47,7 @@ class WorkerSignals(QObject):
     cur_progress = pyqtSignal(int)
     main_progress = pyqtSignal(int)
     progress = pyqtSignal(int)
+
 
 class Worker(QRunnable):
     '''
@@ -95,6 +97,7 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()  # Done
 
+
 class MainWindowGui(Miscellaneous):
     def __init__(self):
         super().__init__()
@@ -102,7 +105,7 @@ class MainWindowGui(Miscellaneous):
         self.url = None
         self.stop = False
         self.window_open = True
-        
+
     def setupUi(self, *args, **kwargs):
         Miscellaneous.setupUi(self, *args, **kwargs)
         self.set_bar_0()
@@ -121,7 +124,7 @@ class MainWindowGui(Miscellaneous):
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
         self.actionDownloads.triggered.connect(self.open_downloads)
-    
+
     def open_Logs(self):
         path = 'log.txt'
         if os.path.exists(path):
@@ -143,14 +146,15 @@ class MainWindowGui(Miscellaneous):
 
             remove_('log.txt')
             remove_('Downloads', 'dir')
-            
-            
+
         worker = Worker(lambda *ars, **kwargs: remove_file())
-        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False,msg = "Failed To Clear Cache Files!",critical=False))
-        
+        worker.signals.error.connect(lambda arg: self.error_handler(
+            arg, normal=False, msg="Failed To Clear Cache Files!", critical=False))
+
         self.threadpool.start(worker)
-        worker.signals.result.connect(lambda: self.show_success_popup(text = "Cache Files Cleared Successfully!"))
-    
+        worker.signals.result.connect(lambda: self.show_success_popup(
+            text="Cache Files Cleared Successfully!"))
+
     def open_downloads(self):
         path = os.path.realpath("./Downloads")
         if os.path.exists(path):
@@ -158,40 +162,42 @@ class MainWindowGui(Miscellaneous):
         else:
             self.show_error_popup(txt="No Downloads Found!")
 
-    #standalone installer for predownloaded files
-    def standalone_installer(self): 
+    # standalone installer for predownloaded files
+    def standalone_installer(self):
         fname = QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args,**kwargs: install(fname[0][0]))
+        worker = Worker(lambda *args, **kwargs: install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
-                    
+
     def openWindow(self):
-        self.stop = False  
-        
+        self.stop = False
+
         def close(event):
             self.window.deleteLater()
             del self.window
             event.accept()
-                  
-        try: 
-            self.window  #checking if self.window already exist
+
+        try:
+            self.window  # checking if self.window already exist
         except:
-            self.window = False #if not set it to false aka the window is not open
-            
-        if self.window:  #if it has value then change focus to the already open window
-            self.window.setWindowState(self.window.windowState() & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive ) #if minimized then unminimize
-            self.window.activateWindow() #set focus to the currently open window
-        else: #open a new window
+            self.window = False  # if not set it to false aka the window is not open
+
+        if self.window:  # if it has value then change focus to the already open window
+            self.window.setWindowState(self.window.windowState(
+            ) & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive)  # if minimized then unminimize
+            self.window.activateWindow()  # set focus to the currently open window
+        else:  # open a new window
             self.window = QMainWindow()
             self.window.setWindowIcon(QIcon('./Images/search.png'))
             search_app = url_window()
             search_app.setupUi(self.window)
             self.window.show()
-            self.window.closeEvent = close #overiding close event for effictive memory management
+            # overiding close event for effictive memory management
+            self.window.closeEvent = close
             search_app.closed.connect(self.parser)
 
     def parser(self, arg):
-        
+
         def parser_thread(data_args, progress_current, progress_main, progress):
             progress_main.emit(20)
             progress_current.emit(10)
@@ -200,23 +206,25 @@ class MainWindowGui(Miscellaneous):
             parse_data = parse_dict(data_dict)
             progress.emit(50)
             return parse_data
-        
-        self.url = arg #saving the url for future uses
+
+        self.url = arg  # saving the url for future uses
         worker = Worker(lambda **kwargs: parser_thread(arg, **kwargs))
         worker.signals.result.connect(self.download_install)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False))
+        worker.signals.error.connect(
+            lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
-        
+
         self.pushButton.setEnabled(False)
         self.show_bar(True)
 
-    def download_install(self, arg):    
-        
+    def download_install(self, arg):
+
+
         def download_install_thread(data,  progress_current, progress_main, progress):
-            main_dict, final_data,file_name = data
+            main_dict, final_data, file_name = data
             abs = os.getcwd()
             dwnpath = f'{abs}/Downloads/'
             if not os.path.exists(dwnpath):
@@ -226,35 +234,39 @@ class MainWindowGui(Miscellaneous):
             path_lst = dict()
             for f_name in final_data:
                 # Define the remote file to retrieve
-                remote_url = main_dict[f_name] #{f_name:url}
+                remote_url = main_dict[f_name]  # {f_name:url}
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
-                if not os.path.exists(path): #don't download if it exists already
-                    
+                if not os.path.exists(path):  # don't download if it exists already
+
                     d = Downloader()
-                    def f_download(url,path,threads):
+
+                    def f_download(url, path, threads):
                         time.sleep(2)
                         try:
-                            d.download(url,path,threads)
+                            d.download(url, path, threads)
                         except:
                             print("download failed getting new url directly!")
                             for _ in range(10):
                                 time.sleep(4)
                                 try:
-                                    url = get_data(self.url)[0][f_name] #getting the new url from the api
-                                    d.download(url,path,threads)
+                                    # getting the new url from the api
+                                    url = get_data(self.url)[0][f_name]
+                                    d.download(url, path, threads)
                                     success = True
                                     break      # as soon as it works, break out of the loop
                                 except:
-                                    print("exception occured: ",_)
+                                    print("exception occured: ", _)
                                     continue
                             if success != True:
                                 d.alive = False
-                                
-                    worker = Worker(lambda *args,**kwargs: f_download(remote_url,path,20)) #concurrent download so we can get the download progress
+
+                    # concurrent download so we can get the download progress
+                    worker = Worker(
+                        lambda *args, **kwargs: f_download(remote_url, path, 20))
                     self.threadpool.start(worker)
-                    
-                    while d.progress !=100 and d.alive == True:
+
+                    while d.progress != 100 and d.alive == True:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
                         time.sleep(0.2)
@@ -263,30 +275,33 @@ class MainWindowGui(Miscellaneous):
                             time.sleep(3)
                             break
                     progress_main.emit(2)
-                    
+
                     if self.stop:
                         raise Exception("Stoped By User!")
-                    
-                    if d.alive ==False:
-                        raise Exception("Download Error Occured Try again Later!")
-                    
+
+                    if d.alive == False:
+                        raise Exception(
+                            "Download Error Occured Try again Later!")
+
                 fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
                 if file_name in fname_lower:
-                    path_lst[path]=1
+                    path_lst[path] = 1
                 else:
-                    path_lst[path]=0
-                    
+                    path_lst[path] = 0
+
             self.stop_btn.hide()
             self.pushButton.show()
             progress_main.emit(100)
-            return install(path_lst) #install the apps'
-        
-        worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))
+            return install(path_lst)  # install the apps'
+
+        worker = Worker(
+            lambda **kwargs: download_install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
         worker.signals.progress.connect(self.progress)
-        worker.signals.error.connect(lambda arg: self.error_handler(arg,normal=False))
+        worker.signals.error.connect(
+            lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
         self.pushButton.hide()
         self.stop_btn.show()
