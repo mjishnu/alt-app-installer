@@ -4,8 +4,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
 from gui import Ui_MainProgram
-from utls import current_time
-
+from datetime import datetime
 
 class Miscellaneous(Ui_MainProgram):
     
@@ -21,8 +20,8 @@ class Miscellaneous(Ui_MainProgram):
                 msg.setWindowIcon(QIcon('./Images/error_y.png'))
             msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
             if text == "Failed To Clear Cache Files!":
-                print("Failed to clear cache")
-            else:
+                pass
+            else: 
                 self.set_bar_0()
                 self.show_bar(False)
                 self.stop_btn.hide()
@@ -36,11 +35,14 @@ class Miscellaneous(Ui_MainProgram):
         msg.setWindowIcon(QIcon('./Images/error_r.png'))
         msg.setText(f'{txt}     ')
         msg.setIcon(QMessageBox.Icon.Critical)
-        self.set_bar_0()
-        self.show_bar(False)
-        self.stop_btn.hide()
-        self.pushButton.setEnabled(True)
-        self.pushButton.show()      
+        if  txt == "No Logs Found!" or txt == "No Downloads Found!":
+            pass
+        else:
+            self.set_bar_0()
+            self.show_bar(False)
+            self.stop_btn.hide()
+            self.pushButton.setEnabled(True)
+            self.pushButton.show()      
         msg.exec()
         
     def show_success_popup(self,text=None):
@@ -72,7 +74,8 @@ class Miscellaneous(Ui_MainProgram):
                 mode = 'w'
             # write to the log file 
             with open('log.txt', mode) as f:
-                f.write(f'[maingui.py, Thread logs] \n{current_time}\n\n')
+                current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                f.write(f'[python logs] \n{current_time}\n\n')
                 f.write(n[2])
                 f.write(f'{82*"-"}\n')
             
