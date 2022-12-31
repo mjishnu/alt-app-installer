@@ -80,7 +80,6 @@ class Worker(QRunnable):
     @pyqtSlot()
     def run(self):
         '''Initialise the runner function with passed args, kwargs.'''
-
         # Retrieve args/kwargs here; and fire processing using them
         try:
             self.signals.started.emit()
