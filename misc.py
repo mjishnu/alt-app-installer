@@ -37,7 +37,7 @@ class Miscellaneous(Ui_MainProgram):
         msg.setWindowIcon(QIcon('./Images/error_r.png'))
         msg.setText(f'{txt}     ')
         msg.setIcon(QMessageBox.Icon.Critical)
-        if txt == "No Logs Found!" or txt == "No Downloads Found!":
+        if txt in ("No Logs Found!", "No Downloads Found!"):
             pass
         else:
             self.set_bar_0()
