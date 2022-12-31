@@ -14,43 +14,35 @@ class Ui_MainProgram(object):
         MainProgram.setObjectName("MainProgram")
         MainProgram.setEnabled(True)
         MainProgram.resize(600, 400)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            MainProgram.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(MainProgram.sizePolicy().hasHeightForWidth())
         MainProgram.setSizePolicy(sizePolicy)
         MainProgram.setMinimumSize(QtCore.QSize(0, 0))
         MainProgram.setMaximumSize(QtCore.QSize(700, 500))
         self.centralwidget = QtWidgets.QWidget(MainProgram)
         self.centralwidget.setEnabled(True)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.centralwidget.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName("gridLayout_2")
         self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setSizeConstraint(
-            QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
+        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetDefaultConstraint)
         self.gridLayout.setObjectName("gridLayout")
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem)
         self.imagetitle = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.imagetitle.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.imagetitle.sizePolicy().hasHeightForWidth())
         self.imagetitle.setSizePolicy(sizePolicy)
         self.imagetitle.setMinimumSize(QtCore.QSize(51, 51))
         self.imagetitle.setMaximumSize(QtCore.QSize(51, 51))
@@ -60,12 +52,10 @@ class Ui_MainProgram(object):
         self.imagetitle.setObjectName("imagetitle")
         self.horizontalLayout_3.addWidget(self.imagetitle)
         self.Title_2 = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.Title_2.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.Title_2.sizePolicy().hasHeightForWidth())
         self.Title_2.setSizePolicy(sizePolicy)
         self.Title_2.setMaximumSize(QtCore.QSize(319, 42))
         font = QtGui.QFont()
@@ -75,37 +65,29 @@ class Ui_MainProgram(object):
         font.setWeight(75)
         self.Title_2.setFont(font)
         self.Title_2.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.Title_2.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.AlignmentFlag.AlignTop)
+        self.Title_2.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter|QtCore.Qt.AlignmentFlag.AlignTop)
         self.Title_2.setObjectName("Title_2")
         self.horizontalLayout_3.addWidget(self.Title_2)
-        spacerItem1 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem1)
         self.gridLayout.addLayout(self.horizontalLayout_3, 2, 0, 1, 1)
-        spacerItem2 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
         self.gridLayout.addItem(spacerItem2, 3, 0, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.gridLayout.addItem(spacerItem3, 6, 0, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            0, 25, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        spacerItem4 = QtWidgets.QSpacerItem(0, 25, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.gridLayout.addItem(spacerItem4, 1, 0, 1, 1)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        spacerItem5 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem5)
         self.Select_app_label = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.Select_app_label.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.Select_app_label.sizePolicy().hasHeightForWidth())
         self.Select_app_label.setSizePolicy(sizePolicy)
         self.Select_app_label.setMaximumSize(QtCore.QSize(225, 30))
         font = QtGui.QFont()
@@ -114,17 +96,14 @@ class Ui_MainProgram(object):
         font.setBold(False)
         font.setWeight(50)
         self.Select_app_label.setFont(font)
-        self.Select_app_label.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.Select_app_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.Select_app_label.setObjectName("Select_app_label")
         self.horizontalLayout_4.addWidget(self.Select_app_label)
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.pushButton.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
         self.pushButton.setSizePolicy(sizePolicy)
         self.pushButton.setMaximumSize(QtCore.QSize(114, 30))
         font = QtGui.QFont()
@@ -136,12 +115,10 @@ class Ui_MainProgram(object):
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout_4.addWidget(self.pushButton)
         self.stop_btn = QtWidgets.QPushButton(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.stop_btn.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.stop_btn.sizePolicy().hasHeightForWidth())
         self.stop_btn.setSizePolicy(sizePolicy)
         self.stop_btn.setMaximumSize(QtCore.QSize(114, 30))
         font = QtGui.QFont()
@@ -152,25 +129,20 @@ class Ui_MainProgram(object):
         self.stop_btn.setFont(font)
         self.stop_btn.setObjectName("stop_btn")
         self.horizontalLayout_4.addWidget(self.stop_btn)
-        spacerItem6 = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem6)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
-        spacerItem7 = QtWidgets.QSpacerItem(
-            500, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem7 = QtWidgets.QSpacerItem(400, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
         self.verticalLayout.addItem(spacerItem7)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        spacerItem8 = QtWidgets.QSpacerItem(
-            18, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem8 = QtWidgets.QSpacerItem(18, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontalLayout.addItem(spacerItem8)
         self.Main_bar = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.Main_bar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.Main_bar.sizePolicy().hasHeightForWidth())
         self.Main_bar.setSizePolicy(sizePolicy)
         self.Main_bar.setMinimumSize(QtCore.QSize(0, 25))
         self.Main_bar.setMaximumSize(QtCore.QSize(16777215, 25))
@@ -180,17 +152,14 @@ class Ui_MainProgram(object):
         font.setBold(False)
         font.setWeight(50)
         self.Main_bar.setFont(font)
-        self.Main_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight |
-                                   QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.Main_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.Main_bar.setObjectName("Main_bar")
         self.horizontalLayout.addWidget(self.Main_bar)
         self.mainprogressBar = QtWidgets.QProgressBar(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.mainprogressBar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.mainprogressBar.sizePolicy().hasHeightForWidth())
         self.mainprogressBar.setSizePolicy(sizePolicy)
         self.mainprogressBar.setMinimumSize(QtCore.QSize(0, 25))
         self.mainprogressBar.setMaximumSize(QtCore.QSize(16777215, 25))
@@ -202,18 +171,15 @@ class Ui_MainProgram(object):
         self.mainprogressBar.setObjectName("mainprogressBar")
         self.horizontalLayout.addWidget(self.mainprogressBar)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        spacerItem9 = QtWidgets.QSpacerItem(
-            40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
+        spacerItem9 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.verticalLayout.addItem(spacerItem9)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.Current_bar = QtWidgets.QLabel(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.Current_bar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.Current_bar.sizePolicy().hasHeightForWidth())
         self.Current_bar.setSizePolicy(sizePolicy)
         self.Current_bar.setMinimumSize(QtCore.QSize(5, 25))
         self.Current_bar.setMaximumSize(QtCore.QSize(16777215, 25))
@@ -222,17 +188,14 @@ class Ui_MainProgram(object):
         font.setFamily("Arial")
         font.setPointSize(11)
         self.Current_bar.setFont(font)
-        self.Current_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight |
-                                      QtCore.Qt.AlignmentFlag.AlignTrailing | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.Current_bar.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing|QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.Current_bar.setObjectName("Current_bar")
         self.horizontalLayout_2.addWidget(self.Current_bar)
         self.currentprogressBar = QtWidgets.QProgressBar(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.currentprogressBar.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.currentprogressBar.sizePolicy().hasHeightForWidth())
         self.currentprogressBar.setSizePolicy(sizePolicy)
         self.currentprogressBar.setMinimumSize(QtCore.QSize(0, 0))
         self.currentprogressBar.setMaximumSize(QtCore.QSize(16777215, 25))
@@ -267,11 +230,9 @@ class Ui_MainProgram(object):
         self.actionclear_cache = QtGui.QAction(MainProgram)
         self.actionclear_cache.setObjectName("actionclear_cache")
         self.actionInstall_Driver_Chrome = QtGui.QAction(MainProgram)
-        self.actionInstall_Driver_Chrome.setObjectName(
-            "actionInstall_Driver_Chrome")
+        self.actionInstall_Driver_Chrome.setObjectName("actionInstall_Driver_Chrome")
         self.actionInstall_Chrome_Driver = QtGui.QAction(MainProgram)
-        self.actionInstall_Chrome_Driver.setObjectName(
-            "actionInstall_Chrome_Driver")
+        self.actionInstall_Chrome_Driver.setObjectName("actionInstall_Chrome_Driver")
         self.actionCheck_For_Updates = QtGui.QAction(MainProgram)
         self.actionCheck_For_Updates.setObjectName("actionCheck_For_Updates")
         self.actionAbout = QtGui.QAction(MainProgram)
@@ -282,8 +243,7 @@ class Ui_MainProgram(object):
         self.actionOpen_Logs = QtGui.QAction(MainProgram)
         self.actionOpen_Logs.setObjectName("actionOpen_Logs")
         self.actionDownload_From_Url_2 = QtGui.QAction(MainProgram)
-        self.actionDownload_From_Url_2.setObjectName(
-            "actionDownload_From_Url_2")
+        self.actionDownload_From_Url_2.setObjectName("actionDownload_From_Url_2")
         self.actioninstall_From_File = QtGui.QAction(MainProgram)
         self.actioninstall_From_File.setObjectName("actioninstall_From_File")
         self.actionSet_Wait_Time = QtGui.QAction(MainProgram)
@@ -306,56 +266,35 @@ class Ui_MainProgram(object):
 
     def retranslateUi(self, MainProgram):
         _translate = QtCore.QCoreApplication.translate
-        MainProgram.setWindowTitle(_translate(
-            "MainProgram", "Alt App Installer"))
+        MainProgram.setWindowTitle(_translate("MainProgram", "Alt App Installer"))
         self.Title_2.setText(_translate("MainProgram", "Alt App Installer"))
-        self.Select_app_label.setText(_translate(
-            "MainProgram", "Select App To Install:"))
+        self.Select_app_label.setText(_translate("MainProgram", "Select App To Install:"))
         self.pushButton.setText(_translate("MainProgram", "Choose App"))
         self.stop_btn.setText(_translate("MainProgram", "Stop"))
         self.Main_bar.setText(_translate("MainProgram", "Main Progress: "))
-        self.Current_bar.setText(_translate(
-            "MainProgram", "Current Progress: "))
+        self.Current_bar.setText(_translate("MainProgram", "Current Progress: "))
         self.menuOptions.setTitle(_translate("MainProgram", "Options"))
         self.menuAbout.setTitle(_translate("MainProgram", "Help"))
-        self.actionInstall_From_File.setText(
-            _translate("MainProgram", "Install From File"))
-        self.actionInstall_From_File.setStatusTip(_translate(
-            "MainProgram", "Install App (appx,Msix) From Local File"))
-        self.actionDownload_From_Url.setText(
-            _translate("MainProgram", "Install From Url"))
-        self.actionDownload_From_Url.setStatusTip(_translate(
-            "MainProgram", "Install from link given by user (link of the app from microsoft.com)"))
-        self.actionclear_cache.setText(
-            _translate("MainProgram", "Clear Cache"))
-        self.actionclear_cache.setStatusTip(_translate(
-            "MainProgram", "Clear all files like [Downloads,logs.. etc]"))
-        self.actionInstall_Driver_Chrome.setText(
-            _translate("MainProgram", "Install Driver + Chrome"))
-        self.actionInstall_Chrome_Driver.setText(
-            _translate("MainProgram", "Install Chrome Driver"))
-        self.actionInstall_Chrome_Driver.setStatusTip(_translate(
-            "MainProgram", "Download and install chrome driver"))
-        self.actionCheck_For_Updates.setText(
-            _translate("MainProgram", "Check For Updates"))
-        self.actionCheck_For_Updates.setStatusTip(
-            _translate("MainProgram", "Check For Updates"))
+        self.actionInstall_From_File.setText(_translate("MainProgram", "Install From File"))
+        self.actionInstall_From_File.setStatusTip(_translate("MainProgram", "Install App (appx,Msix) From Local File"))
+        self.actionDownload_From_Url.setText(_translate("MainProgram", "Install From Url"))
+        self.actionDownload_From_Url.setStatusTip(_translate("MainProgram", "Install from link given by user (link of the app from microsoft.com)"))
+        self.actionclear_cache.setText(_translate("MainProgram", "Clear Cache"))
+        self.actionclear_cache.setStatusTip(_translate("MainProgram", "Clear all files like [Downloads,logs.. etc]"))
+        self.actionInstall_Driver_Chrome.setText(_translate("MainProgram", "Install Driver + Chrome"))
+        self.actionInstall_Chrome_Driver.setText(_translate("MainProgram", "Install Chrome Driver"))
+        self.actionInstall_Chrome_Driver.setStatusTip(_translate("MainProgram", "Download and install chrome driver"))
+        self.actionCheck_For_Updates.setText(_translate("MainProgram", "Check For Updates"))
+        self.actionCheck_For_Updates.setStatusTip(_translate("MainProgram", "Check For Updates"))
         self.actionAbout.setText(_translate("MainProgram", "About"))
         self.actionHelp.setText(_translate("MainProgram", "Help"))
         self.actionHelp.setStatusTip(_translate("MainProgram", "Get Help"))
         self.actionOpen_Logs.setText(_translate("MainProgram", "Open Logs"))
-        self.actionOpen_Logs.setStatusTip(
-            _translate("MainProgram", "Open log File"))
-        self.actionDownload_From_Url_2.setText(
-            _translate("MainProgram", "Download From Url"))
-        self.actionDownload_From_Url_2.setStatusTip(_translate(
-            "MainProgram", "Download from link given by user (link of the app from microsoft.com)"))
-        self.actioninstall_From_File.setText(
-            _translate("MainProgram", "Install From File"))
-        self.actioninstall_From_File.setStatusTip(_translate(
-            "MainProgram", "Install App (Appx,Msix..etc) From Local File "))
-        self.actionSet_Wait_Time.setText(
-            _translate("MainProgram", "Set Wait Time"))
-        self.actionSet_Wait_Time.setStatusTip(_translate(
-            "MainProgram", "Set Wait Time ( Use If Slow Internet Speed,Default: 5)"))
+        self.actionOpen_Logs.setStatusTip(_translate("MainProgram", "Open log File"))
+        self.actionDownload_From_Url_2.setText(_translate("MainProgram", "Download From Url"))
+        self.actionDownload_From_Url_2.setStatusTip(_translate("MainProgram", "Download from link given by user (link of the app from microsoft.com)"))
+        self.actioninstall_From_File.setText(_translate("MainProgram", "Install From File"))
+        self.actioninstall_From_File.setStatusTip(_translate("MainProgram", "Install App (Appx,Msix..etc) From Local File "))
+        self.actionSet_Wait_Time.setText(_translate("MainProgram", "Set Wait Time"))
+        self.actionSet_Wait_Time.setStatusTip(_translate("MainProgram", "Set Wait Time ( Use If Slow Internet Speed,Default: 5)"))
         self.actionDownloads.setText(_translate("MainProgram", "Downloads"))
