@@ -149,8 +149,7 @@ def parse_dict(args):
                         return arg1
                     return arg2
                 return arg2
-            else:
-                return arg2
+            return arg2
         else:
             return arg2
 
