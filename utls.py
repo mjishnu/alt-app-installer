@@ -19,7 +19,7 @@ def install(path):
     if isinstance(path, str):
         path = {path: 1}
 
-    outputs = list()
+    outputs = []
     for s_path in path.keys():
         all_paths = f'Add-AppPackage "{s_path}"'
         output = subprocess.run(
@@ -76,7 +76,7 @@ def get_data(arg):
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
 
-    main_dict = dict()
+    main_dict = {}
     Id, file_name = product_id_getter(str(arg))
     data_list = None
     try:

@@ -79,7 +79,7 @@ class Singledown:
 
 class Downloader:
     def __init__(self):
-        self.dic = dict()
+        self.dic = {}
         self.workers = []
         self.progress = 0
         self.alive = True
