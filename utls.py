@@ -148,12 +148,9 @@ def parse_dict(args):
                     if first[3] > second[3]:
                         return arg1
                     return arg2
-                else:
-                    return arg2
-            else:
                 return arg2
-        else:
             return arg2
+        return arg2
 
     # cleans My.name.1.2 -> myname
     def clean_name(badname):
