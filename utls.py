@@ -230,7 +230,7 @@ def parse_dict(args):
             main_file_name = full_data[(key, arch, _type, ver)]
             final_arch = os_arc() if arch == "neutral" else arch
             break
-    
+
     #removing all the items that we have already parsed (done this way to remove runtime errors)
     for i in remove_list:
         del names_dict[i]
