@@ -91,7 +91,7 @@ class Miscellaneous(Ui_MainProgram):
                 self.show_success_popup("Download Stopped!")
             else:
                 log_error()
-                if msg == None:
+                if msg is None:
                     msg = 'An Error Has Occured Try Again!'
                 self.error_msg(msg, msg_details, "Error", critical)
 

@@ -258,7 +258,7 @@ class MainWindowGui(Miscellaneous):
                                 except:
                                     print("exception occured: ", _)
                                     continue
-                            if success != True:
+                            if success is not True:
                                 d.alive = False
 
                     # concurrent download so we can get the download progress
@@ -266,7 +266,7 @@ class MainWindowGui(Miscellaneous):
                         lambda *args, **kwargs: f_download(remote_url, path, 20))
                     self.threadpool.start(worker)
 
-                    while d.progress != 100 and d.alive == True:
+                    while d.progress != 100 and d.alive is True:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
                         time.sleep(0.2)
@@ -279,7 +279,7 @@ class MainWindowGui(Miscellaneous):
                     if self.stop:
                         raise Exception("Stoped By User!")
 
-                    if d.alive == False:
+                    if d.alive is False:
                         raise Exception(
                             "Download Error Occured Try again Later!")
 
