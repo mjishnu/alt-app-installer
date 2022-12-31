@@ -231,7 +231,7 @@ class MainWindowGui(Miscellaneous):
                 os.makedirs(dwnpath)
 
             progress_main.emit(40)
-            path_lst = dict()
+            path_lst = {}
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
