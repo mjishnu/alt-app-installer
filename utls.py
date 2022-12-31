@@ -71,8 +71,7 @@ def get_data(arg):
             if match is None:
                 raise Exception(
                     'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
-            else:
-                return match, name
+            return match, name
         except AttributeError:
             raise Exception(
                 'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
