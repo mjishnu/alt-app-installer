@@ -138,17 +138,16 @@ def parse_dict(args):
         second = arg2.split(".")
         if first[0] > second[0]:
             return arg1
-        elif first[0] == second[0]:
+        if first[0] == second[0]:
             if first[1] > second[1]:
                 return arg1
-            elif first[1] == second[1]:
+            if first[1] == second[1]:
                 if first[2] > second[2]:
                     return arg1
-                elif first[2] == second[2]:
+                if first[2] == second[2]:
                     if first[3] > second[3]:
                         return arg1
-                    else:
-                        return arg2
+                    return arg2
                 else:
                     return arg2
             else:
@@ -165,12 +164,10 @@ def parse_dict(args):
     def os_arc():
         if platform.machine().endswith("64"):
             return "x64"
-        elif platform.machine().endswith("32") or platform.machine().endswith("86"):
+        if platform.machine().endswith("32") or platform.machine().endswith("86"):
             return "x86"
-        else:
-            ################################
-            return "arm"  # not sure wheather work or not, needs testing
-            ################################
+        ################################
+        return "arm"  # not sure wheather work or not, needs testing
 
     main_dict, file_name = args
     # removing all non string elements
