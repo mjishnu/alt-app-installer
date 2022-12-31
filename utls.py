@@ -68,7 +68,7 @@ def get_data(arg):
             # getting name from url
             name = wrd.split("/")[5]
 
-            if match == None:
+            if match is None:
                 raise Exception(
                     'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
             else:
