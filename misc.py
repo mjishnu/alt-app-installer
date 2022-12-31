@@ -87,7 +87,7 @@ class Miscellaneous(Ui_MainProgram):
             self.show_error_popup()
         else:
             msg_details = f'{n[1]}'
-            if 'Stoped By User!' == msg_details:
+            if msg_details == 'Stoped By User!':
                 self.show_success_popup("Download Stopped!")
             else:
                 log_error()
