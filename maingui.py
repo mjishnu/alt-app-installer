@@ -223,10 +223,10 @@ class MainWindowGui(Miscellaneous):
     def download_install(self, arg):
 
 
-        def download_install_thread(data,  progress_current, progress_main, progress):
+        def download_install_thread(data,  progress_current, progress_main, _):
             main_dict, final_data, file_name = data
-            abs = os.getcwd()
-            dwnpath = f'{abs}/Downloads/'
+            abs_path = os.getcwd()
+            dwnpath = f'{abs_path}/Downloads/'
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
 
