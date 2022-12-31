@@ -193,7 +193,7 @@ def parse_dict(args):
 
     # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]}
     names_dict = {}
-    for value in full_data.keys():
+    for value in full_data:
         if value[0] not in names_dict:
             names_dict[value[0]] = [value[1:]]
         else:
@@ -206,7 +206,7 @@ def parse_dict(args):
     # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
     pattern = re.compile(file_name)
     # getting the name of the main_appx file
-    for key in names_dict.keys():
+    for key in names_dict:
         matches = pattern.search(key)
         if matches:
             # all the contents of the main file [ver1,ver2,ver3,ver4]
@@ -238,7 +238,7 @@ def parse_dict(args):
     final_list = []
     # checking for dependencies
     #################################################################
-    for key in names_dict.keys():
+    for key in names_dict:
         # all the contents of the main file [ver1,ver2,ver3,ver4]
         content_list = names_dict[key]
 
