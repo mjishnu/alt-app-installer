@@ -41,7 +41,7 @@ class Multidown:
             if self.count != self.getval('length'):
                 s = requests.sessions.Session()
                 r = s.get(
-                    url, headers={'range': 'bytes={0}-{1}'.format(start, end)}, stream=True)
+                    url, headers={"range":f"bytes={start}-{end}"}, stream=True)
                 while True:
                     if self.dic['paused']:
                         r.connection.close()
@@ -155,7 +155,7 @@ class Downloader:
         downloaded = 0
         while True:
             Path(json_path).write_text(json.dumps(self.dic, indent=4))
-            status = sum([i.completed for i in self.workers])
+            status = sum(i.completed for i in self.workers)
             downloaded = sum(i.count for i in self.workers)
             doneMiB = downloaded / 1048576
             try:

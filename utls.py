@@ -207,7 +207,7 @@ def parse_dict(args):
         if matches:
             # all the contents of the main file [ver1,ver2,ver3,ver4]
             content_list = names_dict[key]
-            remove_list.append(names_dict[key])
+            remove_list.append(key)
 
             arch = content_list[0][0]
             _type = content_list[0][1]

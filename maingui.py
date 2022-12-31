@@ -223,7 +223,7 @@ class MainWindowGui(Miscellaneous):
     def download_install(self, arg):
 
 
-        def download_install_thread(data,  progress_current, progress_main, _):
+        def download_install_thread(data,  progress_current, progress_main, **kwargs):
             main_dict, final_data, file_name = data
             abs_path = os.getcwd()
             dwnpath = f'{abs_path}/Downloads/'
