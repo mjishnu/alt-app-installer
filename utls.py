@@ -200,12 +200,14 @@ def parse_dict(args):
     # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
     pattern = re.compile(file_name)
     # getting the name of the main_appx file
+    remove_list = []
+
     for key in names_dict:
         matches = pattern.search(key)
         if matches:
             # all the contents of the main file [ver1,ver2,ver3,ver4]
             content_list = names_dict[key]
-            del names_dict[key]
+            remove_list.append(names_dict[key])
 
             arch = content_list[0][0]
             _type = content_list[0][1]
@@ -228,6 +230,10 @@ def parse_dict(args):
             main_file_name = full_data[(key, arch, _type, ver)]
             final_arch = os_arc() if arch == "neutral" else arch
             break
+    
+    #removing all the items that we have already parsed (done this way to remove runtime errors)
+    for i in remove_list:
+        del names_dict[i]
 
     final_list = []
     # checking for dependencies
