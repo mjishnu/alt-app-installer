@@ -144,8 +144,6 @@ def url_grabber():
     newwindow = url_window()
     newwindow.setupUi(window)
     window.show()
-    # window.resize(600, 400)
-    # loop
     app.exec()
 
 
