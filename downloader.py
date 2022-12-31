@@ -69,12 +69,11 @@ class Singledown:
         self.count = 0
 
     def worker(self, url, path):
-        with requests.get(url, stream=True) as r:
-            with open(path, 'wb') as file:
-                for chunk in r.iter_content(1048576):  # 1MB
-                    if chunk:
-                        self.count += len(chunk)
-                        file.write(chunk)
+        with requests.get(url, stream=True) as r, open(path, 'wb') as file:
+            for chunk in r.iter_content(1048576):  # 1MB
+                if chunk:
+                    self.count += len(chunk)
+                    file.write(chunk)
 
 
 class Downloader:
