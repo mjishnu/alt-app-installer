@@ -93,9 +93,12 @@ def url_generator(url):
             verify=False
         )
         doc2 = minidom.parseString(out.text)
+        #checks for all the tags which have name filelocation if 2 of em have then it will check both
         for i in doc2.getElementsByTagName("FileLocation"):
             url = i.getElementsByTagName("Url")[0].firstChild.nodeValue
-            file_dict[f] = url
+            #to avoid getting block maps
+            if (len(url) != 99):
+                file_dict[f] = url
 
     threads = []
     file_dict = {}
