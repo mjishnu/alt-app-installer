@@ -41,7 +41,7 @@ class Multidown:
             if self.count != self.getval('length'):
                 s = requests.sessions.Session()
                 r = s.get(
-                    url, headers={"range":f"bytes={start}-{end}"}, stream=True)
+                    url, headers={"range": f"bytes={start}-{end}"}, stream=True)
                 while True:
                     if self.dic['paused']:
                         r.connection.close()

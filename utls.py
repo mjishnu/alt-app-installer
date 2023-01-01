@@ -4,6 +4,7 @@ import subprocess
 import webbrowser
 from datetime import datetime
 
+
 def open_browser(arg):
     webbrowser.open(arg)
 
@@ -148,8 +149,8 @@ def parse_dict(main_dict, file_name):
             main_file_name = full_data[(key, arch, _type, ver)]
             final_arch = os_arc() if arch == "neutral" else arch
             break
-    
-    #removing all the items that we have already parsed (done this way to remove runtime errors)
+
+    # removing all the items that we have already parsed (done this way to remove runtime errors)
     for i in remove_list:
         del names_dict[i]
 

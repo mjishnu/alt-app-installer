@@ -1,10 +1,10 @@
 import os
+from datetime import datetime
 
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
 from gui import Ui_MainProgram
-from datetime import datetime
 
 
 class Miscellaneous(Ui_MainProgram):

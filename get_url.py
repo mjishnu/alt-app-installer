@@ -1,5 +1,5 @@
 # importing required libraries
-from PyQt6.QtCore import QUrl, pyqtSignal, QObject
+from PyQt6.QtCore import QObject, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,

@@ -12,8 +12,8 @@ from PyQt6.QtWidgets import QFileDialog, QMainWindow
 from downloader import Downloader
 from get_url import url_window
 from misc import Miscellaneous
-from utls import install, open_browser
 from url_gen import get_data
+from utls import install, open_browser
 
 try:
     # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -202,7 +202,7 @@ class MainWindowGui(Miscellaneous):
         def parser_thread(data_args, progress_current, progress_main, progress):
             progress_main.emit(20)
             progress_current.emit(10)
-            #returning the parsed data
+            # returning the parsed data
             data_dict = get_data(str(data_args))
             progress.emit(90)
             return data_dict
@@ -221,7 +221,6 @@ class MainWindowGui(Miscellaneous):
         self.show_bar(True)
 
     def download_install(self, arg):
-
 
         def download_install_thread(data,  progress_current, progress_main, **kwargs):
             main_dict, final_data, file_name = data
