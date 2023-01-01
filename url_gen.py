@@ -78,7 +78,6 @@ def url_generator(url):
     for node in doc.getElementsByTagName('Files'):
         filenames[node.parentNode.parentNode.getElementsByTagName(
             'ID')[0].firstChild.nodeValue] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
-        pass
 
     # extracting the update id,revision number from the xml
     identities = {}  # {filename: (update_id, revision_number)}
@@ -114,7 +113,7 @@ def url_generator(url):
         for i in doc.getElementsByTagName("FileLocation"):
             url = i.getElementsByTagName("Url")[0].firstChild.nodeValue
             # here there are 2 filelocation tags one for the blockmap and one for the actual file so we are checking for the length of the url
-            if (len(url) != 99):
+            if len(url) != 99:
                 file_dict[file_name] = url
 
     # using threading to concurrently get the download url for all the files
