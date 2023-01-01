@@ -15,10 +15,10 @@ class Miscellaneous(Ui_MainProgram):
         msg.setText(f'{str(text)}     ')
         if critical:
             msg.setIcon(QMessageBox.Icon.Critical)
-            msg.setWindowIcon(QIcon('./Images/error_r.png'))
+            msg.setWindowIcon(QIcon('./data/images/error_r.png'))
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setWindowIcon(QIcon('./Images/error_y.png'))
+            msg.setWindowIcon(QIcon('./data/images/error_y.png'))
         msg.setDetailedText(str(msg_details) +
                             '\n\ncheck Full Logs [Help --> Open Logs]')
         if text == "Failed To Clear Cache Files!":
@@ -34,7 +34,7 @@ class Miscellaneous(Ui_MainProgram):
     def show_error_popup(self, txt="An Error Has Occured Try Again!"):
         msg = QMessageBox()
         msg.setWindowTitle('Error')
-        msg.setWindowIcon(QIcon('./Images/error_r.png'))
+        msg.setWindowIcon(QIcon('./data/images/error_r.png'))
         msg.setText(f'{txt}     ')
         msg.setIcon(QMessageBox.Icon.Critical)
         if txt in ("No Logs Found!", "No Downloads Found!"):
@@ -50,7 +50,7 @@ class Miscellaneous(Ui_MainProgram):
     def show_success_popup(self, text=None):
         msg = QMessageBox()
         msg.setWindowTitle('Success')
-        msg.setWindowIcon(QIcon('./Images/success.png'))
+        msg.setWindowIcon(QIcon('./data/images/success.png'))
         if text:
             msg.setText(f'{text}     ')
         else:
@@ -143,7 +143,7 @@ class Miscellaneous(Ui_MainProgram):
     def closeEvent(self, event):
         close = QMessageBox()
         close.setWindowTitle("Confirm")
-        close.setWindowIcon(QIcon('./Images/error_y.png'))
+        close.setWindowIcon(QIcon('./data/images/error_y.png'))
         close.setText("Are you sure you want to exit?     ")
         close.setIcon(QMessageBox.Icon.Warning)
         close.setStandardButtons(

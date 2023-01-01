@@ -11,7 +11,7 @@ def main():
     MainProgram = QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
-    MainProgram.setWindowIcon(QIcon('./Images/main.ico'))
+    MainProgram.setWindowIcon(QIcon('./data/images/main.ico'))
     MainProgram.closeEvent = ui.closeEvent  # overiding close event
     MainProgram.show()
     sys.exit(app.exec())

@@ -188,7 +188,7 @@ class MainWindowGui(Miscellaneous):
             self.window.activateWindow()  # set focus to the currently open window
         else:  # open a new window
             self.window = QMainWindow()
-            self.window.setWindowIcon(QIcon('./Images/search.png'))
+            self.window.setWindowIcon(QIcon('./data/images/search.png'))
             search_app = url_window()
             search_app.setupUi(self.window)
             self.window.show()
