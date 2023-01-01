@@ -11,16 +11,17 @@ A Program To  Download And Install Windows Store Apps
 - Can resume interrupted downloads
 - Automatically use a new url in case current one expires
 - Downloads and install app along with all dependencies 
+- Uses custom link generation to produce download links
 
 # How it works
-This Program basically automates the process of getting the file from [store.rg-adguard](https://store.rg-adguard.net/) or [StoreWeb](https://xwebstore.herokuapp.com/) using their api and installs the app for the user, so credit goes to the creators of [store.rg-adguard](https://store.rg-adguard.net/) and [StoreWeb](https://xwebstore.herokuapp.com/) 
 
 - The app open an browser which allows the user to select the file(application/games) they want to install and returns its url
-- The url is parsed and the product key is first send to the rg-adguard api via [requests-html](https://pypi.org/project/requests-html/) which then finds and returns the appropriate download data(contains both the app and the dependencies) if file is not found, retries using StoreWeb api as fallback.Then the returned data are further parsed based on 
+- The url is parsed and the product key is obtained then, using Microsoft-Display-Catalog-API categoryid and file name is retrived 
+- Using these data the app can send a request to Microsoft-Delivery-Optimization-service-API and retrive data of the selected application, this data is further parsed based on 
     - System architecture of the user(x64/x32)
     - Favorable type(these are decrpted file formats, which doesn't need admin privilage to install)
     - Latest version
-- Then the app downlads the file via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
+- Then it retrives the download links for the parsed data using the API and the files are downloaded via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via [subprocess](https://docs.python.org/3/library/subprocess.html)
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
@@ -53,3 +54,7 @@ https://youtu.be/ayIilTc-6u4
 # FAQ
 
 You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
+
+# Credits
+
+[StoreLib](https://github.com/StoreDev/StoreLib): API for download link generation
