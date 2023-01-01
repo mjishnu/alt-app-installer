@@ -1,5 +1,5 @@
 # importing required libraries
-from PyQt6.QtCore import QUrl, pyqtSignal, QObject
+from PyQt6.QtCore import QObject, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
@@ -76,7 +76,7 @@ class url_window(QObject):
 
         # setting status tip
         back_btn.setStatusTip("Back to previous page")
-        back_btn.setIcon(QIcon('Images/Back.png'))
+        back_btn.setIcon(QIcon('./data/images/Back.png'))
 
         # adding action to the back button
         # making browser go back
@@ -88,7 +88,7 @@ class url_window(QObject):
         # similarly for forward action
         next_btn = QAction("", qt_window)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.setIcon(QIcon('Images/forward.png'))
+        next_btn.setIcon(QIcon('./data/images/forward.png'))
 
         # adding action to the next button
         # making browser go forward
@@ -102,7 +102,7 @@ class url_window(QObject):
         # similarly for reload action
         reload_btn = QAction("", qt_window)
         reload_btn.setStatusTip("Reload page")
-        reload_btn.setIcon(QIcon('Images/reload.png'))
+        reload_btn.setIcon(QIcon('./data/images/reload.png'))
 
         # adding action to the reload button
         # making browser to reload
@@ -127,7 +127,7 @@ class url_window(QObject):
         qt_window.select_btn = QPushButton(qt_window)
         qt_window.select_btn.setText("Select")
         qt_window.select_btn.setStatusTip("Select The File To Download")
-        qt_window.select_btn.setIcon(QIcon('Images/ok.png'))
+        qt_window.select_btn.setIcon(QIcon('./data/images/ok.png'))
         qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
@@ -140,7 +140,7 @@ def url_grabber():
     app = QApplication(sys.argv)
 
     window = QMainWindow()
-    window.setWindowIcon(QIcon('./Images/search.png'))
+    window.setWindowIcon(QIcon('./data/images/search.png'))
     newwindow = url_window()
     newwindow.setupUi(window)
     window.show()

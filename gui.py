@@ -47,7 +47,7 @@ class Ui_MainProgram(object):
         self.imagetitle.setMinimumSize(QtCore.QSize(51, 51))
         self.imagetitle.setMaximumSize(QtCore.QSize(51, 51))
         self.imagetitle.setText("")
-        self.imagetitle.setPixmap(QtGui.QPixmap("Images/installer_icon.png"))
+        self.imagetitle.setPixmap(QtGui.QPixmap("data/images/installer_icon.png"))
         self.imagetitle.setScaledContents(True)
         self.imagetitle.setObjectName("imagetitle")
         self.horizontalLayout_3.addWidget(self.imagetitle)

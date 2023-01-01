@@ -1,12 +1,8 @@
 import platform
 import re
 import subprocess
-import time
 import webbrowser
 from datetime import datetime
-import json
-
-from requests_html import HTMLSession
 
 
 def open_browser(arg):
@@ -55,83 +51,7 @@ def install(path):
     return 0
 
 
-def get_data(arg):
-
-    # geting product id from url
-    def product_id_getter(wrd):
-        try:
-            pattern = re.compile(
-                r".+\/((?:[a-zA-Z]+[0-9]|[0-9]+[a-zA-Z])[a-zA-Z0-9]*)|.+")
-            matches = pattern.search(str(wrd))
-            match = matches.group(1)
-
-            # getting name from url
-            name = wrd.split("/")[5]
-
-            if match is None:
-                raise Exception(
-                    'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
-            return match, name
-        except AttributeError:
-            raise Exception(
-                'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
-
-    main_dict = {}
-    Id, file_name = product_id_getter(str(arg))
-    data_list = None
-    try:
-        # using the api from rg.adguard
-        url = "https://store.rg-adguard.net/api/GetFiles"
-        data = {"type": "ProductId", "url": Id, "ring": "RP", "lang": "en-EN"}
-        for i in range(3):
-            try:
-                session = HTMLSession()
-                r = session.post(url, data=data)
-                # getting all the files from the html
-                data_list = r.html.find("a")
-                break
-            except:
-                time.sleep(3)
-                print(
-                    f"error in getting the files from the rg.adguard api retry:{i}")
-                continue
-
-        # parsing the results
-        if data_list:
-            for data in data_list:
-                main_dict[data.text] = ' '.join(map(str, data.absolute_links))
-        if len(main_dict) == 0:
-            raise
-    except:
-        # using StoreWeb Api as a fallback
-        url = "https://xwebstore.herokuapp.com/api/Packages"
-        data = {"inputform": "ProductId",
-                "id": Id, "environment": "Production"}
-        for i in range(3):
-            try:
-                session = HTMLSession()
-                r = session.get(url, params=data)
-                data_list = json.loads(r.text)
-                break
-            except:
-                time.sleep(3)
-                print(
-                    f"error in getting the files from the storeWeb api retry:{i}")
-                continue
-
-        if data_list:
-            for data in data_list:
-                main_dict[data["packagefilename"]] = data["packagedownloadurl"]
-
-        if len(main_dict) == 0:
-            raise Exception("Sorry, Application not found. Please try again!")
-
-    return (main_dict, file_name)
-
-# main function for getting the right links
-
-
-def parse_dict(args):
+def parse_dict(main_dict, file_name):
 
     def greater_ver(arg1, arg2):
         first = arg1.split(".")
@@ -166,7 +86,6 @@ def parse_dict(args):
         ################################
         return "arm"  # not sure wheather work or not, needs testing
 
-    main_dict, file_name = args
     # removing all non string elements
     file_name = clean_name(file_name.split("-")[0])
 
@@ -231,7 +150,7 @@ def parse_dict(args):
             final_arch = os_arc() if arch == "neutral" else arch
             break
 
-    #removing all the items that we have already parsed (done this way to remove runtime errors)
+    # removing all the items that we have already parsed (done this way to remove runtime errors)
     for i in remove_list:
         del names_dict[i]
 
@@ -270,4 +189,4 @@ def parse_dict(args):
         # since unable to detect the main file assuming it to be the first file, since its true in most cases
         file_name = final_list[0]
 
-    return (main_dict, final_list, file_name)
+    return final_list
