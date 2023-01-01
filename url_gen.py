@@ -4,7 +4,7 @@ import html
 from threading import Thread
 import warnings
 import re
-
+from utls import parse_dict
 
 warnings.filterwarnings("ignore")
 
@@ -39,7 +39,7 @@ def url_generator(url):
     match2 = pattern2.search(str(data_list))
 
     cat_id = match1.group(1) 
-    file_name = match2.group(1).split('_')[0]
+    main_file_name = match2.group(1).split('_')[0]
     release_type = "Retail"
 
     #getting the encrypted cookie for the fe3 delivery api
@@ -80,18 +80,20 @@ def url_generator(url):
     #extracting the update id,revision number from the xml
     identities = {} #{filename: (update_id, revision_number)}
     for node in doc.getElementsByTagName('SecuredFragment'):
-        filename = filenames[node.parentNode.parentNode.parentNode.getElementsByTagName('ID')[
+        file_name = filenames[node.parentNode.parentNode.parentNode.getElementsByTagName('ID')[
             0].firstChild.nodeValue]
 
         update_identity = node.parentNode.parentNode.firstChild
-        identities[filename] = (update_identity.attributes['UpdateID'].value,
+        identities[file_name] = (update_identity.attributes['UpdateID'].value,
                                 update_identity.attributes['RevisionNumber'].value)
                                 
     #parsing the filenames according to latest version,favorable types,system arch
-    #have to implement later
+    parse_names = parse_dict(identities,main_file_name)
+    final_dict = {} #{filename: (update_id, revision_number)}
+    for value in parse_names:
+        final_dict[value] = identities[value]
 
-
-    #getting the download url for the files
+    #getting the download url for the files using the api
     with open("./data/xml/FE3FileUrl.xml", "r") as f:
         file_content = f.read()
     
@@ -113,7 +115,7 @@ def url_generator(url):
 
     #using threading to concurrently get the download url for all the files 
     threads = []
-    for key,value in identities:
+    for key,value in final_dict.items():
         file_name = key
         updateid,revisionnumber = value
         th = Thread(target=geturl, args=(updateid, revisionnumber, file_name))
@@ -126,4 +128,13 @@ def url_generator(url):
         th.join()
 
     
-    return file_dict,file_name
+    return file_dict,parse_names,main_file_name
+
+def get_data(arg):
+
+    main_dict,name_list,file_name = url_generator(arg)
+    if len(main_dict) == 0:
+        #can implement backup apis here
+        pass
+
+    return main_dict,name_list,file_name

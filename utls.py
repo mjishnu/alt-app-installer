@@ -3,9 +3,6 @@ import re
 import subprocess
 import webbrowser
 from datetime import datetime
-from url_gen import url_generator
-import requests
-
 
 def open_browser(arg):
     webbrowser.open(arg)
@@ -53,16 +50,7 @@ def install(path):
     return 0
 
 
-def get_data(arg):
-
-    main_dict,file_name = url_generator(arg)
-    if len(main_dict) == 0:
-        #can implement backup apis here
-        pass
-
-    return main_dict,file_name
-
-def parse_dict(args):
+def parse_dict(main_dict, file_name):
 
     def greater_ver(arg1, arg2):
         first = arg1.split(".")
@@ -97,7 +85,6 @@ def parse_dict(args):
         ################################
         return "arm"  # not sure wheather work or not, needs testing
 
-    main_dict, file_name = args
     # removing all non string elements
     file_name = clean_name(file_name.split("-")[0])
 
@@ -201,4 +188,4 @@ def parse_dict(args):
         # since unable to detect the main file assuming it to be the first file, since its true in most cases
         file_name = final_list[0]
 
-    return (main_dict, final_list, file_name)
+    return final_list
