@@ -28,6 +28,7 @@ class Miscellaneous(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
+            self.actionclear_cache.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -44,6 +45,7 @@ class Miscellaneous(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
+            self.actionclear_cache.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -64,6 +66,7 @@ class Miscellaneous(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
+            self.actionclear_cache.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 

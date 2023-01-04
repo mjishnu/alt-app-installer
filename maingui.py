@@ -215,6 +215,7 @@ class MainWindowGui(Miscellaneous):
         self.threadpool.start(worker)
 
         self.pushButton.setEnabled(False)
+        self.actionclear_cache.setEnabled(False)
         self.show_bar(True)
 
     def download_install(self, arg):
