@@ -143,7 +143,10 @@ class MainWindowGui(Miscellaneous):
                     shutil.rmtree(path)
 
             remove_('log.txt')
-            remove_('Downloads', 'dir')
+            try:
+                remove_('Downloads', 'dir')
+            except FileNotFoundError:
+                print("No Downloads Found!")
 
         worker = Worker(lambda *ars, **kwargs: remove_file())
         worker.signals.error.connect(lambda arg: self.error_handler(
