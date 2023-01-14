@@ -40,6 +40,9 @@ def url_generator(url):
     pattern2 = re.compile('"PackageFamilyName":"([^}]*)","SkuId')
     match1 = pattern1.search(str(data_list))
     match2 = pattern2.search(str(data_list))
+    # if the server returned no data notify the user that the app was not found
+    if not match1 or not match2:
+        raise Exception("server returned a empty list")
 
     cat_id = match1.group(1)
     main_file_name = match2.group(1).split('_')[0]
@@ -78,6 +81,9 @@ def url_generator(url):
     for node in doc.getElementsByTagName('Files'):
         filenames[node.parentNode.parentNode.getElementsByTagName(
             'ID')[0].firstChild.nodeValue] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
+    # if the server returned no files notify the user that the app was not found
+    if not filenames:
+        raise Exception("server returned a empty list")
 
     # extracting the update id,revision number from the xml
     identities = {}  # {filename: (update_id, revision_number)}

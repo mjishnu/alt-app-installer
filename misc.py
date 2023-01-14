@@ -19,8 +19,7 @@ class Miscellaneous(Ui_MainProgram):
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowIcon(QIcon('./data/images/error_y.png'))
-        msg.setDetailedText(str(msg_details) +
-                            '\n\ncheck Full Logs [Help --> Open Logs]')
+        msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
         if text == "Failed To Clear Cache Files!":
             pass
         else:
@@ -92,6 +91,10 @@ class Miscellaneous(Ui_MainProgram):
             msg_details = f'{n[1]}'
             if msg_details == 'Stoped By User!':
                 self.show_success_popup("Download Stopped!")
+            elif msg_details == 'server returned a empty list':
+                msg = 'Sorry, Application not found!'
+                msg_details = "Application not found in the server, Application is not supported!"
+                self.error_msg(msg, msg_details, "Error", critical)
             else:
                 log_error()
                 if msg is None:
