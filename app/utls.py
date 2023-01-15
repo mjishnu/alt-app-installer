@@ -20,31 +20,30 @@ def install(path):
         all_paths = f'Add-AppPackage "{s_path}"'
         output = subprocess.run(
             ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
-        with open('log.txt', 'a') as f:
-            current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
-            f.write(f'[powershell logs] \n{current_time}\n')
-            f.write(f'command: {output.args[1]}\n\n')
-            f.write(output.stderr.decode("utf-8"))
-            f.write(f'{82*"-"}\n')
         outputs.append(output.args[1])
         # if command failed
         if output.returncode != 0:
             flag = 1
             # if the failed commands include the application package then show app not installed
+            with open('log.txt', 'a') as f:
+                current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                f.write(f'[powershell logs] \n{current_time}\n')
+                f.write(f'command: {output.args[1]}\n\n')
+                f.write(output.stderr.decode("utf-8"))
+                f.write(f'{82*"-"}\n')
+
             if path[s_path] == 1:
                 main_prog_error = 1
                 break
     if main_prog_error == 1:
         msg = 'Failed To Install The Application!'
-        detail_msg = f'Command Execution Failed: {outputs}'
-        detail_msg += '\nThe Installation has failed, try again!'
+        detail_msg = 'The Installation has failed, try again!'
         endresult = (msg, detail_msg, "Error", True)
 
     else:
         msg = 'Failed To Install Dependencies!'
-        detail_msg = f'Command Execution Failed: {outputs}'
-        detail_msg += '\nIn Some cases, the installation of dependencies was only unsuccessful since its already installed in your pc.\n'
-        detail_msg += 'So check wheather the program is installed in start menu if not, try again!'
+        detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
+        detail_msg += 'So check wheather the program is installed in start menu. if not, try again!'
         endresult = (msg, detail_msg, "Warning")
     if flag != 0:
         return endresult
