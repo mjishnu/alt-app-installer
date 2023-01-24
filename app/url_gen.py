@@ -79,8 +79,12 @@ def url_generator(url):
     filenames = {}  # {ID: filename}
     # extracting all the filenames(package name) from the xml (the file names are found inside the blockmap)
     for node in doc.getElementsByTagName('Files'):
-        filenames[node.parentNode.parentNode.getElementsByTagName(
+        #using try statement to avoid errors caused when attributes are not found
+        try:
+            filenames[node.parentNode.parentNode.getElementsByTagName(
             'ID')[0].firstChild.nodeValue] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
+        except KeyError:
+            continue
     # if the server returned no files notify the user that the app was not found
     if not filenames:
         raise Exception("server returned a empty list")
@@ -88,13 +92,17 @@ def url_generator(url):
     # extracting the update id,revision number from the xml
     identities = {}  # {filename: (update_id, revision_number)}
     for node in doc.getElementsByTagName('SecuredFragment'):
-        file_name = filenames[node.parentNode.parentNode.parentNode.getElementsByTagName('ID')[
-            0].firstChild.nodeValue]
+        #using try statement to avoid errors caused when attributes are not found
+        try:
+            file_name = filenames[node.parentNode.parentNode.parentNode.getElementsByTagName('ID')[
+                0].firstChild.nodeValue]
 
-        update_identity = node.parentNode.parentNode.firstChild
-        identities[file_name] = (update_identity.attributes['UpdateID'].value,
-                                 update_identity.attributes['RevisionNumber'].value)
-
+            update_identity = node.parentNode.parentNode.firstChild
+            identities[file_name] = (update_identity.attributes['UpdateID'].value,
+                                    update_identity.attributes['RevisionNumber'].value)
+        except KeyError:
+            continue
+        
     # parsing the filenames according to latest version,favorable types,system arch
     parse_names = parse_dict(identities, main_file_name)
     final_dict = {}  # {filename: (update_id, revision_number)}

@@ -178,6 +178,10 @@ def parse_dict(main_dict, file_name):
                     else:
                         if data[0] == arch and data[1] == _type and data[2] != ver:
                             ver = greater_ver(ver, data[2])
+        else:
+            #if there is only 1 file but the arch is not same as main file
+            if arch != final_arch:
+                continue
 
         final_list.append(full_data[(key, arch, _type, ver)])
 
