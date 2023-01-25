@@ -19,7 +19,7 @@ def install(path):
     for s_path in path.keys():
         all_paths = f'Add-AppPackage "{s_path}"'
         output = subprocess.run(
-            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True,shell=True)
+            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True, shell=True)
         outputs.append(output.args[1])
         # if command failed
         if output.returncode != 0:
@@ -52,10 +52,10 @@ def install(path):
     return 0
 
 
-def parse_dict(main_dict, file_name,ignore_ver,all_dependencies):
+def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
 
     def greater_ver(arg1, arg2):
-        first = arg1.split(".") 
+        first = arg1.split(".")
         second = arg2.split(".")
         if first[0] > second[0]:
             return arg1
@@ -160,12 +160,13 @@ def parse_dict(main_dict, file_name,ignore_ver,all_dependencies):
     #################################################################
     for key in names_dict:
         # all the contents of the main file [ver1,ver2,ver3,ver4]
-        content_list = names_dict[key] # [(arch,type,ver),(arch,type,ver),(arch,type,ver)]
-        
+        # [(arch,type,ver),(arch,type,ver),(arch,type,ver)]
+        content_list = names_dict[key]
+
         if all_dependencies:
             # if all_dependencies is checked then we will just add all the files
             for data in content_list:
-                final_list.append(full_data[(key,*data)])
+                final_list.append(full_data[(key, *data)])
         else:
             # if all_dependencies is not checked then we will add only the files that are required
             arch = content_list[0][0]
@@ -186,16 +187,16 @@ def parse_dict(main_dict, file_name,ignore_ver,all_dependencies):
                         else:
                             if not ignore_ver and data[0] == arch and data[1] == _type and data[2] != ver:
                                 ver = greater_ver(ver, data[2])
-                            #checking to see if ignore_ver is checked or not
+                            # checking to see if ignore_ver is checked or not
                             if ignore_ver:
-                                final_list.append(full_data[(key, arch, _type, ver)])
+                                final_list.append(
+                                    full_data[(key, arch, _type, ver)])
                                 ver = data[2]
             else:
-                #if there is only 1 file but the arch is not same as main file
+                # if there is only 1 file but the arch is not same as main file
                 if arch != final_arch:
                     continue
             final_list.append(full_data[(key, arch, _type, ver)])
-
 
     if main_file_name:
         final_list.append(main_file_name)
