@@ -176,7 +176,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
             if len(content_list) > 1:
                 for data in content_list[1:]:
                     # checking arch is same as main file
-                    if data[0] != arch and data[0] == final_arch:
+                    if data[0] != arch and (data[0] == "neutral" or data[0] == final_arch):
                         arch = data[0]
                         _type = data[1]
                         ver = data[2]
@@ -192,11 +192,10 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
                                 final_list.append(
                                     full_data[(key, arch, _type, ver)])
                                 ver = data[2]
-            else:
-                # if there is only 1 file but the arch is not same as main file
-                if arch != final_arch:
-                    continue
-            final_list.append(full_data[(key, arch, _type, ver)])
+
+            # only add if arch is same as main file
+            if arch == "neutral" or arch == final_arch:
+                final_list.append(full_data[(key, arch, _type, ver)])
 
     if main_file_name:
         final_list.append(main_file_name)
