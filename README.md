@@ -33,8 +33,8 @@ A Program To  Download And Install Windows Store Apps
 - An internet connection
 
 # How to use the app
-- Download the alt_app_installer.exe and run it or build it from source
-- Now open the alt_app_installer.exe file in the extracted folder (alt_app_installer folder) and run it (the first run can take time)
+- Download the "alt app installer.exe" and run it or build it from source
+- Now open the "alt app installer.exe" file in the extracted folder ("alt app installer" folder) and run it (the first run can take time)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
 - you can also install already downloaded apps via "install from file" in "Options" 
@@ -53,7 +53,16 @@ https://youtu.be/ayIilTc-6u4
 
 # FAQ
 
-You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
+- How to Solve Failed to install Dependencies ?
+
+    In some cases, this occurs since the dependencies are already installed on your pc. So check wheather the program is installed from start menu.
+    if the program is still not installed, then there are 2 ways to solve this. **[only try the 2nd method if 1st method failed]**
+    1. Enable Ignore Version (Options --> Dependencies --> Ignore Version), this will download all version of dependencies available for your system
+    2. Enable Ignore All Filters (Options --> Dependencies --> Ignore All Filters), this will download all available dependencies (can take time)
+
+- For other issues
+    
+    You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
 
 # Credits
 
