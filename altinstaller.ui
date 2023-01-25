@@ -528,9 +528,33 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actioninstall_From_File"/>
+    <widget class="QMenu" name="menuDependencies">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="statusTip">
+      <string>Dependency Download Option</string>
+     </property>
+     <property name="tearOffEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Dependencies</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>data/images/dependencies.png</normaloff>data/images/dependencies.png</iconset>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>false</bool>
+     </property>
+     <addaction name="actionIgnore_Latest_Version"/>
+     <addaction name="actionIgnore_All_filters"/>
+    </widget>
     <addaction name="actionDownloads"/>
+    <addaction name="actioninstall_From_File"/>
     <addaction name="actionclear_cache"/>
+    <addaction name="menuDependencies"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -563,6 +587,10 @@
    </property>
   </action>
   <action name="actionclear_cache">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/clear.png</normaloff>data/images/clear.png</iconset>
+   </property>
    <property name="text">
     <string>Clear Cache</string>
    </property>
@@ -584,6 +612,10 @@
    </property>
   </action>
   <action name="actionCheck_For_Updates">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/update.png</normaloff>data/images/update.png</iconset>
+   </property>
    <property name="text">
     <string>Check For Updates</string>
    </property>
@@ -592,6 +624,10 @@
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/about.png</normaloff>data/images/about.png</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>
@@ -600,6 +636,10 @@
    </property>
   </action>
   <action name="actionHelp">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/help.png</normaloff>data/images/help.png</iconset>
+   </property>
    <property name="text">
     <string>Help</string>
    </property>
@@ -608,6 +648,10 @@
    </property>
   </action>
   <action name="actionOpen_Logs">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/log.png</normaloff>data/images/log.png</iconset>
+   </property>
    <property name="text">
     <string>Open Logs</string>
    </property>
@@ -624,6 +668,10 @@
    </property>
   </action>
   <action name="actioninstall_From_File">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/file.png</normaloff>data/images/file.png</iconset>
+   </property>
    <property name="text">
     <string>Install From File</string>
    </property>
@@ -640,8 +688,65 @@
    </property>
   </action>
   <action name="actionDownloads">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/downloads.png</normaloff>data/images/downloads.png</iconset>
+   </property>
    <property name="text">
     <string>Downloads</string>
+   </property>
+   <property name="statusTip">
+    <string>Open Downloads Folder</string>
+   </property>
+  </action>
+  <action name="actionAll_Dependencies">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <selectedoff>data/images/unchecked.png</selectedoff>
+     <selectedon>data/images/checked.png</selectedon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>All Dependencies</string>
+   </property>
+  </action>
+  <action name="actionIgnore_Latest_Version">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/unchecked.png</normaloff>
+     <normalon>data/images/checked.png</normalon>
+     <selectedoff>data/images/unchecked.png</selectedoff>
+     <selectedon>data/images/checked.png</selectedon>data/images/unchecked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ignore Version</string>
+   </property>
+   <property name="statusTip">
+    <string>Download All Versions Of The Dependencies</string>
+   </property>
+  </action>
+  <action name="actionIgnore_All_filters">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/unchecked.png</normaloff>
+     <normalon>data/images/checked.png</normalon>
+     <selectedoff>data/images/unchecked.png</selectedoff>
+     <selectedon>data/images/checked.png</selectedon>data/images/unchecked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ignore All Filters</string>
+   </property>
+   <property name="statusTip">
+    <string>Download All Dependencies Regardless Of System Arch (x64,x32,Arm), Type (Appx,Msix..etc), Latest Version</string>
    </property>
   </action>
  </widget>
