@@ -138,9 +138,11 @@ class MainWindowGui(Miscellaneous):
         if self.actionIgnore_All_filters.isChecked():
             self.all_dependencies = True
             self.actionIgnore_Latest_Version.setChecked(True)
+            self.actionIgnore_Latest_Version.setEnabled(False)
         else:
             self.all_dependencies = False
             self.actionIgnore_Latest_Version.setChecked(False)
+            self.actionIgnore_Latest_Version.setEnabled(True)
 
     def open_Logs(self):
         path = 'log.txt'
