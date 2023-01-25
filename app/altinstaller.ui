@@ -529,6 +529,15 @@
      <string>Options</string>
     </property>
     <widget class="QMenu" name="menuDependencies">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="statusTip">
+      <string>Dependency Download Option</string>
+     </property>
+     <property name="tearOffEnabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Dependencies</string>
      </property>
@@ -536,12 +545,14 @@
       <iconset>
        <normaloff>data/images/dependencies.png</normaloff>data/images/dependencies.png</iconset>
      </property>
-     <addaction name="separator"/>
+     <property name="toolTipsVisible">
+      <bool>false</bool>
+     </property>
      <addaction name="actionIgnore_Latest_Version"/>
-     <addaction name="actionIgnore_Architecture"/>
+     <addaction name="actionIgnore_All_filters"/>
     </widget>
-    <addaction name="actioninstall_From_File"/>
     <addaction name="actionDownloads"/>
+    <addaction name="actioninstall_From_File"/>
     <addaction name="actionclear_cache"/>
     <addaction name="menuDependencies"/>
    </widget>
@@ -684,6 +695,9 @@
    <property name="text">
     <string>Downloads</string>
    </property>
+   <property name="statusTip">
+    <string>Open Downloads Folder</string>
+   </property>
   </action>
   <action name="actionAll_Dependencies">
    <property name="checkable">
@@ -713,8 +727,11 @@
    <property name="text">
     <string>Ignore Version</string>
    </property>
+   <property name="statusTip">
+    <string>Download All Versions Of The Dependencies</string>
+   </property>
   </action>
-  <action name="actionIgnore_Architecture">
+  <action name="actionIgnore_All_filters">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -726,7 +743,10 @@
      <selectedon>data/images/checked.png</selectedon>data/images/unchecked.png</iconset>
    </property>
    <property name="text">
-    <string>Ignore Architecture</string>
+    <string>Ignore All Filters</string>
+   </property>
+   <property name="statusTip">
+    <string>Download All Dependencies Regardless Of System Arch (x64,x32,Arm), Type (Appx,Msix..etc), Latest Version</string>
    </property>
   </action>
  </widget>

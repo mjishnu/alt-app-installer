@@ -104,6 +104,7 @@ class MainWindowGui(Miscellaneous):
         self.stop = False
         self.window_open = True
         self.ignore_ver = False
+        self.all_dependencies = False
 
     def setupUi(self, *args, **kwargs):
         Miscellaneous.setupUi(self, *args, **kwargs)
@@ -123,6 +124,22 @@ class MainWindowGui(Miscellaneous):
             'https://discord.com/invite/cbuEkpd'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
         self.actionDownloads.triggered.connect(self.open_downloads)
+        self.actionIgnore_Latest_Version.triggered.connect(self.ignore_version)
+        self.actionIgnore_All_filters.triggered.connect(self.ignore_All_filters)
+    
+    def ignore_version(self):
+        if self.actionIgnore_Latest_Version.isChecked():
+            self.ignore_ver = True
+        else:
+            self.ignore_ver = False
+    
+    def ignore_All_filters(self):
+        if self.actionIgnore_All_filters.isChecked():
+            self.all_dependencies = True
+            self.actionIgnore_Latest_Version.setChecked(True)
+        else:
+            self.all_dependencies = False
+            self.actionIgnore_Latest_Version.setChecked(False)
 
     def open_Logs(self):
         path = 'log.txt'
@@ -204,7 +221,7 @@ class MainWindowGui(Miscellaneous):
             progress_main.emit(20)
             progress_current.emit(10)
             # returning the parsed data
-            data_dict = get_data(str(data_args),self.ignore_ver)
+            data_dict = get_data(str(data_args),self.ignore_ver,self.all_dependencies)
             progress.emit(90)
             return data_dict
 
@@ -217,8 +234,9 @@ class MainWindowGui(Miscellaneous):
         worker.signals.error.connect(
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
-
+        
         self.pushButton.setEnabled(False)
+        self.menuDependencies.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
         self.show_bar(True)
 
@@ -252,7 +270,7 @@ class MainWindowGui(Miscellaneous):
                                 time.sleep(4)
                                 try:
                                     # getting the new url from the api
-                                    url = get_data(self.url,self.ignore_ver)[0][f_name]
+                                    url = get_data(self.url,self.ignore_ver,self.all_dependencies)[0][f_name]
                                     d.download(url, path, threads)
                                     success = True
                                     break      # as soon as it works, break out of the loop
