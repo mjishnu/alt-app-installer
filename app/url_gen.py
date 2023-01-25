@@ -11,7 +11,7 @@ from utls import parse_dict
 warnings.filterwarnings("ignore")
 
 
-def url_generator(url):
+def url_generator(url,ignore_ver):
     # geting product id from url
     try:
         pattern = re.compile(
@@ -104,7 +104,7 @@ def url_generator(url):
             continue
         
     # parsing the filenames according to latest version,favorable types,system arch
-    parse_names = parse_dict(identities, main_file_name)
+    parse_names = parse_dict(identities, main_file_name,ignore_ver)
     final_dict = {}  # {filename: (update_id, revision_number)}
     for value in parse_names:
         final_dict[value] = identities[value]
@@ -147,9 +147,9 @@ def url_generator(url):
     return file_dict, parse_names, main_file_name
 
 
-def get_data(arg):
+def get_data(arg,ignore_ver):
 
-    main_dict, name_list, file_name = url_generator(arg)
+    main_dict, name_list, file_name = url_generator(arg,ignore_ver)
     if len(main_dict) == 0:
         # can implement backup apis here
         pass

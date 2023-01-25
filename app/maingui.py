@@ -103,6 +103,7 @@ class MainWindowGui(Miscellaneous):
         self.url = None
         self.stop = False
         self.window_open = True
+        self.ignore_ver = False
 
     def setupUi(self, *args, **kwargs):
         Miscellaneous.setupUi(self, *args, **kwargs)
@@ -203,7 +204,7 @@ class MainWindowGui(Miscellaneous):
             progress_main.emit(20)
             progress_current.emit(10)
             # returning the parsed data
-            data_dict = get_data(str(data_args))
+            data_dict = get_data(str(data_args),self.ignore_ver)
             progress.emit(90)
             return data_dict
 
@@ -251,7 +252,7 @@ class MainWindowGui(Miscellaneous):
                                 time.sleep(4)
                                 try:
                                     # getting the new url from the api
-                                    url = get_data(self.url)[0][f_name]
+                                    url = get_data(self.url,self.ignore_ver)[0][f_name]
                                     d.download(url, path, threads)
                                     success = True
                                     break      # as soon as it works, break out of the loop
