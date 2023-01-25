@@ -19,7 +19,7 @@ def install(path):
     for s_path in path.keys():
         all_paths = f'Add-AppPackage "{s_path}"'
         output = subprocess.run(
-            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True)
+            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True,shell=True)
         outputs.append(output.args[1])
         # if command failed
         if output.returncode != 0:
