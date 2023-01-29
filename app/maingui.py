@@ -14,6 +14,8 @@ from get_url import url_window
 from misc import Miscellaneous
 from url_gen import get_data
 from utls import install, open_browser
+from threading import Event
+import requests
 
 try:
     # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -101,7 +103,7 @@ class MainWindowGui(Miscellaneous):
         super().__init__()
         self.threadpool = QThreadPool()
         self.url = None
-        self.stop = False
+        self.stop = Event()
         self.window_open = True
         self.ignore_ver = False
         self.all_dependencies = False
@@ -192,7 +194,7 @@ class MainWindowGui(Miscellaneous):
         worker.signals.result.connect(self.run_success)
 
     def openWindow(self):
-        self.stop = False
+        self.stop.clear()
 
         def close(event):
             self.window.deleteLater()
@@ -225,7 +227,7 @@ class MainWindowGui(Miscellaneous):
             progress_current.emit(10)
             # returning the parsed data
             data_dict = get_data(
-                str(data_args), self.ignore_ver, self.all_dependencies)
+                str(data_args), self.ignore_ver, self.all_dependencies,self.stop)
             progress.emit(90)
             return data_dict
 
@@ -243,8 +245,12 @@ class MainWindowGui(Miscellaneous):
         self.menuDependencies.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
         self.show_bar(True)
+        self.pushButton.hide()
+        self.stop_btn.show()
 
     def download_install(self, arg):
+        if arg == None:
+            raise Exception("Stoped By User!")
 
         def download_install_thread(data,  progress_current, progress_main, **kwargs):
             main_dict, final_data, file_name = data
@@ -255,54 +261,53 @@ class MainWindowGui(Miscellaneous):
 
             progress_main.emit(40)
             path_lst = {}
+            request_exceptions = (requests.RequestException, requests.ConnectionError, requests.HTTPError,requests.URLRequired,
+                        requests.TooManyRedirects,requests.ConnectTimeout,requests.ReadTimeout,requests.Timeout,requests.JSONDecodeError)
+        
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
-
-                    d = Downloader()
-
+                    #downloader is declared inside to prevent it being reused this could lead to issue like one download not completing and the other one starting
+                    d = Downloader(self.stop)
                     def f_download(url, path, threads):
-                        time.sleep(2)
+                        success = False
+                        d.alive = True
                         try:
                             d.download(url, path, threads)
-                        except:
+                            success = True
+                        except request_exceptions:
                             print("download failed getting new url directly!")
                             for _ in range(10):
                                 time.sleep(4)
                                 try:
                                     # getting the new url from the api
-                                    url = get_data(self.url, self.ignore_ver, self.all_dependencies)[
+                                    url = get_data(self.url, self.ignore_ver, self.all_dependencies,self.stop)[
                                         0][f_name]
                                     d.download(url, path, threads)
                                     success = True
                                     break      # as soon as it works, break out of the loop
-                                except:
+                                except request_exceptions:
                                     print("exception occured: ", _)
                                     continue
-                            if success is not True:
-                                d.alive = False
+                        if success is not True:
+                            d.alive = False
 
                     # concurrent download so we can get the download progress
                     worker = Worker(
                         lambda *args, **kwargs: f_download(remote_url, path, 20))
                     self.threadpool.start(worker)
-
                     while d.progress != 100 and d.alive is True:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
-                        time.sleep(0.2)
-                        if self.stop:
-                            d.dic['paused'] = self.stop
-                            time.sleep(3)
-                            break
+                        time.sleep(0.1)
+                        if self.stop.is_set():
+                            raise Exception("Stoped By User!")
                     progress_main.emit(2)
 
-                    if self.stop:
-                        raise Exception("Stoped By User!")
-
+                    #d.alive is just to check if the download has succeded or not
                     if d.alive is False:
                         raise Exception(
                             "Download Error Occured Try again Later!")
@@ -327,5 +332,7 @@ class MainWindowGui(Miscellaneous):
         worker.signals.error.connect(
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
-        self.pushButton.hide()
-        self.stop_btn.show()
+
+# add stoping the downloader using event
+# proper testing
+# progress bar for the installer

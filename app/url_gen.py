@@ -3,6 +3,7 @@ import re
 import warnings
 from threading import Thread
 from xml.dom import minidom
+import time
 
 import requests
 
@@ -10,8 +11,13 @@ from utls import parse_dict
 
 warnings.filterwarnings("ignore")
 
+#using this to check if the user has decieded to stop the process
+def check(Event):
+    if Event.is_set():
+        raise Exception("Stoped By User!")
+    
 
-def url_generator(url, ignore_ver, all_dependencies):
+def url_generator(url, ignore_ver, all_dependencies,Event):
     # geting product id from url
     try:
         pattern = re.compile(
@@ -51,7 +57,7 @@ def url_generator(url, ignore_ver, all_dependencies):
     # getting the encrypted cookie for the fe3 delivery api
     with open("./data/xml/GetCookie.xml", "r") as f:
         cookie_content = f.read()
-
+    check(Event)
     out = session.post(
         'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
         data=cookie_content,
@@ -67,7 +73,7 @@ def url_generator(url, ignore_ver, all_dependencies):
     # Map {"retail": "Retail", "release preview": "RP","insider slow": "WIS", "insider fast": "WIF"}
     with open("./data/xml/WUIDRequest.xml", "r") as f:
         cat_id_content = f.read().format(cookie, cat_id, release_type)
-
+    check(Event)
     out = session.post(
         'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
         data=cat_id_content,
@@ -102,7 +108,7 @@ def url_generator(url, ignore_ver, all_dependencies):
                                      update_identity.attributes['RevisionNumber'].value)
         except KeyError:
             continue
-
+    check(Event)
     # parsing the filenames according to latest version,favorable types,system arch
     parse_names = parse_dict(identities, main_file_name,
                              ignore_ver, all_dependencies)
@@ -115,7 +121,6 @@ def url_generator(url, ignore_ver, all_dependencies):
         file_content = f.read()
 
     file_dict = {}  # the final result
-
     def geturl(updateid, revisionnumber, file_name):
         out = session.post(
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
@@ -134,6 +139,7 @@ def url_generator(url, ignore_ver, all_dependencies):
     # using threading to concurrently get the download url for all the files
     threads = []
     for key, value in final_dict.items():
+        check(Event)
         file_name = key
         updateid, revisionnumber = value
         th = Thread(target=geturl, args=(updateid, revisionnumber, file_name))
@@ -142,16 +148,17 @@ def url_generator(url, ignore_ver, all_dependencies):
         th.start()
 
     # waiting for all threads to complete
-    for th in threads:
-        th.join()
+    while len(file_dict) != len(final_dict):
+        check(Event)
+        time.sleep(0.2)
 
     return file_dict, parse_names, main_file_name
 
 
-def get_data(arg, ignore_ver, all_dependencies):
-
+def get_data(arg, ignore_ver, all_dependencies,Event):
     main_dict, name_list, file_name = url_generator(
-        arg, ignore_ver, all_dependencies)
+        arg, ignore_ver, all_dependencies,Event)
+    check(Event)
     if len(main_dict) == 0:
         # can implement backup apis here
         pass

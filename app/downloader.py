@@ -77,12 +77,13 @@ class Singledown:
 
 
 class Downloader:
-    def __init__(self):
+    def __init__(self,Event):
         self.dic = {}
         self.workers = []
         self.progress = 0
-        self.alive = True
         self.completed = False
+        self.alive = True
+        self.Event = Event
 
     def download(self, url, filepath, num_connections=20):
         json_path = filepath + '.progress.json'
@@ -161,8 +162,10 @@ class Downloader:
                 self.progress = (doneMiB * 100) / size
             except ZeroDivisionError:
                 print("zero division error")
-            if self.dic['paused']:
-                break
+            if self.Event.is_set():
+                self.dic['paused'] = True
+                raise Exception("Stoped By User!")
+            time.sleep(0.1)
             if status == len(self.workers):
                 if not singlethread:
                     BLOCKSIZE = 4096
@@ -187,6 +190,3 @@ class Downloader:
                 break
 
             time.sleep(0.04)
-
-        if not self.completed:
-            print('Download interrupted!')
