@@ -12,10 +12,12 @@ from PyQt6.QtWidgets import QFileDialog, QMainWindow
 from downloader import Downloader
 from get_url import url_window
 from misc import Miscellaneous
-from url_gen import get_data
-from utls import install, open_browser
+from url_gen import url_generator
+from utls import open_browser
 from threading import Event
 import requests
+import subprocess
+from datetime import datetime
 
 try:
     # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -49,8 +51,6 @@ class WorkerSignals(QObject):
     result = pyqtSignal(object)
     cur_progress = pyqtSignal(int)
     main_progress = pyqtSignal(int)
-    progress = pyqtSignal(int)
-
 
 class Worker(QRunnable):
     '''
@@ -78,7 +78,6 @@ class Worker(QRunnable):
         # Add the callback to our kwargs
         self.kwargs['progress_current'] = self.signals.cur_progress
         self.kwargs['progress_main'] = self.signals.main_progress
-        self.kwargs['progress'] = self.signals.progress
 
     @pyqtSlot()
     def run(self):
@@ -189,7 +188,7 @@ class MainWindowGui(Miscellaneous):
     # standalone installer for predownloaded files
     def standalone_installer(self):
         fname = QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args, **kwargs: install(fname[0][0]))
+        worker = Worker(lambda *args, **kwargs: self.install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
 
@@ -222,21 +221,11 @@ class MainWindowGui(Miscellaneous):
 
     def parser(self, arg):
 
-        def parser_thread(data_args, progress_current, progress_main, progress):
-            progress_main.emit(20)
-            progress_current.emit(10)
-            # returning the parsed data
-            data_dict = get_data(
-                str(data_args), self.ignore_ver, self.all_dependencies,self.stop)
-            progress.emit(90)
-            return data_dict
-
         self.url = arg  # saving the url for future uses
-        worker = Worker(lambda **kwargs: parser_thread(arg, **kwargs))
+        worker = Worker(lambda **kwargs: url_generator(str(arg), self.ignore_ver, self.all_dependencies,self.stop,emit=True,**kwargs))
         worker.signals.result.connect(self.download_install)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.progress.connect(self.progress)
         worker.signals.error.connect(
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
@@ -252,14 +241,13 @@ class MainWindowGui(Miscellaneous):
         if arg is None:
             raise Exception("Stoped By User!")
 
-        def download_install_thread(data,  progress_current, progress_main, **kwargs):
+        def download_install_thread(data,  progress_current, progress_main):
             main_dict, final_data, file_name = data
+            part = int(40/len(final_data))
             abs_path = os.getcwd()
             dwnpath = f'{abs_path}/Downloads/'
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
-
-            progress_main.emit(40)
             path_lst = {}
             request_exceptions = (requests.RequestException, requests.ConnectionError, requests.HTTPError,requests.URLRequired,
                         requests.TooManyRedirects,requests.ConnectTimeout,requests.ReadTimeout,requests.Timeout,requests.JSONDecodeError)
@@ -283,7 +271,7 @@ class MainWindowGui(Miscellaneous):
                                 time.sleep(4)
                                 try:
                                     # getting the new url from the api
-                                    url = get_data(self.url, self.ignore_ver, self.all_dependencies,self.stop)[
+                                    url = url_generator(self.url, self.ignore_ver, self.all_dependencies,self.stop,progress_current,progress_main,emit=False)[
                                         0][f_name]
                                     d.download(url, path, threads)
                                     success = True
@@ -304,8 +292,7 @@ class MainWindowGui(Miscellaneous):
                         time.sleep(0.1)
                         if self.stop.is_set():
                             raise Exception("Stoped By User!")
-                    progress_main.emit(2)
-
+                    progress_main.emit(part)
                     #d.alive is just to check if the download has succeded or not
                     if d.alive is False:
                         raise Exception(
@@ -316,22 +303,80 @@ class MainWindowGui(Miscellaneous):
                     path_lst[path] = 1
                 else:
                     path_lst[path] = 0
-
-            self.stop_btn.hide()
-            self.pushButton.show()
-            progress_main.emit(100)
-            return install(path_lst)  # install the apps'
+            return path_lst  # install the apps'
 
         worker = Worker(
             lambda **kwargs: download_install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.result.connect(self.run_success)
-        worker.signals.progress.connect(self.progress)
+        worker.signals.result.connect(self.install)
         worker.signals.error.connect(
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
-# add stoping the downloader using event
-# proper testing
-# progress bar for the installer
+    def install(self,arg):
+        self.stop_btn.hide()
+        self.pushButton.show()
+        
+        def install_thread(path,progress_current,progress_main,val=True):
+            flag = 0
+            main_prog_error = 0
+            part = int((100 - self.mainprogressBar.value())/len(path))
+
+            for s_path in path.keys():
+                if val:
+                    progress_current.emit(10)
+                all_paths = f'Add-AppPackage "{s_path}"'
+                output = subprocess.run(
+                    ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True, shell=val)
+                if val:
+                    progress_current.emit(100)
+                    time.sleep(0.3)
+                    progress_main.emit(part)
+                # if command failed
+                if output.returncode != 0:
+                    flag = 1
+                    with open('log.txt', 'a') as f:
+                        current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                        f.write(f'[powershell logs] \n{current_time}\n')
+                        f.write(f'command: {output.args[1]}\n\n')
+                        f.write(output.stderr.decode("utf-8"))
+                        f.write(f'{82*"-"}\n')
+
+                    if path[s_path] == 1:
+                        main_prog_error = 1
+                        break
+            if val:
+                progress_current.emit(100)
+                progress_main.emit(100)
+                
+            # if the failed commands include the application package then show app not installed
+            if main_prog_error == 1:
+                msg = 'Failed To Install The Application!'
+                detail_msg = 'The Installation has failed, try again!'
+                endresult = (msg, detail_msg, "Error", True)
+
+            else:
+                msg = 'Failed To Install Dependencies!'
+                detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
+                detail_msg += 'So check wheather the program is installed from start menu.\n\n'
+                detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
+                detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
+                endresult = (msg, detail_msg, "Warning")
+            if flag != 0:
+                return endresult
+            return 0
+        #for standalone installer
+        if isinstance(arg, str):
+            path = {arg: 1}
+            #if val is set to false then it wont update the progressbar
+            return install_thread(path, None, None,val=False)
+    
+        #done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
+        worker = Worker(lambda **kwargs: install_thread(arg, **kwargs))
+        worker.signals.cur_progress.connect(self.cur_Progress)
+        worker.signals.main_progress.connect(self.main_Progress)
+        worker.signals.result.connect(self.run_success)
+        worker.signals.error.connect(
+            lambda arg: self.error_handler(arg, normal=False))
+        self.threadpool.start(worker)

@@ -1,55 +1,12 @@
 import platform
 import re
-import subprocess
+
 import webbrowser
-from datetime import datetime
+
 
 
 def open_browser(arg):
     webbrowser.open(arg)
-
-
-def install(path):
-    flag = 0
-    main_prog_error = 0
-    if isinstance(path, str):
-        path = {path: 1}
-
-    outputs = []
-    for s_path in path.keys():
-        all_paths = f'Add-AppPackage "{s_path}"'
-        output = subprocess.run(
-            ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True, shell=True)
-        outputs.append(output.args[1])
-        # if command failed
-        if output.returncode != 0:
-            flag = 1
-            # if the failed commands include the application package then show app not installed
-            with open('log.txt', 'a') as f:
-                current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
-                f.write(f'[powershell logs] \n{current_time}\n')
-                f.write(f'command: {output.args[1]}\n\n')
-                f.write(output.stderr.decode("utf-8"))
-                f.write(f'{82*"-"}\n')
-
-            if path[s_path] == 1:
-                main_prog_error = 1
-                break
-    if main_prog_error == 1:
-        msg = 'Failed To Install The Application!'
-        detail_msg = 'The Installation has failed, try again!'
-        endresult = (msg, detail_msg, "Error", True)
-
-    else:
-        msg = 'Failed To Install Dependencies!'
-        detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
-        detail_msg += 'So check wheather the program is installed from start menu.\n\n'
-        detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
-        detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
-        endresult = (msg, detail_msg, "Warning")
-    if flag != 0:
-        return endresult
-    return 0
 
 
 def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):

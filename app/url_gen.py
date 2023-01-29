@@ -17,7 +17,9 @@ def check(Event):
         raise Exception("Stoped By User!")
     
 
-def url_generator(url, ignore_ver, all_dependencies,Event):
+def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progress_main,emit):
+    total_prog = 0
+    progress_current.emit(total_prog)
     # geting product id from url
     try:
         pattern = re.compile(
@@ -41,7 +43,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
     session = requests.Session()
     r = session.get(details_api, params=data)
     data_list = r.text
-
+    total_prog+=20
+    progress_current.emit(total_prog)
     pattern1 = re.compile('"WuCategoryId":"([^}]*)","PackageFamilyName"')
     pattern2 = re.compile('"PackageFamilyName":"([^}]*)","SkuId')
     match1 = pattern1.search(str(data_list))
@@ -65,7 +68,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
         verify=False
     )
     doc = minidom.parseString(out.text)
-
+    total_prog+=20
+    progress_current.emit(total_prog)
     # extracting the cooking from the EncryptedData tag
     cookie = doc.getElementsByTagName('EncryptedData')[0].firstChild.nodeValue
 
@@ -82,6 +86,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
     )
 
     doc = minidom.parseString(html.unescape(out.text))
+    total_prog+=20
+    progress_current.emit(total_prog)
     filenames = {}  # {ID: filename}
     # extracting all the filenames(package name) from the xml (the file names are found inside the blockmap)
     for node in doc.getElementsByTagName('Files'):
@@ -121,7 +127,10 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
         file_content = f.read()
 
     file_dict = {}  # the final result
-    def geturl(updateid, revisionnumber, file_name):
+    total_prog+=10
+    progress_current.emit(total_prog)
+    part = int(30/len(final_dict))
+    def geturl(updateid, revisionnumber, file_name,total_prog):
         out = session.post(
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
             data=file_content.format(updateid, revisionnumber, release_type),
@@ -135,6 +144,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
             # here there are 2 filelocation tags one for the blockmap and one for the actual file so we are checking for the length of the url
             if len(url) != 99:
                 file_dict[file_name] = url
+                total_prog+=part
+                progress_current.emit(total_prog)
 
     # using threading to concurrently get the download url for all the files
     threads = []
@@ -142,7 +153,7 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
         check(Event)
         file_name = key
         updateid, revisionnumber = value
-        th = Thread(target=geturl, args=(updateid, revisionnumber, file_name))
+        th = Thread(target=geturl, args=(updateid, revisionnumber, file_name,total_prog))
         th.daemon = True
         threads.append(th)
         th.start()
@@ -151,16 +162,9 @@ def url_generator(url, ignore_ver, all_dependencies,Event):
     while len(file_dict) != len(final_dict):
         check(Event)
         time.sleep(0.2)
+    if emit is True:
+        progress_current.emit(100)
+        time.sleep(0.2)
+        progress_main.emit(20)
 
     return file_dict, parse_names, main_file_name
-
-
-def get_data(arg, ignore_ver, all_dependencies,Event):
-    main_dict, name_list, file_name = url_generator(
-        arg, ignore_ver, all_dependencies,Event)
-    check(Event)
-    if len(main_dict) == 0:
-        # can implement backup apis here
-        pass
-
-    return main_dict, name_list, file_name

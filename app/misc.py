@@ -115,19 +115,12 @@ class Miscellaneous(Ui_MainProgram):
         if total + n < 100:
             total += n
         else:
-            total = 99
+            total = 100
         self.mainprogressBar.setValue(total)
 
     def cur_Progress(self, n):
         self.currentprogressBar.setValue(n)
-
-    def progress(self, n):
-        total = self.currentprogressBar.value()
-        total += n
-        self.currentprogressBar.setValue(total)
-        if total == 100:
-            self.main_Progress(20)
-
+        
     def set_bar_0(self):
         self.mainprogressBar.setValue(0)
         self.currentprogressBar.setValue(0)
