@@ -188,10 +188,15 @@ class MainWindowGui(Miscellaneous):
 
     # standalone installer for predownloaded files
     def standalone_installer(self):
+        def error(arg):
+            self.pushButton.setEnabled(True)
+
+        self.pushButton.setEnabled(False)
         fname = QFileDialog.getOpenFileNames()
         worker = Worker(lambda *args, **kwargs: self.install(fname[0][0]))
         self.threadpool.start(worker)
         worker.signals.result.connect(self.run_success)
+        worker.signals.error.connect(error)
 
     def openWindow(self):
         self.stop.clear()
@@ -235,6 +240,7 @@ class MainWindowGui(Miscellaneous):
         self.pushButton.setEnabled(False)
         self.menuDependencies.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
+        self.actioninstall_From_File.setEnabled(False)
         self.show_bar(True)
         self.pushButton.hide()
         self.stop_btn.show()

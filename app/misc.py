@@ -30,6 +30,7 @@ class Miscellaneous(Ui_MainProgram):
             self.pushButton.setEnabled(True)
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
+            self.actioninstall_From_File.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -48,6 +49,7 @@ class Miscellaneous(Ui_MainProgram):
             self.pushButton.setEnabled(True)
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
+            self.actioninstall_From_File.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -70,6 +72,7 @@ class Miscellaneous(Ui_MainProgram):
             self.pushButton.setEnabled(True)
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
+            self.actioninstall_From_File.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
