@@ -19,7 +19,7 @@ A Program To  Download And Install Windows Store Apps
 - The url is parsed and the product key is obtained then, using Microsoft-Display-Catalog-API categoryid and file name is retrived 
 - Using these data the app can send a request to Microsoft-Delivery-Optimization-service-API and retrive data of the selected application, this data is further parsed based on 
     - System architecture of the user(x64/x32)
-    - Favorable type(these are decrpted file formats, which doesn't need admin privilage to install)
+    - Favorable type(these are decrypted file formats, which doesn't need admin privilage to install)
     - Latest version
 - Then it retrives the download links for the parsed data using the API and the files are downloaded via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via [subprocess](https://docs.python.org/3/library/subprocess.html)
@@ -37,7 +37,7 @@ A Program To  Download And Install Windows Store Apps
 - Now open the "alt app installer.exe" file in the extracted folder ("alt app installer" folder) and run it (the first run can take time)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
-- you can also install already downloaded apps via "install from file" in "Options" 
+- you can also install already downloaded apps via "Install from file" in "Options" 
 
 # How to build from source
 
