@@ -11,13 +11,15 @@ from utls import parse_dict
 
 warnings.filterwarnings("ignore")
 
-#using this to check if the user has decieded to stop the process
+# using this to check if the user has decieded to stop the process
+
+
 def check(Event):
     if Event.is_set():
         raise Exception("Stoped By User!")
-    
 
-def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progress_main,emit):
+
+def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, progress_main, emit):
     total_prog = 0
     progress_current.emit(total_prog)
     # geting product id from url
@@ -43,7 +45,7 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
     session = requests.Session()
     r = session.get(details_api, params=data)
     data_list = r.text
-    total_prog+=20
+    total_prog += 20
     progress_current.emit(total_prog)
     pattern1 = re.compile('"WuCategoryId":"([^}]*)","PackageFamilyName"')
     pattern2 = re.compile('"PackageFamilyName":"([^}]*)","SkuId')
@@ -68,7 +70,7 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
         verify=False
     )
     doc = minidom.parseString(out.text)
-    total_prog+=20
+    total_prog += 20
     progress_current.emit(total_prog)
     # extracting the cooking from the EncryptedData tag
     cookie = doc.getElementsByTagName('EncryptedData')[0].firstChild.nodeValue
@@ -86,7 +88,7 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
     )
 
     doc = minidom.parseString(html.unescape(out.text))
-    total_prog+=20
+    total_prog += 20
     progress_current.emit(total_prog)
     filenames = {}  # {ID: filename}
     # extracting all the filenames(package name) from the xml (the file names are found inside the blockmap)
@@ -116,8 +118,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
             continue
     check(Event)
     # parsing the filenames according to latest version,favorable types,system arch
-    parse_names = parse_dict(identities, main_file_name,
-                             ignore_ver, all_dependencies)
+    parse_names, main_file_name = parse_dict(identities, main_file_name,
+                                             ignore_ver, all_dependencies)
     final_dict = {}  # {filename: (update_id, revision_number)}
     for value in parse_names:
         final_dict[value] = identities[value]
@@ -127,10 +129,11 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
         file_content = f.read()
 
     file_dict = {}  # the final result
-    total_prog+=10
+    total_prog += 10
     progress_current.emit(total_prog)
-    part = int(30/len(final_dict))
-    def geturl(updateid, revisionnumber, file_name,total_prog):
+    part = int(30 / len(final_dict))
+
+    def geturl(updateid, revisionnumber, file_name, total_prog):
         out = session.post(
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
             data=file_content.format(updateid, revisionnumber, release_type),
@@ -144,7 +147,7 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
             # here there are 2 filelocation tags one for the blockmap and one for the actual file so we are checking for the length of the url
             if len(url) != 99:
                 file_dict[file_name] = url
-                total_prog+=part
+                total_prog += part
                 progress_current.emit(total_prog)
 
     # using threading to concurrently get the download url for all the files
@@ -153,7 +156,8 @@ def url_generator(url, ignore_ver, all_dependencies,Event,progress_current,progr
         check(Event)
         file_name = key
         updateid, revisionnumber = value
-        th = Thread(target=geturl, args=(updateid, revisionnumber, file_name,total_prog))
+        th = Thread(target=geturl, args=(
+            updateid, revisionnumber, file_name, total_prog))
         th.daemon = True
         threads.append(th)
         th.start()

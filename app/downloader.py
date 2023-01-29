@@ -77,7 +77,7 @@ class Singledown:
 
 
 class Downloader:
-    def __init__(self,Event):
+    def __init__(self, Event):
         self.dic = {}
         self.workers = []
         self.progress = 0

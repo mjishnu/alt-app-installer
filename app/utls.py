@@ -4,7 +4,6 @@ import re
 import webbrowser
 
 
-
 def open_browser(arg):
     webbrowser.open(arg)
 
@@ -145,7 +144,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
                             if not ignore_ver and data[0] == arch and data[1] == _type and data[2] != ver:
                                 ver = greater_ver(ver, data[2])
                             # checking to see if ignore_ver is checked or not
-                            if ignore_ver:
+                            elif ignore_ver and data[0] == arch and data[1] == _type and data[2] != ver:
                                 final_list.append(
                                     full_data[(key, arch, _type, ver)])
                                 ver = data[2]
@@ -161,4 +160,4 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
         # since unable to detect the main file assuming it to be the first file, since its true in most cases
         file_name = final_list[0]
 
-    return final_list
+    return final_list,file_name

@@ -52,6 +52,7 @@ class WorkerSignals(QObject):
     cur_progress = pyqtSignal(int)
     main_progress = pyqtSignal(int)
 
+
 class Worker(QRunnable):
     '''
     Worker thread
@@ -222,7 +223,8 @@ class MainWindowGui(Miscellaneous):
     def parser(self, arg):
 
         self.url = arg  # saving the url for future uses
-        worker = Worker(lambda **kwargs: url_generator(str(arg), self.ignore_ver, self.all_dependencies,self.stop,emit=True,**kwargs))
+        worker = Worker(lambda **kwargs: url_generator(str(arg), self.ignore_ver,
+                                                       self.all_dependencies, self.stop, emit=True, **kwargs))
         worker.signals.result.connect(self.download_install)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
@@ -243,23 +245,24 @@ class MainWindowGui(Miscellaneous):
 
         def download_install_thread(data,  progress_current, progress_main):
             main_dict, final_data, file_name = data
-            part = int(40/len(final_data))
+            part = int(50 / len(final_data))
             abs_path = os.getcwd()
             dwnpath = f'{abs_path}/Downloads/'
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            request_exceptions = (requests.RequestException, requests.ConnectionError, requests.HTTPError,requests.URLRequired,
-                        requests.TooManyRedirects,requests.ConnectTimeout,requests.ReadTimeout,requests.Timeout,requests.JSONDecodeError)
-        
+            request_exceptions = (requests.RequestException, requests.ConnectionError, requests.HTTPError, requests.URLRequired,
+                                  requests.TooManyRedirects, requests.ConnectTimeout, requests.ReadTimeout, requests.Timeout, requests.JSONDecodeError)
+
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
-                    #downloader is declared inside to prevent it being reused this could lead to issue like one download not completing and the other one starting
+                    # downloader is declared inside to prevent it being reused this could lead to issue like one download not completing and the other one starting
                     d = Downloader(self.stop)
+
                     def f_download(url, path, threads):
                         success = False
                         try:
@@ -271,7 +274,7 @@ class MainWindowGui(Miscellaneous):
                                 time.sleep(4)
                                 try:
                                     # getting the new url from the api
-                                    url = url_generator(self.url, self.ignore_ver, self.all_dependencies,self.stop,progress_current,progress_main,emit=False)[
+                                    url = url_generator(self.url, self.ignore_ver, self.all_dependencies, self.stop, progress_current, progress_main, emit=False)[
                                         0][f_name]
                                     d.download(url, path, threads)
                                     success = True
@@ -279,6 +282,7 @@ class MainWindowGui(Miscellaneous):
                                 except request_exceptions:
                                     print("exception occured: ", _)
                                     continue
+
                         if success is not True:
                             d.alive = False
 
@@ -293,7 +297,7 @@ class MainWindowGui(Miscellaneous):
                         if self.stop.is_set():
                             raise Exception("Stoped By User!")
                     progress_main.emit(part)
-                    #d.alive is just to check if the download has succeded or not
+                    # d.alive is just to check if the download has succeded or not
                     if d.alive is False:
                         raise Exception(
                             "Download Error Occured Try again Later!")
@@ -314,14 +318,14 @@ class MainWindowGui(Miscellaneous):
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
-    def install(self,arg):
+    def install(self, arg):
         self.stop_btn.hide()
         self.pushButton.show()
-        
-        def install_thread(path,progress_current,progress_main,val=True):
+
+        def install_thread(path, progress_current, progress_main, val=True):
             flag = 0
             main_prog_error = 0
-            part = int((100 - self.mainprogressBar.value())/len(path))
+            part = int((100 - self.mainprogressBar.value()) / len(path))
 
             for s_path in path.keys():
                 if val:
@@ -337,7 +341,8 @@ class MainWindowGui(Miscellaneous):
                 if output.returncode != 0:
                     flag = 1
                     with open('log.txt', 'a') as f:
-                        current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                        current_time = datetime.now().strftime(
+                            "[%d-%m-%Y %H:%M:%S]")
                         f.write(f'[powershell logs] \n{current_time}\n')
                         f.write(f'command: {output.args[1]}\n\n')
                         f.write(output.stderr.decode("utf-8"))
@@ -349,7 +354,7 @@ class MainWindowGui(Miscellaneous):
             if val:
                 progress_current.emit(100)
                 progress_main.emit(100)
-                
+
             # if the failed commands include the application package then show app not installed
             if main_prog_error == 1:
                 msg = 'Failed To Install The Application!'
@@ -366,13 +371,13 @@ class MainWindowGui(Miscellaneous):
             if flag != 0:
                 return endresult
             return 0
-        #for standalone installer
+        # for standalone installer
         if isinstance(arg, str):
             path = {arg: 1}
-            #if val is set to false then it wont update the progressbar
-            return install_thread(path, None, None,val=False)
-    
-        #done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
+            # if val is set to false then it wont update the progressbar
+            return install_thread(path, None, None, val=False)
+
+        # done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
         worker = Worker(lambda **kwargs: install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)

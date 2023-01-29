@@ -19,7 +19,8 @@ class Miscellaneous(Ui_MainProgram):
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowIcon(QIcon('./data/images/error_y.png'))
-        msg.setDetailedText(str(msg_details) + '\n\ncheck Full Logs [Help --> Open Logs]')
+        msg.setDetailedText(str(msg_details) +
+                            '\n\ncheck Full Logs [Help --> Open Logs]')
         if text == "Failed To Clear Cache Files!":
             pass
         else:
@@ -120,7 +121,7 @@ class Miscellaneous(Ui_MainProgram):
 
     def cur_Progress(self, n):
         self.currentprogressBar.setValue(n)
-        
+
     def set_bar_0(self):
         self.mainprogressBar.setValue(0)
         self.currentprogressBar.setValue(0)
