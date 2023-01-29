@@ -249,7 +249,7 @@ class MainWindowGui(Miscellaneous):
         self.stop_btn.show()
 
     def download_install(self, arg):
-        if arg == None:
+        if arg is None:
             raise Exception("Stoped By User!")
 
         def download_install_thread(data,  progress_current, progress_main, **kwargs):
@@ -274,7 +274,6 @@ class MainWindowGui(Miscellaneous):
                     d = Downloader(self.stop)
                     def f_download(url, path, threads):
                         success = False
-                        d.alive = True
                         try:
                             d.download(url, path, threads)
                             success = True
