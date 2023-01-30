@@ -141,13 +141,13 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
                             _type = data[1]
                             ver = data[2]
                         else:
-                            if not ignore_ver and data[0] == arch and data[1] == _type and data[2] != ver:
-                                ver = greater_ver(ver, data[2])
-                            # checking to see if ignore_ver is checked or not
-                            elif ignore_ver and data[0] == arch and data[1] == _type and data[2] != ver:
-                                final_list.append(
-                                    full_data[(key, arch, _type, ver)])
-                                ver = data[2]
+                            if data[0] == arch and data[1] == _type and data[2] != ver:
+                                # checking to see if ignore_ver is checked or not
+                                if ignore_ver:
+                                    final_list.append(full_data[(key, arch, _type, ver)])
+                                    ver = data[2]
+                                else:
+                                    ver = greater_ver(ver, data[2])
 
             # only add if arch is same as main file
             if arch == "neutral" or arch == final_arch:
