@@ -552,6 +552,7 @@
      <addaction name="actionIgnore_All_filters"/>
     </widget>
     <addaction name="actionDownloads"/>
+    <addaction name="actionInstall_using_url"/>
     <addaction name="actioninstall_From_File"/>
     <addaction name="actionclear_cache"/>
     <addaction name="menuDependencies"/>
@@ -595,7 +596,7 @@
     <string>Clear Cache</string>
    </property>
    <property name="statusTip">
-    <string>Clear all files like [Downloads,logs.. etc]</string>
+    <string>Clear all files like [downloads,logs.. etc]</string>
    </property>
   </action>
   <action name="actionInstall_Driver_Chrome">
@@ -620,7 +621,7 @@
     <string>Check For Updates</string>
    </property>
    <property name="statusTip">
-    <string>Check For Updates</string>
+    <string>Check for updates</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -656,7 +657,7 @@
     <string>Open Logs</string>
    </property>
    <property name="statusTip">
-    <string>Open log File</string>
+    <string>Open log file</string>
    </property>
   </action>
   <action name="actionDownload_From_Url_2">
@@ -676,7 +677,7 @@
     <string>Install From File</string>
    </property>
    <property name="statusTip">
-    <string>Install App (Appx,Msix..etc) From Local File </string>
+    <string>Install app (Appx,Msix..etc) from local file </string>
    </property>
   </action>
   <action name="actionSet_Wait_Time">
@@ -696,7 +697,7 @@
     <string>Downloads</string>
    </property>
    <property name="statusTip">
-    <string>Open Downloads Folder</string>
+    <string>Open downloads folder</string>
    </property>
   </action>
   <action name="actionAll_Dependencies">
@@ -728,7 +729,7 @@
     <string>Ignore Version</string>
    </property>
    <property name="statusTip">
-    <string>Download All Versions Of The Dependencies</string>
+    <string>Download all versions of the dependencies</string>
    </property>
   </action>
   <action name="actionIgnore_All_filters">
@@ -746,7 +747,19 @@
     <string>Ignore All Filters</string>
    </property>
    <property name="statusTip">
-    <string>Download All Dependencies Regardless Of System Arch (x64,x32,Arm), Type (Appx,Msix..etc), Latest Version</string>
+    <string>Download all dependencies regardless of system arch (x64,x32,Arm), type (Appx,Msix..etc), latest version</string>
+   </property>
+  </action>
+  <action name="actionInstall_using_url">
+   <property name="icon">
+    <iconset>
+     <normaloff>data/images/link.png</normaloff>data/images/link.png</iconset>
+   </property>
+   <property name="text">
+    <string>Install From Link</string>
+   </property>
+   <property name="statusTip">
+    <string>Download and install the app from the link (app url)</string>
    </property>
   </action>
  </widget>

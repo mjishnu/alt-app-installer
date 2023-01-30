@@ -11,7 +11,7 @@ from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
 from downloader import Downloader
 from get_url import url_window
-from misc import Miscellaneous
+from misc import Miscellaneous,DilalogBox
 from url_gen import url_generator
 from utls import open_browser
 from threading import Event
@@ -129,6 +129,7 @@ class MainWindowGui(Miscellaneous):
         self.actionIgnore_Latest_Version.triggered.connect(self.ignore_version)
         self.actionIgnore_All_filters.triggered.connect(
             self.ignore_All_filters)
+        self.actionInstall_using_url.triggered.connect(self.install_url)
 
     def ignore_version(self):
         if self.actionIgnore_Latest_Version.isChecked():
@@ -198,6 +199,11 @@ class MainWindowGui(Miscellaneous):
         worker.signals.result.connect(self.run_success)
         worker.signals.error.connect(error)
 
+    def install_url(self):
+        window = DilalogBox()
+        window.closed.connect(self.parser)
+        window.exec()
+    
     def openWindow(self):
         self.stop.clear()
 
@@ -241,6 +247,7 @@ class MainWindowGui(Miscellaneous):
         self.menuDependencies.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
         self.actioninstall_From_File.setEnabled(False)
+        self.actionInstall_using_url.setEnabled(False)
         self.show_bar(True)
         self.pushButton.hide()
         self.stop_btn.show()

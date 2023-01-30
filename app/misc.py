@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
 
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon,QPixmap
+from PyQt6.QtWidgets import QMessageBox,QDialog
+from PyQt6 import QtCore,QtWidgets
 
 from gui import Ui_MainProgram
 
@@ -31,6 +32,7 @@ class Miscellaneous(Ui_MainProgram):
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
+            self.actionInstall_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -50,6 +52,7 @@ class Miscellaneous(Ui_MainProgram):
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
+            self.actionInstall_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -73,6 +76,7 @@ class Miscellaneous(Ui_MainProgram):
             self.menuDependencies.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
+            self.actionInstall_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -164,3 +168,45 @@ class Miscellaneous(Ui_MainProgram):
             event.accept()
         else:
             event.ignore()
+class DilalogBox(QDialog):
+
+    closed = QtCore.pyqtSignal(object)
+    
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+    
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(390, 49)
+        Form.setMinimumSize(QtCore.QSize(300, 49))
+        Form.setMaximumSize(QtCore.QSize(600, 49))
+        Form.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
+        Form.setWindowTitle("Enter URL")
+        icon = QIcon()
+        icon.addPixmap(QPixmap("data/images/main.ico"), QIcon.Mode.Normal, QIcon.State.Off)
+        Form.setWindowIcon(icon)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.install_link_lineEdit = QtWidgets.QLineEdit(Form)
+        self.install_link_lineEdit.setInputMask("")
+        self.install_link_lineEdit.setText("")
+        self.install_link_lineEdit.setClearButtonEnabled(False)
+        self.install_link_lineEdit.setObjectName("install_link_lineEdit")
+        self.horizontalLayout.addWidget(self.install_link_lineEdit)
+        self.install_link_ok_btn = QtWidgets.QPushButton(Form)
+        self.install_link_ok_btn.setObjectName("install_link_ok_btn")
+        self.install_link_ok_btn.setText("OK")
+        self.horizontalLayout.addWidget(self.install_link_ok_btn)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+        def current_url():
+            self.closed.emit(str(self.install_link_lineEdit.text()))
+            Form.close()
+
+        self.install_link_ok_btn.clicked.connect(current_url)

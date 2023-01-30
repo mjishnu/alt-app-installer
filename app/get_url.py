@@ -40,8 +40,8 @@ class url_window(QObject):
             qt_window.urlbar.setCursorPosition(0)
 
         def current_url():
-            qt_window.close()
             self.closed.emit(str(qt_window.urlbar.text()))
+            qt_window.close()
 
         # set the title
         qt_window.setWindowTitle("App Selector")
@@ -116,7 +116,7 @@ class url_window(QObject):
         # creating a line edit for the url
         qt_window.urlbar = QLineEdit()
 
-        # adding this to the tool bar
+        # adding select button to the tool bar
         navtb.addWidget(qt_window.urlbar)
         qt_window.label = QLabel(qt_window)
         qt_window.label.setText(

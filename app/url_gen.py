@@ -31,11 +31,11 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         if product_id is None:
             raise Exception(
-                'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
+                'No Data Found: --> [You Selected Wrong Page, Try Again!]')
 
     except AttributeError:
         raise Exception(
-            'No Data Found: --> [You Selected Wrong Page in App Selector, Try Again!]')
+            'No Data Found: --> [You Selected Wrong Page, Try Again!]')
 
     # getting cat_id and package name from the api
     details_api = "https://displaycatalog.mp.microsoft.com/v7.0/products/"
