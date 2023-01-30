@@ -168,7 +168,7 @@ class MainWindowGui(Miscellaneous):
 
             remove_('log.txt')
             try:
-                remove_('Downloads', 'dir')
+                remove_('downloads', 'dir')
             except FileNotFoundError:
                 print("No Downloads Found!")
 
@@ -181,7 +181,7 @@ class MainWindowGui(Miscellaneous):
             text="Cache Files Cleared Successfully!"))
 
     def open_downloads(self):
-        path = os.path.realpath("./Downloads")
+        path = os.path.realpath("./downloads")
         if os.path.exists(path):
             os.startfile(path)
         else:
@@ -260,7 +260,7 @@ class MainWindowGui(Miscellaneous):
             main_dict, final_data, file_name = data
             part = int(50 / len(final_data))
             abs_path = os.getcwd()
-            dwnpath = f'{abs_path}/Downloads/'
+            dwnpath = f'{abs_path}/downloads/'
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
