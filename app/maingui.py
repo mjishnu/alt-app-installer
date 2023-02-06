@@ -205,13 +205,6 @@ class MainWindowGui(Miscellaneous):
         window.exec()
     
     def openWindow(self):
-        self.stop.clear()
-
-        def close(event):
-            self.window.deleteLater()
-            del self.window
-            event.accept()
-
         try:
             self.window  # checking if self.window already exist
         except:
@@ -227,11 +220,17 @@ class MainWindowGui(Miscellaneous):
             search_app = url_window()
             search_app.setupUi(self.window)
             self.window.show()
-            # overiding close event for effictive memory management
-            self.window.closeEvent = close
             search_app.closed.connect(self.parser)
 
     def parser(self, arg):
+        self.stop.clear()
+        # closing the window
+        try:
+            self.window.close()
+            self.window.deleteLater()
+            del self.window
+        except:
+            pass
 
         self.url = arg  # saving the url for future uses
         worker = Worker(lambda **kwargs: url_generator(str(arg), self.ignore_ver,
