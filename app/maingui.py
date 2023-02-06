@@ -353,12 +353,16 @@ class MainWindowGui(Miscellaneous):
                 # if command failed
                 if output.returncode != 0:
                     flag = 1
+                    try:
+                        output_text = output.stderr.decode("mbcs")
+                    except UnicodeDecodeError:
+                        output_text = output.stderr.decode("utf-8", errors="ignore")
                     with open('log.txt', 'a') as f:
                         current_time = datetime.now().strftime(
                             "[%d-%m-%Y %H:%M:%S]")
                         f.write(f'[powershell logs] \n{current_time}\n')
                         f.write(f'command: {output.args[1]}\n\n')
-                        f.write(output.stderr.decode("utf-8"))
+                        f.write(output_text)
                         f.write(f'{82*"-"}\n')
 
                     if path[s_path] == 1:
