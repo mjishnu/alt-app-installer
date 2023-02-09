@@ -1,9 +1,14 @@
 import os
 import shutil
+import subprocess
 import sys
 import time
 import traceback
+from datetime import datetime
+from threading import Event
 
+import clr
+import requests
 from PyQt6.QtCore import (QObject, QRunnable, Qt, QThreadPool, pyqtSignal,
                           pyqtSlot)
 from PyQt6.QtGui import QIcon
@@ -11,13 +16,12 @@ from PyQt6.QtWidgets import QFileDialog, QMainWindow
 
 from downloader import Downloader
 from get_url import url_window
-from misc import Miscellaneous,DilalogBox
+from misc import DilalogBox, Miscellaneous
 from url_gen import url_generator
 from utls import open_browser
-from threading import Event
-import requests
-import subprocess
-from datetime import datetime
+
+dll_path = os.path.abspath(r"data\System.Management.Automation.dll")
+clr.AddReference(dll_path)
 
 try:
     # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
@@ -191,13 +195,17 @@ class MainWindowGui(Miscellaneous):
     def standalone_installer(self):
         def error(arg):
             self.pushButton.setEnabled(True)
+            self.show_bar(False)
 
         self.pushButton.setEnabled(False)
         fname = QFileDialog.getOpenFileNames()
-        worker = Worker(lambda *args, **kwargs: self.install(fname[0][0]))
-        self.threadpool.start(worker)
+        worker = Worker(lambda **kwargs: self.install(fname[0][0], **kwargs))
+        worker.signals.cur_progress.connect(self.cur_Progress)
+        worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
         worker.signals.error.connect(error)
+        self.threadpool.start(worker)
+        self.show_bar(True)
 
     def install_url(self):
         window = DilalogBox()
@@ -330,7 +338,10 @@ class MainWindowGui(Miscellaneous):
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
-    def install(self, arg):
+    def install(self, arg,**kwargs):
+        #importing the system management.Automation dlls powershell funcs
+        from System.Management.Automation import PowerShell
+
         self.stop_btn.hide()
         self.pushButton.show()
 
@@ -338,38 +349,46 @@ class MainWindowGui(Miscellaneous):
             flag = 0
             main_prog_error = 0
             part = int((100 - self.mainprogressBar.value()) / len(path))
+            
+            #helper func for getting progress from powershell
+            def Progress(source,e):
+                prog = int(source[e.Index].PercentComplete)
+                #to remove -1 from the progress bar
+                progress_current.emit(prog if prog > 0 else 0)
+                if not val:
+                    progress_main.emit(prog if prog > 0 else 0)
+
+            #helper func for getting error from powershell
+            def error(source,e):
+                nonlocal flag,main_prog_error
+
+                flag = 1
+                if path[s_path] == 1:
+                    main_prog_error = 1
+                
+                with open('log.txt', 'a') as f:
+                    current_time = datetime.now().strftime(
+                        "[%d-%m-%Y %H:%M:%S]")
+                    f.write(f'[powershell logs] \n{current_time}\n\n')
+                    f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')
+                    f.write(str(source[e.Index].Exception.Message))
+                    f.write(f'{82*"-"}\n')
 
             for s_path in path.keys():
-                if val:
-                    progress_current.emit(10)
-                all_paths = f'Add-AppPackage "{s_path}"'
-                output = subprocess.run(
-                    ["C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe", all_paths], capture_output=True, shell=val)
-                if val:
-                    progress_current.emit(100)
-                    time.sleep(0.3)
-                    progress_main.emit(part)
-                # if command failed
-                if output.returncode != 0:
-                    flag = 1
-                    try:
-                        output_text = output.stderr.decode("mbcs")
-                    except UnicodeDecodeError:
-                        output_text = output.stderr.decode("utf-8", errors="ignore")
-                    with open('log.txt', 'a') as f:
-                        current_time = datetime.now().strftime(
-                            "[%d-%m-%Y %H:%M:%S]")
-                        f.write(f'[powershell logs] \n{current_time}\n')
-                        f.write(f'command: {output.args[1]}\n\n')
-                        f.write(output_text)
-                        f.write(f'{82*"-"}\n')
+                #C# command run using pythonnet via system.management.automation dll
+                ps=PowerShell.Create()
+                ps.Streams.Progress.DataAdded +=Progress
+                ps.Streams.Error.DataAdded += error
+                ps.AddCommand("Add-AppxPackage")
+                ps.AddParameter("Path", s_path)
 
-                    if path[s_path] == 1:
-                        main_prog_error = 1
-                        break
-            if val:
-                progress_current.emit(100)
-                progress_main.emit(100)
+                try:
+                    ps.Invoke()
+                except Exception as e:
+                    print(e)
+                
+                time.sleep(0.3)
+                progress_main.emit(part)
 
             # if the failed commands include the application package then show app not installed
             if main_prog_error == 1:
@@ -391,7 +410,7 @@ class MainWindowGui(Miscellaneous):
         if isinstance(arg, str):
             path = {arg: 1}
             # if val is set to false then it wont update the progressbar
-            return install_thread(path, None, None, val=False)
+            return install_thread(path, val=False, **kwargs)
 
         # done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
         worker = Worker(lambda **kwargs: install_thread(arg, **kwargs))
