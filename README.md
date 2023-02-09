@@ -22,7 +22,7 @@ A Program To  Download And Install Windows Store Apps
     - Favorable type(these are decrypted file formats, which doesn't need admin privilage to install)
     - Latest version
 - Then it retrives the download links for the parsed data using the API and the files are downloaded via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
-- Finally it installs the downloaded files via [subprocess](https://docs.python.org/3/library/subprocess.html)
+- Finally it installs the downloaded files via System.Management.Automation.dll using [pythonnet](https://pypi.org/project/pythonnet)
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
 <img width="952" alt="image" src="https://user-images.githubusercontent.com/83004520/176722809-dbafa2a0-56c6-4cbc-ba8b-fe964a73e029.png">
