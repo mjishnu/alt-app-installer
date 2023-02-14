@@ -107,7 +107,6 @@ class MainWindowGui(Miscellaneous):
         self.threadpool = QThreadPool()
         self.url = None
         self.stop = Event()
-        self.window_open = True
         self.ignore_ver = False
         self.all_dependencies = False
 
@@ -212,6 +211,12 @@ class MainWindowGui(Miscellaneous):
         window.exec()
     
     def openWindow(self):
+        #close event for the new window
+        def close(event):
+            self.window.deleteLater()
+            del self.window
+            event.accept()
+
         try:
             self.window  # checking if self.window already exist
         except:
@@ -226,12 +231,14 @@ class MainWindowGui(Miscellaneous):
             self.window.setWindowIcon(QIcon('./data/images/search.png'))
             search_app = url_window()
             search_app.setupUi(self.window)
+            #overding the new window close event for proper cleanup
+            self.window.closeEvent = close
             self.window.show()
             search_app.closed.connect(self.parser)
 
     def parser(self, arg):
         self.stop.clear()
-        # closing the window
+        # if the window is open closing it before starting the parser
         try:
             self.window.close()
             self.window.deleteLater()
