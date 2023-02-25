@@ -7,7 +7,7 @@ import requests
 
 
 class Multidown:
-    def __init__(self, dic, id):
+    def __init__(self, dic, id,Event):
         self.count = 0
         self.completed = False
         # used to differniate between diffent instance of multidown class
@@ -16,6 +16,7 @@ class Multidown:
         # the json also has info like paused,total bytes,number of connections (parts)
         self.dic = dic
         self.position = self.getval('position')
+        self.Event = Event
 
     def getval(self, key):
         return self.dic[self.id][key]
@@ -43,7 +44,8 @@ class Multidown:
                 r = s.get(
                     url, headers={"range": f"bytes={start}-{end}"}, stream=True)
                 while True:
-                    if self.dic['paused']:
+                    if self.Event.is_set():
+                        self.dic['paused'] = True
                         r.connection.close()
                         r.close()
                         s.close()
@@ -111,8 +113,7 @@ class Downloader:
             # multiple threads possible
             if json_file:
                 # the object_hook converts the key strings whose value is int to type int
-                progress = json.loads(Path(json_path).read_text(), object_hook=lambda d: {
-                                      int(k) if k.isdigit() else k: v for k, v in d.items()})
+                progress = json.loads(Path(json_path).read_text(), object_hook=lambda d: {int(k) if k.isdigit() else k: v for k, v in d.items()})
             segment = total / num_connections
             print('Download started!')
             self.dic['total'] = total
@@ -142,10 +143,8 @@ class Downloader:
                     'url': url,
                     'completed': False
                 }
-
-                md = Multidown(self.dic, i)
+                md = Multidown(self.dic, i,self.Event)
                 th = Thread(target=md.worker)
-                th.daemon = True
                 threads.append(th)
                 th.start()
                 self.workers.append(md)
@@ -164,7 +163,9 @@ class Downloader:
                 print("zero division error")
             if self.Event.is_set():
                 self.dic['paused'] = True
-                raise Exception("Stoped By User!")
+                Path(json_path).write_text(json.dumps(self.dic, indent=4))
+                print("Stoping Connections")
+                break
             time.sleep(0.1)
             if status == len(self.workers):
                 if not singlethread:
