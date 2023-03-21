@@ -43,7 +43,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
     data = {"bigIds": product_id, "market": "US", "languages": "en"}
 
     session = requests.Session()
-    r = session.get(details_api, params=data)
+    r = session.get(details_api, params=data,timeout=20)
     data_list = r.text
     total_prog += 20
     progress_current.emit(total_prog)
@@ -67,7 +67,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
         data=cookie_content,
         headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-        verify=False
+        verify=False,timeout=20
     )
     doc = minidom.parseString(out.text)
     total_prog += 20
@@ -84,7 +84,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
         data=cat_id_content,
         headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-        verify=False
+        verify=False,timeout=20
     )
 
     doc = minidom.parseString(html.unescape(out.text))
@@ -138,7 +138,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
             data=file_content.format(updateid, revisionnumber, release_type),
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-            verify=False
+            verify=False,timeout=20
         )
         doc = minidom.parseString(out.text)
         # checks for all the tags which have name "filelocation" and extracts the url from it

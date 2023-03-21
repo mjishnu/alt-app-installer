@@ -7,7 +7,6 @@ from datetime import datetime
 from threading import Event
 
 import clr
-import requests
 from PyQt6.QtCore import (QObject, QRunnable, Qt, QThreadPool, pyqtSignal,
                           pyqtSlot)
 from PyQt6.QtGui import QIcon
@@ -209,9 +208,9 @@ class MainWindowGui(Miscellaneous):
         window = DilalogBox()
         window.closed.connect(self.parser)
         window.exec()
-    
+
     def openWindow(self):
-        #close event for the new window
+        # close event for the new window
         def close(event):
             self.window.deleteLater()
             del self.window
@@ -231,7 +230,7 @@ class MainWindowGui(Miscellaneous):
             self.window.setWindowIcon(QIcon('./data/images/search.png'))
             search_app = url_window()
             search_app.setupUi(self.window)
-            #overding the new window close event for proper cleanup
+            # overding the new window close event for proper cleanup
             self.window.closeEvent = close
             self.window.show()
             search_app.closed.connect(self.parser)
@@ -277,9 +276,7 @@ class MainWindowGui(Miscellaneous):
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            request_exceptions = (requests.RequestException, requests.ConnectionError, requests.HTTPError, requests.URLRequired,
-                                  requests.TooManyRedirects, requests.ConnectTimeout, requests.ReadTimeout, requests.Timeout, requests.JSONDecodeError)
-
+            d = Downloader(self.stop)
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
@@ -287,46 +284,26 @@ class MainWindowGui(Miscellaneous):
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
                     # downloader is declared inside to prevent it being reused this could lead to issue like one download not completing and the other one starting
-                    d = Downloader(self.stop)
-
-                    def f_download(url, path, threads):
-                        success = False
-                        try:
-                            d.download(url, path, threads)
-                            success = True
-                        except request_exceptions:
-                            print("download failed getting new url directly!")
-                            for _ in range(10):
-                                time.sleep(4)
-                                try:
-                                    # getting the new url from the api
-                                    url = url_generator(self.url, self.ignore_ver, self.all_dependencies, self.stop, progress_current, progress_main, emit=False)[
-                                        0][f_name]
-                                    d.download(url, path, threads)
-                                    success = True
-                                    break      # as soon as it works, break out of the loop
-                                except request_exceptions:
-                                    print("exception occured: ", _)
-                                    continue
-
-                        if success is not True:
-                            d.alive = False
+                    # d = Downloader(self.stop)
+                    new_url_gen = lambda: url_generator(self.url, self.ignore_ver, self.all_dependencies,
+                                                            self.stop, progress_current, progress_main, emit=False)[0][f_name]
+                    
+                    d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen,block=False)
+                    
+                    # worker = Worker(lambda *args, **kwargs: d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen))
+                    # self.threadpool.start(worker)
 
                     # concurrent download so we can get the download progress
-                    worker = Worker(
-                        lambda *args, **kwargs: f_download(remote_url, path, 20))
-                    self.threadpool.start(worker)
-                    while d.progress != 100 and d.alive is True:
+                    while d.progress != 100:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
                         time.sleep(0.1)
-                        if self.stop.is_set():
+                        if self.stop.is_set():  # check if the stop event is triggered
                             raise Exception("Stoped By User!")
+                        elif d.Failed:  
+                            raise Exception("Download Error Occured!")
+
                     progress_main.emit(part)
-                    # d.alive is just to check if the download has succeded or not
-                    if d.alive is False:
-                        raise Exception(
-                            "Download Error Occured Try again Later!")
 
                 fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
                 if file_name in fname_lower:
@@ -344,8 +321,8 @@ class MainWindowGui(Miscellaneous):
             lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
-    def install(self, arg,**kwargs):
-        #importing the system management.Automation dlls powershell funcs
+    def install(self, arg, **kwargs):
+        # importing the system management.Automation dlls powershell funcs
         from System.Management.Automation import PowerShell
 
         self.stop_btn.hide()
@@ -355,23 +332,23 @@ class MainWindowGui(Miscellaneous):
             flag = 0
             main_prog_error = 0
             part = int((100 - self.mainprogressBar.value()) / len(path))
-            
-            #helper func for getting progress from powershell
-            def Progress(source,e):
+
+            # helper func for getting progress from powershell
+            def Progress(source, e):
                 prog = int(source[e.Index].PercentComplete)
-                #to remove -1 from the progress bar
+                # to remove -1 from the progress bar
                 progress_current.emit(prog if prog > 0 else 0)
                 if not val:
                     progress_main.emit(prog if prog > 0 else 0)
 
-            #helper func for getting error from powershell
-            def error(source,e):
-                nonlocal flag,main_prog_error
+            # helper func for getting error from powershell
+            def error(source, e):
+                nonlocal flag, main_prog_error
 
                 flag = 1
                 if path[s_path] == 1:
                     main_prog_error = 1
-                
+
                 with open('log.txt', 'a') as f:
                     current_time = datetime.now().strftime(
                         "[%d-%m-%Y %H:%M:%S]")
@@ -381,9 +358,9 @@ class MainWindowGui(Miscellaneous):
                     f.write(f'{82*"-"}\n')
 
             for s_path in path.keys():
-                #C# command run using pythonnet via system.management.automation dll
-                ps=PowerShell.Create()
-                ps.Streams.Progress.DataAdded +=Progress
+                # C# command run using pythonnet via system.management.automation dll
+                ps = PowerShell.Create()
+                ps.Streams.Progress.DataAdded += Progress
                 ps.Streams.Error.DataAdded += error
                 ps.AddCommand("Add-AppxPackage")
                 ps.AddParameter("Path", s_path)
@@ -392,7 +369,7 @@ class MainWindowGui(Miscellaneous):
                     ps.Invoke()
                 except Exception as e:
                     print(e)
-                
+
                 time.sleep(0.3)
                 progress_main.emit(part)
 
