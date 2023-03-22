@@ -26,9 +26,9 @@ A Program To  Download And Install Windows Store Apps
 - Then it retrives the download links for the parsed data using the API and the files are downloaded using a stripped version of [pypdl](https://github.com/m-jishnu/pypdl), which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via System.Management.Automation.dll using [pythonnet](https://pypi.org/project/pythonnet)
 
-<img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
-<img width="952" alt="image" src="https://user-images.githubusercontent.com/83004520/176722809-dbafa2a0-56c6-4cbc-ba8b-fe964a73e029.png">
-
+<img width="1060" alt="1-min" src="https://user-images.githubusercontent.com/83004520/226940878-11cfb8ca-074e-4876-8a38-142559f5116b.png">
+<img width="1060" alt="2-min" src="https://user-images.githubusercontent.com/83004520/226940893-f4f01e91-2d0c-4231-b1a2-27653d6ac164.png">
+<img width="1060" alt="3-min" src="https://user-images.githubusercontent.com/83004520/226940945-063401e1-0ba2-4c38-9559-cbe4acaf7cb8.png">
 
 # Requirements
 - windows 10/11
