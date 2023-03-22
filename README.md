@@ -7,11 +7,13 @@ A Program To  Download And Install Windows Store Apps
 - This program can download and install microsoft store apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
 - Auto downloads the latest app according to your system architecture (x64/x32)
 - Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin privilage to install
-- Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) for fast downloading
+- Can installed already downloaded microsoft store apps (appx,msix,appxbundle...)
+- Can install microsoft store apps by providing its url
+- Uses custom link generation to produce download links
+- Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using a stripped version [pypdl](https://github.com/m-jishnu/pypdl) for fast downloading
 - Can resume interrupted downloads
 - Automatically use a new url in case current one expires
 - Downloads and install app along with all dependencies 
-- Uses custom link generation to produce download links
 
 # How it works
 
@@ -21,7 +23,7 @@ A Program To  Download And Install Windows Store Apps
     - System architecture of the user(x64/x32)
     - Favorable type(these are decrypted file formats, which doesn't need admin privilage to install)
     - Latest version
-- Then it retrives the download links for the parsed data using the API and the files are downloaded via custom downloader, which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
+- Then it retrives the download links for the parsed data using the API and the files are downloaded using a stripped version of [pypdl](https://github.com/m-jishnu/pypdl), which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via System.Management.Automation.dll using [pythonnet](https://pypi.org/project/pythonnet)
 
 <img width="1173" alt="image" src="https://user-images.githubusercontent.com/83004520/175317632-8199f281-948e-4558-9b4a-0c8bdd2c50ee.png">
