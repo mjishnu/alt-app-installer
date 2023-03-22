@@ -194,15 +194,27 @@ class MainWindowGui(Miscellaneous):
             self.pushButton.setEnabled(True)
             self.show_bar(False)
 
-        self.pushButton.setEnabled(False)
-        fname = QFileDialog.getOpenFileNames()
-        worker = Worker(lambda **kwargs: self.install(fname[0][0], **kwargs))
-        worker.signals.cur_progress.connect(self.cur_Progress)
-        worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.result.connect(self.run_success)
-        worker.signals.error.connect(error)
-        self.threadpool.start(worker)
-        self.show_bar(True)
+        fname = QFileDialog.getOpenFileNames()[0]
+        if fname:
+            worker = Worker(lambda **kwargs: self.install(fname[0], **kwargs))
+            worker.signals.cur_progress.connect(self.cur_Progress)
+            worker.signals.main_progress.connect(self.main_Progress)
+            worker.signals.result.connect(self.run_success)
+            worker.signals.error.connect(error)
+            self.threadpool.start(worker)
+            self.show_bar(True)
+            self.pushButton.setEnabled(False)
+            self.menuDependencies.setEnabled(False)
+            self.actionclear_cache.setEnabled(False)
+            self.actioninstall_From_File.setEnabled(False)
+            self.actionInstall_using_url.setEnabled(False)
+            # if the app selector window is open closing it
+            try:
+                self.window.close()
+                self.window.deleteLater()
+                del self.window
+            except:
+                pass
 
     def install_url(self):
         window = DilalogBox()
@@ -283,17 +295,11 @@ class MainWindowGui(Miscellaneous):
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
-                    # downloader is declared inside to prevent it being reused this could lead to issue like one download not completing and the other one starting
-                    # d = Downloader(self.stop)
                     new_url_gen = lambda: url_generator(self.url, self.ignore_ver, self.all_dependencies,
                                                             self.stop, progress_current, progress_main, emit=False)[0][f_name]
                     
                     d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen,block=False)
-                    
-                    # worker = Worker(lambda *args, **kwargs: d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen))
-                    # self.threadpool.start(worker)
 
-                    # concurrent download so we can get the download progress
                     while d.progress != 100:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
