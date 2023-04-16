@@ -299,7 +299,6 @@ class MainWindowGui(Miscellaneous):
                                                             self.stop, progress_current, progress_main, emit=False)[0][f_name]
                     
                     d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen,block=False)
-
                     while d.progress != 100:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)

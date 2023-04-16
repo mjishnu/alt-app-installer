@@ -91,7 +91,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
 
             if len(content_list) > 1:
                 for data in content_list[1:]:
-                    if data[0] != arch and (data[0] == "neutral" or data[0] == os_arc()):
+                    if not (arch == "neutral" or arch == os_arc) and data[0] != arch and (data[0] == "neutral" or data[0] == os_arc()):
                         arch = data[0]
                         _type = data[1]
                         ver = data[2]
@@ -132,7 +132,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
             if len(content_list) > 1:
                 for data in content_list[1:]:
                     # checking arch is same as main file
-                    if data[0] != arch and (data[0] == "neutral" or data[0] == final_arch):
+                    if not (arch == "neutral" or arch == os_arc) and data[0] != arch and (data[0] == "neutral" or data[0] == final_arch):
                         arch = data[0]
                         _type = data[1]
                         ver = data[2]
