@@ -77,6 +77,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
     pattern = re.compile(file_name)
     # getting the name of the main_appx file
     remove_list = []
+    os_arc = os_arc()
 
     for key in names_dict:
         matches = pattern.search(key)
@@ -91,7 +92,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
 
             if len(content_list) > 1:
                 for data in content_list[1:]:
-                    if arch not in ("neutral", os_arc()) and data[0] != arch and data[0] in ("neutral", os_arc()):
+                    if arch not in ("neutral", os_arc) and data[0] != arch and data[0] in ("neutral", os_arc):
                         arch = data[0]
                         _type = data[1]
                         ver = data[2]
@@ -104,7 +105,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
                                 ver = greater_ver(ver, data[2])
 
             main_file_name = full_data[(key, arch, _type, ver)]
-            final_arch = os_arc() if arch == "neutral" else arch
+            final_arch = os_arc if arch == "neutral" else arch
             break
 
     # removing all the items that we have already parsed (done this way to remove runtime errors)
@@ -132,7 +133,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
             if len(content_list) > 1:
                 for data in content_list[1:]:
                     # checking arch is same as main file
-                    if arch not in ("neutral", os_arc()) and data[0] != arch and data[0] in ("neutral", final_arch):
+                    if arch not in ("neutral", final_arch) and data[0] != arch and data[0] in ("neutral", final_arch):
                         arch = data[0]
                         _type = data[1]
                         ver = data[2]
