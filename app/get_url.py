@@ -63,6 +63,12 @@ class CustomWebEngineView(QWebEngineView):
             paste_action.setShortcut("Ctrl+V")
             paste_action.triggered.connect(
                 lambda: self.page().triggerAction(QWebEnginePage.WebAction.Paste))
+
+            if not self.selectedText():
+                copy_action.setDisabled(True)
+            if not self._is_text_box:
+                paste_action.setDisabled(True)
+
             # Display the menu at the cursor position
             menu.exec(self.mapToGlobal(self._context_menu_pos))
 
