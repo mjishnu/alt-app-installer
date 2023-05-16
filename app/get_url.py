@@ -1,12 +1,77 @@
 # importing required libraries
 from PyQt6.QtCore import QObject, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtWebEngineCore import QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
-                             QPushButton, QStatusBar, QToolBar)
+                             QMenu, QPushButton, QStatusBar, QToolBar)
 
+
+class CustomWebEngineView(QWebEngineView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._history = []
+        self._history_index = -1
+        self.urlChanged.connect(self._on_url_changed)
+        self._context_menu_pos = None
+        self._is_text_box = False
+
+    def _on_url_changed(self, url):
+        if self._history_index >= 0 and url == self._history[self._history_index]:
+            return
+        self._history = self._history[:self._history_index + 1]
+        self._history.append(url)
+        self._history_index += 1
+
+    def back(self):
+        if self._history_index > 0:
+            self._history_index -= 1
+            self.load(self._history[self._history_index])
+
+    def forward(self):
+        if self._history_index < len(self._history) - 1:
+            self._history_index += 1
+            self.load(self._history[self._history_index])
+
+    def contextMenuEvent(self, event):
+        # Save the position of the context menu event
+        self._context_menu_pos = event.pos()
+
+        # Check if the element under the cursor is a text box using JavaScript
+        script = """
+            (function() {{
+                let el = document.elementFromPoint({}, {});
+                return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
+            }})()
+        """.format(event.x(), event.y())
+        self.page().runJavaScript(script, self._on_text_box_check)
+
+    def _on_text_box_check(self, is_text_box):
+        # Save the result of the text box check
+        self._is_text_box = is_text_box
+
+        # Check if text is selected or if the context menu was triggered within a text box
+        if self.selectedText() or self._is_text_box:
+            menu = QMenu(self)
+            copy_action = menu.addAction(QIcon("data/images/copy.png"), "Copy")
+            copy_action.setShortcut("Ctrl+C")
+            copy_action.triggered.connect(
+                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Copy))
+            menu.addSeparator()
+            paste_action = menu.addAction(
+                QIcon("data/images/paste.png"), "Paste")
+            paste_action.setShortcut("Ctrl+V")
+            paste_action.triggered.connect(
+                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Paste))
+            # Display the menu at the cursor position
+            menu.exec(self.mapToGlobal(self._context_menu_pos))
+
+    def createWindow(self, _type):
+        return self
 
 # creating main window class
+
+
 class url_window(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
@@ -46,7 +111,7 @@ class url_window(QObject):
         # set the title
         qt_window.setWindowTitle("App Selector")
         # creating a QWebEngineView
-        qt_window.browser = QWebEngineView()
+        qt_window.browser = CustomWebEngineView()
 
         # setting default browser url as google
         qt_window.browser.setUrl(
@@ -108,6 +173,17 @@ class url_window(QObject):
         # making browser to reload
         reload_btn.triggered.connect(qt_window.browser.reload)
         navtb.addAction(reload_btn)
+
+        # similarly for home button
+        home_btn = QAction("", qt_window)
+        home_btn.setStatusTip("Home page")
+        home_btn.setIcon(QIcon('./data/images/home.png'))
+
+        # adding action to the home button
+        # making browser go to home
+        home_btn.triggered.connect(lambda: qt_window.browser.load(
+            QUrl("https://apps.microsoft.com/")))
+        navtb.addAction(home_btn)
 
         qt_window.label2 = QLabel(qt_window)
         qt_window.label2.setText(" ")
