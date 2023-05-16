@@ -75,9 +75,6 @@ class CustomWebEngineView(QWebEngineView):
     def createWindow(self, _type):
         return self
 
-# creating main window class
-
-
 class url_window(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
@@ -214,20 +211,21 @@ class url_window(QObject):
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
 
+#test code
 
-def url_grabber():
-    import sys
+# def url_grabber():
+#     import sys
 
-    # creating a pyQt application
-    app = QApplication(sys.argv)
+#     # creating a pyQt application
+#     app = QApplication(sys.argv)
 
-    window = QMainWindow()
-    window.setWindowIcon(QIcon('./data/images/search.png'))
-    newwindow = url_window()
-    newwindow.setupUi(window)
-    window.show()
-    app.exec()
+#     window = QMainWindow()
+#     window.setWindowIcon(QIcon('./data/images/search.png'))
+#     newwindow = url_window()
+#     newwindow.setupUi(window)
+#     window.show()
+#     app.exec()
 
 
-if __name__ == "__main__":
-    url_grabber()
+# if __name__ == "__main__":
+#     url_grabber()
