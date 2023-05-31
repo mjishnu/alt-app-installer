@@ -65,7 +65,7 @@ https://youtu.be/ayIilTc-6u4
 
 - For other issues
     
-    You can open an issue or ask me directly in [discord](https://discord.com/invite/cbuEkpd)
+    You can open an issue or ask me directly in [discord](https://discord.gg/9eeN2Wve4T)
 
 # Credits
 
