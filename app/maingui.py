@@ -124,7 +124,7 @@ class MainWindowGui(Miscellaneous):
         self.actionAbout.triggered.connect(lambda: open_browser(
             'https://github.com/m-jishnu/alt-app-installer'))
         self.actionHelp.triggered.connect(lambda: open_browser(
-            'https://discord.com/invite/cbuEkpd'))
+            'https://discord.com/invite/9eeN2Wve4T'))
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
         self.actionDownloads.triggered.connect(self.open_downloads)
         self.actionIgnore_Latest_Version.triggered.connect(self.ignore_version)
