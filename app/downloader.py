@@ -190,7 +190,7 @@ class Downloader:
             # save progress to progress file
             json_file.write_text(json.dumps(self._dic, indent=4))
             # check if all workers have completed
-            status = sum([i.completed for i in self._workers])
+            status = sum(i.completed for i in self._workers)
             # get the total amount of data downloaded
             downloaded = sum(i.curr for i in self._workers)
             try:

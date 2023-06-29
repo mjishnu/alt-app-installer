@@ -22,13 +22,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 dll_path = os.path.join(script_dir,r"data\System.Management.Automation.dll")
 clr.AddReference(dll_path)
 
-try:
-    # changing directory to (__file__ directory),used for a single-file option in pyinstaller to display image properly
-    os.chdir(sys._MEIPASS)
-except Exception:
-    pass
-
-
 class WorkerSignals(QObject):
     '''
     Defines the signals available from a running worker thread.
@@ -106,6 +99,7 @@ class MainWindowGui(Miscellaneous):
         super().__init__()
         self.threadpool = QThreadPool()
         self.url = None
+        self.window = None
         self.stop = Event()
         self.ignore_ver = False
         self.all_dependencies = False
