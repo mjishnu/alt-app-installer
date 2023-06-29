@@ -9,9 +9,7 @@ import requests
 
 
 class Multidown:
-    """
-    Class for downloading a specific part of a file in multiple chunks
-    """
+    """Class for downloading a specific part of a file in multiple chunks"""
 
     def __init__(self, dic, id, stop, error):
         self.curr = 0  # current size of downloaded file
@@ -23,21 +21,15 @@ class Multidown:
         self.error = error  # event to indicate an error occurred
 
     def getval(self, key):
-        """
-        Get the value of a key from the dictionary
-        """
+        """Get the value of a key from the dictionary"""
         return self.dic[self.id][key]
 
     def setval(self, key, val):
-        """
-        Set the value of a key in the dictionary
-        """
+        """Set the value of a key in the dictionary"""
         self.dic[self.id][key] = val
 
     def worker(self):
-        """
-        Download a part of the file in multiple chunks
-        """
+        """Download a part of the file in multiple chunks"""
         filepath = self.getval('filepath')
         path = Path(filepath)
         end = self.getval('end')
@@ -82,18 +74,14 @@ class Multidown:
 
 
 class Singledown:
-    """
-    Class for downloading a whole file in a single chunk
-    """
+    """Class for downloading a whole file in a single chunk"""
 
     def __init__(self):
         self.curr = 0  # current size of downloaded file
         self.completed = 0  # whether the download is complete
 
     def worker(self, url, path, stop, error):
-        """
-        Download a whole file in a single chunk
-        """
+        """Download a whole file in a single chunk"""
         flag = True
         try:
             # download part
