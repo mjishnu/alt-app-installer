@@ -151,7 +151,7 @@ def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
                                     ver = greater_ver(ver, data[2])
 
             # only add if arch is same as main file
-            if arch == "neutral" or arch == final_arch:
+            if arch in ("neutral", final_arch):
                 final_list.append(full_data[(key, arch, _type, ver)])
 
     if main_file_name:
