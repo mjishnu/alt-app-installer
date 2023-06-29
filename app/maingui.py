@@ -19,7 +19,7 @@ from url_gen import url_generator
 from utls import open_browser
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-dll_path = os.path.join(script_dir,"data\System.Management.Automation.dll")
+dll_path = os.path.join(script_dir,r"data\System.Management.Automation.dll")
 clr.AddReference(dll_path)
 
 try:
