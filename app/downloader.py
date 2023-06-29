@@ -3,6 +3,7 @@ import threading
 import time
 from math import inf
 from pathlib import Path
+import os
 
 import requests
 
@@ -47,7 +48,13 @@ class Multidown:
         else:
             # gets the size of the file
             self.curr = path.stat().st_size
-            start = self.getval('start') + self.curr
+            # add the old start size and the current size to get the new start size
+            start = self.getval("start") + self.curr
+            # corruption check to make sure parts are not corrupted
+            if start > end:
+                os.remove(path)
+                self.error.set()
+                print("corrupted file!")
 
         url = self.getval('url')
         if self.curr != self.getval('size'):
@@ -147,7 +154,7 @@ class Downloader:
                 # load the progress from the progress file
                 # the object_hook converts the key strings whose value is int to type int
                 progress = json.loads(json_file.read_text(), object_hook=lambda d: {
-                                      int(k) if k.isdigit() else k: v for k, v in d.items()})
+                                    int(k) if k.isdigit() else k: v for k, v in d.items()})
             segment = total / num_connections
             self._dic['total'] = total
             self._dic['connections'] = num_connections
