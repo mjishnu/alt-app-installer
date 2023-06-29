@@ -306,7 +306,7 @@ class MainWindowGui(Miscellaneous):
                         time.sleep(0.1)
                         if self.stop.is_set():  # check if the stop event is triggered
                             raise Exception("Stoped By User!")
-                        elif d.Failed:  
+                        if d.Failed:  
                             raise Exception("Download Error Occured!")
 
                     progress_main.emit(part)
