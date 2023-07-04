@@ -1,6 +1,6 @@
 # Alt App Installer
 
-A Program To  Download And Install Windows Store Apps
+A Program To  Download And Install Windows Store UMP Apps
 
 # Features
 
