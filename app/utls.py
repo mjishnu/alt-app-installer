@@ -1,164 +1,125 @@
-import platform
-import re
-
+import sys
+import traceback
 import webbrowser
 
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QDialog
+
+
+class DilalogBox(QDialog):
+
+    closed = QtCore.pyqtSignal(object)
+    
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+    
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(390, 49)
+        Form.setMinimumSize(QtCore.QSize(300, 49))
+        Form.setMaximumSize(QtCore.QSize(600, 49))
+        Form.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
+        Form.setWindowTitle("Enter URL")
+        icon = QIcon()
+        icon.addPixmap(QPixmap("data/images/main.ico"), QIcon.Mode.Normal, QIcon.State.Off)
+        Form.setWindowIcon(icon)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Form)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.install_link_lineEdit = QtWidgets.QLineEdit(Form)
+        self.install_link_lineEdit.setInputMask("")
+        self.install_link_lineEdit.setText("")
+        self.install_link_lineEdit.setClearButtonEnabled(False)
+        self.install_link_lineEdit.setObjectName("install_link_lineEdit")
+        self.horizontalLayout.addWidget(self.install_link_lineEdit)
+        self.install_link_ok_btn = QtWidgets.QPushButton(Form)
+        self.install_link_ok_btn.setObjectName("install_link_ok_btn")
+        self.install_link_ok_btn.setText("OK")
+        self.horizontalLayout.addWidget(self.install_link_ok_btn)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        self.verticalLayout.addItem(spacerItem)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+        def current_url():
+            self.closed.emit(str(self.install_link_lineEdit.text()))
+            Form.close()
+
+        self.install_link_ok_btn.clicked.connect(current_url)
+
+class WorkerSignals(QObject):
+    '''
+    Defines the signals available from a running worker thread.
+
+    Supported signals are:
+
+    finished
+        No data
+
+    error
+        tuple (exctype, value, traceback.format_exc() )
+
+    result
+        object data returned from processing, anything
+
+    progress
+        int indicating % progress
+
+    '''
+    started = pyqtSignal()
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    cur_progress = pyqtSignal(int)
+    main_progress = pyqtSignal(int)
+
+class Worker(QRunnable):
+    '''
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                    kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    '''
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+
+        # Add the callback to our kwargs
+        self.kwargs['progress_current'] = self.signals.cur_progress
+        self.kwargs['progress_main'] = self.signals.main_progress
+
+    @pyqtSlot()
+    def run(self):
+        '''Initialise the runner function with passed args, kwargs.'''
+        # Retrieve args/kwargs here; and fire processing using them
+        try:
+            self.signals.started.emit()
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            # Return the result of the processing
+            self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()  # Done
 
 def open_browser(arg):
     webbrowser.open(arg)
-
-
-def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
-
-    def greater_ver(arg1, arg2):
-        first = arg1.split(".")
-        second = arg2.split(".")
-        if first[0] > second[0]:
-            return arg1
-        if first[0] == second[0]:
-            if first[1] > second[1]:
-                return arg1
-            if first[1] == second[1]:
-                if first[2] > second[2]:
-                    return arg1
-                if first[2] == second[2]:
-                    if first[3] > second[3]:
-                        return arg1
-                    return arg2
-                return arg2
-            return arg2
-        return arg2
-
-    # cleans My.name.1.2 -> myname
-    def clean_name(badname):
-        name = "".join(
-            [(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "") for i in badname])
-        return name.lower()
-
-    def os_arc():
-        if platform.machine().endswith("64"):
-            return "x64"
-        if platform.machine().endswith("32") or platform.machine().endswith("86"):
-            return "x86"
-        ################################
-        return "arm"  # not sure wheather work or not, needs testing
-
-    # removing all non string elements
-    file_name = clean_name(file_name.split("-")[0])
-
-    pattern = re.compile(r".+\.BlockMap")
-    full_data = {}  # {(name,arch,type,version):full_name}
-
-    for key in main_dict.keys():
-        matches = pattern.search(str(key))
-        # removing block map files
-        if not matches:
-            #['Microsoft.VCLibs.140.00', '14.0.30704.0', 'x86', '', '8wekyb3d8bbwe.appx']
-            temp = key.split("_")
-            #contains [name,arch,type,version]
-            # temp[-1].split(".")[1] = type[appx,msix, etc]
-            content_lst = (clean_name(temp[0]), temp[2].lower(
-            ), temp[-1].split(".")[1].lower(), temp[1])
-            full_data[content_lst] = key
-
-    # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]}
-    names_dict = {}
-    for value in full_data:
-        if value[0] not in names_dict:
-            names_dict[value[0]] = [value[1:]]
-        else:
-            names_dict[value[0]] += [value[1:]]
-
-    final_arch = None  # arch of main file
-    # fav_type is a list of extensions that are easy to install without admin privileges
-    fav_type = ['appx', 'msix', 'msixbundle', 'appxbundle']
-    main_file_name = None
-    # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
-    pattern = re.compile(file_name)
-    # getting the name of the main_appx file
-    remove_list = []
-    os_arc = os_arc()
-
-    for key in names_dict:
-        matches = pattern.search(key)
-        if matches:
-            # all the contents of the main file [ver1,ver2,ver3,ver4]
-            content_list = names_dict[key]
-            remove_list.append(key)
-
-            arch = content_list[0][0]
-            _type = content_list[0][1]
-            ver = content_list[0][2]
-
-            if len(content_list) > 1:
-                for data in content_list[1:]:
-                    if arch not in ("neutral", os_arc) and data[0] != arch and data[0] in ("neutral", os_arc):
-                        arch = data[0]
-                        _type = data[1]
-                        ver = data[2]
-                    else:
-                        if data[0] == arch and data[1] != _type and data[1] in fav_type:
-                            _type = data[1]
-                            ver = data[2]
-                        else:
-                            if data[0] == arch and data[1] == _type and data[2] != ver:
-                                ver = greater_ver(ver, data[2])
-
-            main_file_name = full_data[(key, arch, _type, ver)]
-            final_arch = os_arc if arch == "neutral" else arch
-            break
-
-    # removing all the items that we have already parsed (done this way to remove runtime errors)
-    for i in remove_list:
-        del names_dict[i]
-
-    final_list = []
-    # checking for dependencies
-    #################################################################
-    for key in names_dict:
-        # all the contents of the main file [ver1,ver2,ver3,ver4]
-        # [(arch,type,ver),(arch,type,ver),(arch,type,ver)]
-        content_list = names_dict[key]
-
-        if all_dependencies:
-            # if all_dependencies is checked then we will just add all the files
-            for data in content_list:
-                final_list.append(full_data[(key, *data)])
-        else:
-            # if all_dependencies is not checked then we will add only the files that are required
-            arch = content_list[0][0]
-            _type = content_list[0][1]
-            ver = content_list[0][2]
-
-            if len(content_list) > 1:
-                for data in content_list[1:]:
-                    # checking arch is same as main file
-                    if arch not in ("neutral", final_arch) and data[0] != arch and data[0] in ("neutral", final_arch):
-                        arch = data[0]
-                        _type = data[1]
-                        ver = data[2]
-                    else:
-                        if data[0] == arch and data[1] != _type and data[1] in fav_type:
-                            _type = data[1]
-                            ver = data[2]
-                        else:
-                            if data[0] == arch and data[1] == _type and data[2] != ver:
-                                # checking to see if ignore_ver is checked or not
-                                if ignore_ver:
-                                    final_list.append(full_data[(key, arch, _type, ver)])
-                                    ver = data[2]
-                                else:
-                                    ver = greater_ver(ver, data[2])
-
-            # only add if arch is same as main file
-            if arch in ("neutral", final_arch):
-                final_list.append(full_data[(key, arch, _type, ver)])
-
-    if main_file_name:
-        final_list.append(main_file_name)
-        file_name = main_file_name
-    else:
-        # since unable to detect the main file assuming it to be the first file, since its true in most cases
-        file_name = final_list[0]
-
-    return final_list,file_name

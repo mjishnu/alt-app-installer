@@ -1,9 +1,9 @@
 import json
+import os
 import threading
 import time
 from math import inf
 from pathlib import Path
-import os
 
 import requests
 
