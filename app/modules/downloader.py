@@ -187,8 +187,9 @@ class Downloader:
         downloaded = 0
         interval = 0.15
         while True:
-            # save progress to progress file
-            json_file.write_text(json.dumps(self._dic, indent=4))
+            if not singlethread:
+                # save progress to progress file
+                json_file.write_text(json.dumps(self._dic, indent=4))
             # check if all workers have completed
             status = sum(i.completed for i in self._workers)
             # get the total amount of data downloaded

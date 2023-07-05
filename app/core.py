@@ -224,7 +224,7 @@ class core(internal_func):
             raise Exception("Stoped By User!")
 
         def download_install_thread(data,  progress_current, progress_main):
-            main_dict, final_data, file_name = data
+            main_dict, final_data, file_name,uwp = data
             part = int(50 / len(final_data))
             abs_path = os.getcwd()
             dwnpath = f'{abs_path}/downloads/'
@@ -258,7 +258,7 @@ class core(internal_func):
                     path_lst[path] = 1
                 else:
                     path_lst[path] = 0
-            return path_lst  # install the apps'
+            return path_lst,uwp  # install the apps'
 
         worker = Worker(
             lambda **kwargs: download_install_thread(arg, **kwargs))
@@ -276,7 +276,7 @@ class core(internal_func):
         self.stop_btn.hide()
         self.pushButton.show()
 
-        def install_thread(path, progress_current, progress_main, val=True):
+        def install_thread(path, progress_current, progress_main, uwp, val=True):
             flag = 0
             main_prog_error = 0
             part = int((100 - self.mainprogressBar.value()) / len(path))
@@ -304,15 +304,21 @@ class core(internal_func):
                     f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')
                     f.write(str(source[e.Index].Exception.Message))
                     f.write(f'{82*"-"}\n')
+                    
 
             for s_path in path.keys():
                 # C# command run using pythonnet via system.management.automation dll
                 ps = PowerShell.Create()
                 ps.Streams.Progress.DataAdded += Progress
                 ps.Streams.Error.DataAdded += error
-                ps.AddCommand("Add-AppxPackage")
-                ps.AddParameter("Path", s_path)
 
+                if uwp:
+                    ps.AddCommand("Add-AppxPackage")
+                    ps.AddParameter("Path", s_path)
+                else:
+                    ps.AddCommand("Start-Process")
+                    ps.AddParameter("FilePath",s_path)
+                
                 try:
                     ps.Invoke()
                 except Exception as e:
@@ -321,30 +327,33 @@ class core(internal_func):
                 time.sleep(0.3)
                 progress_main.emit(part)
 
-            # if the failed commands include the application package then show app not installed
-            if main_prog_error == 1:
-                msg = 'Failed To Install The Application!'
-                detail_msg = 'The Installation has failed, try again!'
-                endresult = (msg, detail_msg, "Error", True)
+            if flag == 1:
+                # if the failed commands include the application package then show app not installed
+                if main_prog_error == 1:
+                    msg = 'Failed To Install The Application!'
+                    detail_msg = 'The Installation has failed, try again!'
+                    endresult = (msg, detail_msg, "Error", True)
 
-            else:
-                msg = 'Failed To Install Dependencies!'
-                detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
-                detail_msg += 'So check wheather the program is installed from start menu.\n\n'
-                detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
-                detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
-                endresult = (msg, detail_msg, "Warning")
-            if flag != 0:
+                else:
+                    msg = 'Failed To Install Dependencies!'
+                    detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
+                    detail_msg += 'So check wheather the program is installed from start menu.\n\n'
+                    detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
+                    detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
+                    endresult = (msg, detail_msg, "Warning")
+            
                 return endresult
             return 0
         # for standalone installer
+
         if isinstance(arg, str):
             path = {arg: 1}
             # if val is set to false then it wont update the progressbar
-            return install_thread(path, val=False, **kwargs)
+            return install_thread(path, val=False,uwp=True, **kwargs)
 
+        path,uwp = arg
         # done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
-        worker = Worker(lambda **kwargs: install_thread(arg, **kwargs))
+        worker = Worker(lambda **kwargs: install_thread(path,uwp=uwp, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)

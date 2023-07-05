@@ -674,7 +674,7 @@
      <normaloff>data/images/file.png</normaloff>data/images/file.png</iconset>
    </property>
    <property name="text">
-    <string>Install From File</string>
+    <string>Install UWP App</string>
    </property>
    <property name="statusTip">
     <string>Install app (Appx,Msix..etc) from local file </string>
