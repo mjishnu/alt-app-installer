@@ -1,5 +1,6 @@
 import html
 import re
+import json
 import warnings
 from threading import Thread
 from xml.dom import minidom
@@ -12,8 +13,6 @@ from utls import parse_dict
 warnings.filterwarnings("ignore")
 
 # using this to check if the user has decieded to stop the process
-
-
 def check(Event):
     if Event.is_set():
         raise Exception("Stoped By User!")
@@ -38,25 +37,20 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             'No Data Found: --> [You Selected Wrong Page, Try Again!]')
 
     # getting cat_id and package name from the api
-    details_api = "https://displaycatalog.mp.microsoft.com/v7.0/products/"
-
-    data = {"bigIds": product_id, "market": "US", "languages": "en"}
-
+    details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
     session = requests.Session()
-    r = session.get(details_api, params=data,timeout=20)
-    data_list = r.text
+    r = session.get(details_api,timeout=20)
+    response_data = json.loads(r.text,object_hook=lambda obj: 
+                            {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})["Payload"]["Skus"][0]
+    data_list = response_data.get("FulfillmentData",None)
     total_prog += 20
     progress_current.emit(total_prog)
-    pattern1 = re.compile('"WuCategoryId":"([^}]*)","PackageFamilyName"')
-    pattern2 = re.compile('"PackageFamilyName":"([^}]*)","SkuId')
-    match1 = pattern1.search(str(data_list))
-    match2 = pattern2.search(str(data_list))
     # if the server returned no data notify the user that the app was not found
-    if not match1 or not match2:
+    if not data_list:
         raise Exception("server returned a empty list")
 
-    cat_id = match1.group(1)
-    main_file_name = match2.group(1).split('_')[0]
+    cat_id = data_list["WuCategoryId"]
+    main_file_name = data_list["PackageFamilyName"].split('_')[0]
     release_type = "Retail"
 
     # getting the encrypted cookie for the fe3 delivery api
