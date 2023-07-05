@@ -331,21 +331,24 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         total_prog += 20
         progress_current.emit(total_prog)
 
-        main_file_name = datas["Data"]["Versions"][0]["DefaultLocale"]["PackageName"]
-
+        file_name = datas["Data"]["Versions"][0]["DefaultLocale"]["PackageName"]
+        
         installer_list = datas["Data"]["Versions"][0]["Installers"]
         download_data = set()
         for d in installer_list:
-            download_data.add((d["Architecture"],d["InstallerType"],d["InstallerUrl"]))
+            download_data.add((d["Architecture"],d["InstallerType"],d["InstallerUrl"],d["InstallerLocale"]))
 
         curr_arch = os_arc()
         file_dict = {}
+        main_file_name = ""
 
         for data in download_data:
             if data[0] == curr_arch or data[0] == "neutral":
-                main_file_name = clean_name(main_file_name) + "." + data[1] #adding the file extention
+                main_file_name = clean_name(file_name) + "." + data[1] #adding the file extention
                 file_dict[main_file_name] = data[2]
-                break
+                if "en" in data[3]:
+                    file_dict[main_file_name] = data[2]
+                    break
     
         if not file_dict:
             raise Exception("server returned a empty list")
