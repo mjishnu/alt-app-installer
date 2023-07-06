@@ -1,9 +1,9 @@
 import json
+import os
 import threading
 import time
 from math import inf
 from pathlib import Path
-import os
 
 import requests
 
@@ -142,7 +142,7 @@ class Downloader:
                 # load the progress from the progress file
                 # the object_hook converts the key strings whose value is int to type int
                 progress = json.loads(json_file.read_text(), object_hook=lambda d: {
-                                    int(k) if k.isdigit() else k: v for k, v in d.items()})
+                    int(k) if k.isdigit() else k: v for k, v in d.items()})
             segment = total / num_connections
             self._dic['total'] = total
             self._dic['connections'] = num_connections
@@ -187,8 +187,9 @@ class Downloader:
         downloaded = 0
         interval = 0.15
         while True:
-            # save progress to progress file
-            json_file.write_text(json.dumps(self._dic, indent=4))
+            if not singlethread:
+                # save progress to progress file
+                json_file.write_text(json.dumps(self._dic, indent=4))
             # check if all workers have completed
             status = sum(i.completed for i in self._workers)
             # get the total amount of data downloaded
@@ -251,7 +252,7 @@ class Downloader:
             try:
                 # start the download
                 self.download(url, filepath, num_connections,
-                                display, multithread)
+                              display, multithread)
                 # retry the download if there are errors
                 for _ in range(retries):
                     if self._Error.is_set():
@@ -272,7 +273,7 @@ class Downloader:
                             print("retrying...")
                         # restart the download
                         self.download(_url, filepath, num_connections,
-                                        display, multithread)
+                                      display, multithread)
                     else:
                         break
             # if there's an error, set the error event and print the error message

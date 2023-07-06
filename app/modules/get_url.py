@@ -3,8 +3,8 @@ from PyQt6.QtCore import QObject, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineCore import QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import (QApplication, QLabel, QLineEdit, QMainWindow,
-                             QMenu, QPushButton, QStatusBar, QToolBar)
+from PyQt6.QtWidgets import (QLabel, QLineEdit, QMenu, QPushButton, QStatusBar,
+                             QToolBar)
 
 
 class CustomWebEngineView(QWebEngineView):
@@ -74,6 +74,7 @@ class CustomWebEngineView(QWebEngineView):
 
     def createWindow(self, _type):
         return self
+
 
 class url_window(QObject):
     # creating a signal varable to signal if code execution completed
@@ -211,8 +212,8 @@ class url_window(QObject):
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
 
-#test code
-
+# test code
+# from PyQt6.QtWidgets import (QApplication, QMainWindow)
 # def url_grabber():
 #     import sys
 
