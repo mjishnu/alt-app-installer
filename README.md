@@ -1,6 +1,6 @@
 # Alt App Installer
 
-A Program To  Download And Install microsoft Store Apps
+A program to  download and install microsoft store apps
 
 # Features
 
