@@ -75,6 +75,7 @@ class CustomWebEngineView(QWebEngineView):
     def createWindow(self, _type):
         return self
 
+
 class url_window(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
@@ -211,7 +212,7 @@ class url_window(QObject):
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
 
-#test code
+# test code
 # from PyQt6.QtWidgets import (QApplication, QMainWindow)
 # def url_grabber():
 #     import sys

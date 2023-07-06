@@ -12,10 +12,13 @@ import requests
 warnings.filterwarnings("ignore")
 
 # using this to check if the user has decieded to stop the process
+
+
 def check(Event):
     if Event.is_set():
         raise Exception("Stoped By User!")
-    
+
+
 def os_arc():
     if platform.machine().endswith("64"):
         return "x64"
@@ -25,6 +28,8 @@ def os_arc():
     return "arm"  # not sure wheather work or not, needs testing
 
 # cleans My.name.1.2 -> myname
+
+
 def clean_name(badname):
     name = "".join(
         [(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "") for i in badname])
@@ -52,15 +57,16 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
     # getting cat_id and package name from the api
     details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
     session = requests.Session()
-    r = session.get(details_api,timeout=20)
-    response_data = json.loads(r.text,object_hook=lambda obj: 
-                            {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})["Payload"]["Skus"][0]
-    data_list = response_data.get("FulfillmentData",None)
+    r = session.get(details_api, timeout=20)
+    response_data = json.loads(r.text, object_hook=lambda obj:
+                               {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})["Payload"]["Skus"][0]
+    data_list = response_data.get("FulfillmentData", None)
     total_prog += 20
     progress_current.emit(total_prog)
 
     def uwp_gen():
         nonlocal total_prog
+
         def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
 
             def greater_ver(arg1, arg2):
@@ -81,7 +87,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                         return arg2
                     return arg2
                 return arg2
-            
+
             # removing all non string elements
             file_name = clean_name(file_name.split("-")[0])
 
@@ -184,7 +190,8 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                                     if data[0] == arch and data[1] == _type and data[2] != ver:
                                         # checking to see if ignore_ver is checked or not
                                         if ignore_ver:
-                                            final_list.append(full_data[(key, arch, _type, ver)])
+                                            final_list.append(
+                                                full_data[(key, arch, _type, ver)])
                                             ver = data[2]
                                         else:
                                             ver = greater_ver(ver, data[2])
@@ -200,8 +207,8 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                 # since unable to detect the main file assuming it to be the first file, since its true in most cases
                 file_name = final_list[0]
 
-            return final_list,file_name
-        
+            return final_list, file_name
+
         cat_id = data_list["WuCategoryId"]
         main_file_name = data_list["PackageFamilyName"].split('_')[0]
         release_type = "Retail"
@@ -214,13 +221,14 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
             data=cookie_content,
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-            verify=False,timeout=20
+            verify=False, timeout=20
         )
         doc = minidom.parseString(out.text)
         total_prog += 20
         progress_current.emit(total_prog)
         # extracting the cooking from the EncryptedData tag
-        cookie = doc.getElementsByTagName('EncryptedData')[0].firstChild.nodeValue
+        cookie = doc.getElementsByTagName('EncryptedData')[
+            0].firstChild.nodeValue
 
         # getting the update id,revision number and package name from the fe3 delivery api by providing the encrpyted cookie, cat_id, realse type
         # Map {"retail": "Retail", "release preview": "RP","insider slow": "WIS", "insider fast": "WIF"}
@@ -231,7 +239,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
             data=cat_id_content,
             headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-            verify=False,timeout=20
+            verify=False, timeout=20
         )
 
         doc = minidom.parseString(html.unescape(out.text))
@@ -260,13 +268,13 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
                 update_identity = node.parentNode.parentNode.firstChild
                 identities[file_name] = (update_identity.attributes['UpdateID'].value,
-                                        update_identity.attributes['RevisionNumber'].value)
+                                         update_identity.attributes['RevisionNumber'].value)
             except KeyError:
                 continue
         check(Event)
         # parsing the filenames according to latest version,favorable types,system arch
         parse_names, main_file_name = parse_dict(identities, main_file_name,
-                                                ignore_ver, all_dependencies)
+                                                 ignore_ver, all_dependencies)
         final_dict = {}  # {filename: (update_id, revision_number)}
         for value in parse_names:
             final_dict[value] = identities[value]
@@ -283,9 +291,10 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         def geturl(updateid, revisionnumber, file_name, total_prog):
             out = session.post(
                 'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
-                data=file_content.format(updateid, revisionnumber, release_type),
+                data=file_content.format(
+                    updateid, revisionnumber, release_type),
                 headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-                verify=False,timeout=20
+                verify=False, timeout=20
             )
             doc = minidom.parseString(out.text)
             # checks for all the tags which have name "filelocation" and extracts the url from it
@@ -317,26 +326,27 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             progress_current.emit(100)
             time.sleep(0.2)
             progress_main.emit(20)
-        #uwp = True
+        # uwp = True
         return file_dict, parse_names, main_file_name, True
 
     def non_uwp_gen():
         nonlocal total_prog
         api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/packageManifests//{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
         check(Event)
-        
-        r = session.get(api,timeout=20)
+
+        r = session.get(api, timeout=20)
         datas = json.loads(r.text)
 
         total_prog += 20
         progress_current.emit(total_prog)
 
         file_name = datas["Data"]["Versions"][0]["DefaultLocale"]["PackageName"]
-        
+
         installer_list = datas["Data"]["Versions"][0]["Installers"]
         download_data = set()
         for d in installer_list:
-            download_data.add((d["Architecture"],d["InstallerType"],d["InstallerUrl"],d["InstallerLocale"]))
+            download_data.add(
+                (d["Architecture"], d["InstallerType"], d["InstallerUrl"], d["InstallerLocale"]))
 
         curr_arch = os_arc()
         file_dict = {}
@@ -344,19 +354,20 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         for data in download_data:
             if data[0] == curr_arch or data[0] == "neutral":
-                main_file_name = clean_name(file_name) + "." + data[1] #adding the file extention
+                # adding the file extention
+                main_file_name = clean_name(file_name) + "." + data[1]
                 file_dict[main_file_name] = data[2]
                 if "en" in data[3]:
                     file_dict[main_file_name] = data[2]
                     break
-    
+
         if not file_dict:
             raise Exception("server returned a empty list")
-        
-        #uwp = False    
-        return file_dict,[main_file_name],main_file_name,False
-    
-    #check and see if the app is ump or not, return --> func_output,(ump or not)
+
+        # uwp = False
+        return file_dict, [main_file_name], main_file_name, False
+
+    # check and see if the app is ump or not, return --> func_output,(ump or not)
     if data_list:
         return uwp_gen()
     else:

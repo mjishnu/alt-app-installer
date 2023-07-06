@@ -11,11 +11,11 @@ from PyQt6.QtWidgets import QDialog
 class DilalogBox(QDialog):
 
     closed = QtCore.pyqtSignal(object)
-    
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-    
+
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(390, 49)
@@ -24,7 +24,8 @@ class DilalogBox(QDialog):
         Form.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
         Form.setWindowTitle("Enter URL")
         icon = QIcon()
-        icon.addPixmap(QPixmap("data/images/main.ico"), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addPixmap(QPixmap("data/images/main.ico"),
+                       QIcon.Mode.Normal, QIcon.State.Off)
         Form.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -41,7 +42,8 @@ class DilalogBox(QDialog):
         self.install_link_ok_btn.setText("OK")
         self.horizontalLayout.addWidget(self.install_link_ok_btn)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(
+            20, 40, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -50,6 +52,7 @@ class DilalogBox(QDialog):
             Form.close()
 
         self.install_link_ok_btn.clicked.connect(current_url)
+
 
 class WorkerSignals(QObject):
     '''
@@ -76,6 +79,7 @@ class WorkerSignals(QObject):
     result = pyqtSignal(object)
     cur_progress = pyqtSignal(int)
     main_progress = pyqtSignal(int)
+
 
 class Worker(QRunnable):
     '''
@@ -120,6 +124,7 @@ class Worker(QRunnable):
             self.signals.result.emit(result)
         finally:
             self.signals.finished.emit()  # Done
+
 
 def open_browser(arg):
     webbrowser.open(arg)

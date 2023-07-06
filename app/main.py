@@ -7,8 +7,8 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from core import core
-from utls import DilalogBox, Worker, open_browser
 from modules.get_url import url_window
+from utls import DilalogBox, Worker, open_browser
 
 
 class MainWindowGui(core):
@@ -150,6 +150,7 @@ class MainWindowGui(core):
             self.window.closeEvent = close
             self.window.show()
             search_app.closed.connect(self.parser)
+
 
 def main():
     app = QApplication(sys.argv)

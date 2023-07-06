@@ -142,7 +142,7 @@ class Downloader:
                 # load the progress from the progress file
                 # the object_hook converts the key strings whose value is int to type int
                 progress = json.loads(json_file.read_text(), object_hook=lambda d: {
-                                    int(k) if k.isdigit() else k: v for k, v in d.items()})
+                    int(k) if k.isdigit() else k: v for k, v in d.items()})
             segment = total / num_connections
             self._dic['total'] = total
             self._dic['connections'] = num_connections
@@ -252,7 +252,7 @@ class Downloader:
             try:
                 # start the download
                 self.download(url, filepath, num_connections,
-                                display, multithread)
+                              display, multithread)
                 # retry the download if there are errors
                 for _ in range(retries):
                     if self._Error.is_set():
@@ -273,7 +273,7 @@ class Downloader:
                             print("retrying...")
                         # restart the download
                         self.download(_url, filepath, num_connections,
-                                        display, multithread)
+                                      display, multithread)
                     else:
                         break
             # if there's an error, set the error event and print the error message

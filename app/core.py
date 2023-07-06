@@ -8,13 +8,13 @@ from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
-from utls import Worker
 from modules.downloader import Downloader
 from modules.gui import Ui_MainProgram
 from modules.url_gen import url_generator
+from utls import Worker
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-dll_path = os.path.join(script_dir,r"data\System.Management.Automation.dll")
+dll_path = os.path.join(script_dir, r"data\System.Management.Automation.dll")
 clr.AddReference(dll_path)
 
 
@@ -223,8 +223,8 @@ class core(internal_func):
         if arg is None:
             raise Exception("Stoped By User!")
 
-        def download_install_thread(data,  progress_current, progress_main):
-            main_dict, final_data, file_name,uwp = data
+        def download_install_thread(data, progress_current, progress_main):
+            main_dict, final_data, file_name, uwp = data
             part = int(50 / len(final_data))
             abs_path = os.getcwd()
             dwnpath = f'{abs_path}/downloads/'
@@ -238,17 +238,19 @@ class core(internal_func):
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
-                    new_url_gen = lambda: url_generator(self.url, self.ignore_ver, self.all_dependencies,
-                                                            self.stop, progress_current, progress_main, emit=False)[0][f_name]
-                    
-                    d.start(remote_url, path, 20,retries=5, retry_func=new_url_gen,block=False)
+                    def new_url_gen():
+                        return url_generator(self.url, self.ignore_ver, self.all_dependencies,
+                                             self.stop, progress_current, progress_main, emit=False)[0][f_name]
+
+                    d.start(remote_url, path, 20, retries=5,
+                            retry_func=new_url_gen, block=False)
                     while d.progress != 100:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
                         time.sleep(0.1)
                         if self.stop.is_set():  # check if the stop event is triggered
                             raise Exception("Stoped By User!")
-                        if d.Failed:  
+                        if d.Failed:
                             raise Exception("Download Error Occured!")
 
                     progress_main.emit(part)
@@ -258,7 +260,7 @@ class core(internal_func):
                     path_lst[path] = 1
                 else:
                     path_lst[path] = 0
-            return path_lst,uwp  # install the apps'
+            return path_lst, uwp  # install the apps'
 
         worker = Worker(
             lambda **kwargs: download_install_thread(arg, **kwargs))
@@ -304,7 +306,6 @@ class core(internal_func):
                     f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')
                     f.write(str(source[e.Index].Exception.Message))
                     f.write(f'{82*"-"}\n')
-                    
 
             for s_path in path.keys():
                 # C# command run using pythonnet via system.management.automation dll
@@ -317,8 +318,8 @@ class core(internal_func):
                     ps.AddParameter("Path", s_path)
                 else:
                     ps.AddCommand("Start-Process")
-                    ps.AddParameter("FilePath",s_path)
-                
+                    ps.AddParameter("FilePath", s_path)
+
                 try:
                     ps.Invoke()
                 except Exception as e:
@@ -341,7 +342,7 @@ class core(internal_func):
                     detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
                     detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
                     endresult = (msg, detail_msg, "Warning")
-            
+
                 return endresult
             return 0
         # for standalone installer
@@ -349,11 +350,12 @@ class core(internal_func):
         if isinstance(arg, str):
             path = {arg: 1}
             # if val is set to false then it wont update the progressbar
-            return install_thread(path, val=False,uwp=True, **kwargs)
+            return install_thread(path, val=False, uwp=True, **kwargs)
 
-        path,uwp = arg
+        path, uwp = arg
         # done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
-        worker = Worker(lambda **kwargs: install_thread(path,uwp=uwp, **kwargs))
+        worker = Worker(
+            lambda **kwargs: install_thread(path, uwp=uwp, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
