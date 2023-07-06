@@ -336,7 +336,10 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         r = session.get(api, timeout=20)
         datas = json.loads(r.text)
-
+        
+        if not datas.get("Data", None):
+            raise Exception("server returned a empty list")
+        
         total_prog += 20
         progress_current.emit(total_prog)
 
@@ -346,23 +349,35 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         download_data = set()
         for d in installer_list:
             download_data.add(
-                (d["Architecture"], d["InstallerType"], d["InstallerUrl"], d["InstallerLocale"]))
+                (d["Architecture"], d["InstallerLocale"], d["InstallerType"], d["InstallerUrl"]))
 
         curr_arch = os_arc()
         file_dict = {}
-        main_file_name = ""
+        # casting to list for indexing
+        download_data = list(download_data)
+        
+        # parsing
+        arch = download_data[0][0]
+        locale = download_data[0][1]
+        installer_type = download_data[0][2]
+        url = download_data[0][3]
 
-        for data in download_data:
-            if data[0] == curr_arch or data[0] == "neutral":
-                # adding the file extention
-                main_file_name = clean_name(file_name) + "." + data[1]
-                file_dict[main_file_name] = data[2]
-                if "en" in data[3]:
-                    file_dict[main_file_name] = data[2]
-                    break
+        if len(download_data) > 1:
+            for data in download_data[1:]:
+                if arch not in ("neutral", curr_arch) and data[0] != arch and data[0] in ("neutral", curr_arch):
+                    arch = data[0]
+                    locale = data[1]
+                    installer_type = data[2]
+                    url = data[3]
+                else:
+                    if data[0] == arch and data[1] != locale and ("en" in data[1] or "us" in data[1]):
+                        locale = data[1]
+                        installer_type = data[2]
+                        url = data[3]
+                        break
 
-        if not file_dict:
-            raise Exception("server returned a empty list")
+        main_file_name = clean_name(file_name) + "." + installer_type
+        file_dict[main_file_name] = url
 
         # uwp = False
         return file_dict, [main_file_name], main_file_name, False
