@@ -543,7 +543,7 @@
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>data/images/dependencies.png</normaloff>data/images/dependencies.png</iconset>
+       <normaloff>../data/images/dependencies.png</normaloff>../data/images/dependencies.png</iconset>
      </property>
      <property name="toolTipsVisible">
       <bool>false</bool>
@@ -590,7 +590,7 @@
   <action name="actionclear_cache">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/clear.png</normaloff>data/images/clear.png</iconset>
+     <normaloff>../data/images/clear.png</normaloff>../data/images/clear.png</iconset>
    </property>
    <property name="text">
     <string>Clear Cache</string>
@@ -615,7 +615,7 @@
   <action name="actionCheck_For_Updates">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/update.png</normaloff>data/images/update.png</iconset>
+     <normaloff>../data/images/update.png</normaloff>../data/images/update.png</iconset>
    </property>
    <property name="text">
     <string>Check For Updates</string>
@@ -627,7 +627,7 @@
   <action name="actionAbout">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/about.png</normaloff>data/images/about.png</iconset>
+     <normaloff>../data/images/about.png</normaloff>../data/images/about.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -639,7 +639,7 @@
   <action name="actionHelp">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/help.png</normaloff>data/images/help.png</iconset>
+     <normaloff>../data/images/help.png</normaloff>../data/images/help.png</iconset>
    </property>
    <property name="text">
     <string>Help</string>
@@ -651,7 +651,7 @@
   <action name="actionOpen_Logs">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/log.png</normaloff>data/images/log.png</iconset>
+     <normaloff>../data/images/log.png</normaloff>../data/images/log.png</iconset>
    </property>
    <property name="text">
     <string>Open Logs</string>
@@ -671,7 +671,7 @@
   <action name="actioninstall_From_File">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/file.png</normaloff>data/images/file.png</iconset>
+     <normaloff>../data/images/file.png</normaloff>../data/images/file.png</iconset>
    </property>
    <property name="text">
     <string>Install UWP App</string>
@@ -691,7 +691,7 @@
   <action name="actionDownloads">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/downloads.png</normaloff>data/images/downloads.png</iconset>
+     <normaloff>../data/images/downloads.png</normaloff>../data/images/downloads.png</iconset>
    </property>
    <property name="text">
     <string>Downloads</string>
@@ -720,10 +720,8 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>data/images/unchecked.png</normaloff>
-     <normalon>data/images/checked.png</normalon>
-     <selectedoff>data/images/unchecked.png</selectedoff>
-     <selectedon>data/images/checked.png</selectedon>data/images/unchecked.png</iconset>
+     <normaloff>../data/images/unchecked.png</normaloff>
+     <normalon>../data/images/checked.png</normalon>../data/images/unchecked.png</iconset>
    </property>
    <property name="text">
     <string>Ignore Version</string>
@@ -738,10 +736,10 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>data/images/unchecked.png</normaloff>
-     <normalon>data/images/checked.png</normalon>
-     <selectedoff>data/images/unchecked.png</selectedoff>
-     <selectedon>data/images/checked.png</selectedon>data/images/unchecked.png</iconset>
+     <normaloff>../data/images/unchecked.png</normaloff>
+     <normalon>../data/images/checked.png</normalon>
+     <selectedoff>../data/images/unchecked.png</selectedoff>
+     <selectedon>../data/images/checked.png</selectedon>../data/images/unchecked.png</iconset>
    </property>
    <property name="text">
     <string>Ignore All Filters</string>
@@ -753,7 +751,7 @@
   <action name="actionInstall_using_url">
    <property name="icon">
     <iconset>
-     <normaloff>data/images/link.png</normaloff>data/images/link.png</iconset>
+     <normaloff>../data/images/link.png</normaloff>../data/images/link.png</iconset>
    </property>
    <property name="text">
     <string>Install From Link</string>
