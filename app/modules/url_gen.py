@@ -45,11 +45,6 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             r".+\/([^\/\?]+)(?:\?|$)")
         matches = pattern.search(str(url))
         product_id = matches.group(1)
-
-        if product_id is None:
-            raise Exception(
-                'No Data Found: --> [You Selected Wrong Page, Try Again!]')
-
     except AttributeError:
         raise Exception(
             'No Data Found: --> [You Selected Wrong Page, Try Again!]')
@@ -58,8 +53,13 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
     details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
     session = requests.Session()
     r = session.get(details_api, timeout=20)
-    response_data = json.loads(r.text, object_hook=lambda obj:
-                               {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})["Payload"]["Skus"][0]
+    response = json.loads(r.text, object_hook=lambda obj:
+                               {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})
+    
+    if not response.get("Payload", None):
+        raise Exception('No Data Found: --> [You Selected Wrong Page, Try Again!]')
+        
+    response_data = response["Payload"]["Skus"][0]
     data_list = response_data.get("FulfillmentData", None)
     total_prog += 20
     progress_current.emit(total_prog)
