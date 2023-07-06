@@ -1,15 +1,16 @@
 # Alt App Installer
 
-A Program To  Download And Install Windows Store Apps
+A Program To  Download And Install microsoft Store Apps
 
 # Features
 
-- This program can download and install microsoft store apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
+- This program can download and install microsoft store uwp apps (appx,msix,eappx,appxbundle...) without needing microsoft store or App installer
+- It can also download non-uwp apps present in microsoft store
 - Auto downloads the latest app according to your system architecture (x64/x32)
 - Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin privilage to install
 - Can installed already downloaded microsoft store apps (appx,msix,appxbundle...)
 - Can install microsoft store apps by providing its url
-- Uses custom link generation to produce download links
+- Uses custom link generation to produce download links using API from [StoreLib](https://github.com/StoreDev/StoreLib) and [MS-Store-API](https://github.com/ThomasPe/MS-Store-API)
 - Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using a stripped version [pypdl](https://github.com/m-jishnu/pypdl) for fast downloading
 - Can resume interrupted downloads
 - Automatically use a new url in case current one expires
@@ -69,4 +70,6 @@ https://youtu.be/ayIilTc-6u4
 
 # Credits
 
-[StoreLib](https://github.com/StoreDev/StoreLib): API for download link generation
+- [StoreLib](https://github.com/StoreDev/StoreLib): API for download link generation
+- [pypdl](https://github.com/m-jishnu/pypdl): Downloader
+- [MS-Store-API](https://github.com/ThomasPe/MS-Store-API): API for download link generation
