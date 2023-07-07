@@ -8,7 +8,7 @@ from PyQt6.QtGui import QIcon, QPixmap
 from PyQt6.QtWidgets import QDialog
 
 
-class DilalogBox(QDialog):
+class UrlBox(QDialog):
 
     closed = QtCore.pyqtSignal(object)
 

@@ -370,7 +370,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                     installer_type = data[2]
                     url = data[3]
                 else:
-                    if data[0] == arch and data[1] != locale and ("en" in data[1] or "us" in data[1]):
+                    if data[0] == arch and data[1] != locale and ("us" in data[1] or "en" in data[1]):
                         locale = data[1]
                         installer_type = data[2]
                         url = data[3]

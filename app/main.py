@@ -7,8 +7,8 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from core import core
-from modules.get_url import url_window
-from utls import DilalogBox, Worker, open_browser
+from modules.app_selector import AppSelector
+from utls import UrlBox, Worker, open_browser
 
 
 class MainWindowGui(core):
@@ -121,7 +121,7 @@ class MainWindowGui(core):
                 pass
 
     def install_url(self):
-        window = DilalogBox()
+        window = UrlBox()
         window.closed.connect(self.parser)
         window.exec()
 
@@ -144,7 +144,7 @@ class MainWindowGui(core):
         else:  # open a new window
             self.window = QMainWindow()
             self.window.setWindowIcon(QIcon('./data/images/search.png'))
-            search_app = url_window()
+            search_app = AppSelector()
             search_app.setupUi(self.window)
             # overding the new window close event for proper cleanup
             self.window.closeEvent = close

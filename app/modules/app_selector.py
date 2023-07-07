@@ -76,7 +76,7 @@ class CustomWebEngineView(QWebEngineView):
         return self
 
 
-class url_window(QObject):
+class AppSelector(QObject):
     # creating a signal varable to signal if code execution completed
     closed = pyqtSignal(object)
 
