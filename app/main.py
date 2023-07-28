@@ -10,6 +10,8 @@ from core import core
 from modules.app_selector import AppSelector
 from utls import UrlBox, Worker, open_browser
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class MainWindowGui(core):
 
@@ -86,7 +88,7 @@ class MainWindowGui(core):
             text="Cache Files Cleared Successfully!"))
 
     def open_downloads(self):
-        path = os.path.realpath("./downloads")
+        path = os.path.realpath(f'{script_dir}/downloads')
         if os.path.exists(path):
             os.startfile(path)
         else:
@@ -143,7 +145,8 @@ class MainWindowGui(core):
             self.window.activateWindow()  # set focus to the currently open window
         else:  # open a new window
             self.window = QMainWindow()
-            self.window.setWindowIcon(QIcon('./data/images/search.png'))
+            self.window.setWindowIcon(
+                QIcon(f'{script_dir}/data/images/search.png'))
             search_app = AppSelector()
             search_app.setupUi(self.window)
             # overding the new window close event for proper cleanup
@@ -157,7 +160,7 @@ def main():
     MainProgram = QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
-    MainProgram.setWindowIcon(QIcon('./data/images/main.ico'))
+    MainProgram.setWindowIcon(QIcon(f'{script_dir}/data/images/main.ico'))
     MainProgram.closeEvent = ui.closeEvent  # overiding close event
     MainProgram.show()
     sys.exit(app.exec())

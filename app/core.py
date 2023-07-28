@@ -14,8 +14,7 @@ from modules.url_gen import url_generator
 from utls import Worker
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-dll_path = os.path.join(script_dir, r"data\System.Management.Automation.dll")
-clr.AddReference(dll_path)
+clr.AddReference(script_dir + r"\data\System.Management.Automation.dll")
 
 
 class internal_func(Ui_MainProgram):
@@ -26,10 +25,10 @@ class internal_func(Ui_MainProgram):
         msg.setText(f'{str(text)}     ')
         if critical:
             msg.setIcon(QMessageBox.Icon.Critical)
-            msg.setWindowIcon(QIcon('./data/images/error_r.png'))
+            msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_r.png'))
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setWindowIcon(QIcon('./data/images/error_y.png'))
+            msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_y.png'))
         msg.setDetailedText(str(msg_details) +
                             '\n\ncheck Full Logs [Help --> Open Logs]')
         if text == "Failed To Clear Cache Files!":
@@ -49,7 +48,7 @@ class internal_func(Ui_MainProgram):
     def show_error_popup(self, txt="An Error Has Occured Try Again!"):
         msg = QMessageBox()
         msg.setWindowTitle('Error')
-        msg.setWindowIcon(QIcon('./data/images/error_r.png'))
+        msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_r.png'))
         msg.setText(f'{txt}     ')
         msg.setIcon(QMessageBox.Icon.Critical)
         if txt in ("No Logs Found!", "No Downloads Found!"):
@@ -69,7 +68,7 @@ class internal_func(Ui_MainProgram):
     def show_success_popup(self, text=None):
         msg = QMessageBox()
         msg.setWindowTitle('Success')
-        msg.setWindowIcon(QIcon('./data/images/success.png'))
+        msg.setWindowIcon(QIcon(f'{script_dir}/data/images/success.png'))
         if text:
             msg.setText(f'{text}     ')
         else:
@@ -163,7 +162,7 @@ class internal_func(Ui_MainProgram):
     def closeEvent(self, event):
         close = QMessageBox()
         close.setWindowTitle("Confirm")
-        close.setWindowIcon(QIcon('./data/images/error_y.png'))
+        close.setWindowIcon(QIcon(f'{script_dir}/data/images/error_y.png'))
         close.setText("Are you sure you want to exit?     ")
         close.setIcon(QMessageBox.Icon.Warning)
         close.setStandardButtons(
@@ -226,8 +225,7 @@ class core(internal_func):
         def download_install_thread(data, progress_current, progress_main):
             main_dict, final_data, file_name, uwp = data
             part = int(50 / len(final_data))
-            abs_path = os.getcwd()
-            dwnpath = f'{abs_path}/downloads/'
+            dwnpath = f'{script_dir}//downloads/'
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}

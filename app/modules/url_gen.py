@@ -1,5 +1,6 @@
 import html
 import json
+import os
 import platform
 import re
 import time
@@ -10,6 +11,8 @@ from xml.dom import minidom
 import requests
 
 warnings.filterwarnings("ignore")
+# parent directory for absloute path
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # using this to check if the user has decieded to stop the process
 
@@ -54,11 +57,12 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
     session = requests.Session()
     r = session.get(details_api, timeout=20)
     response = json.loads(r.text, object_hook=lambda obj:
-                               {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})
-    
+                          {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})
+
     if not response.get("Payload", None):
-        raise Exception('No Data Found: --> [You Selected Wrong Page, Try Again!]')
-        
+        raise Exception(
+            'No Data Found: --> [You Selected Wrong Page, Try Again!]')
+
     response_data = response["Payload"]["Skus"][0]
     data_list = response_data.get("FulfillmentData", None)
     total_prog += 20
@@ -214,7 +218,8 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         release_type = "Retail"
 
         # getting the encrypted cookie for the fe3 delivery api
-        with open("./data/xml/GetCookie.xml", "r") as f:
+        GetCookie_path = os.path.join(parent_dir, r"data\xml\GetCookie.xml")
+        with open(GetCookie_path, "r") as f:
             cookie_content = f.read()
         check(Event)
         out = session.post(
@@ -232,7 +237,9 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         # getting the update id,revision number and package name from the fe3 delivery api by providing the encrpyted cookie, cat_id, realse type
         # Map {"retail": "Retail", "release preview": "RP","insider slow": "WIS", "insider fast": "WIF"}
-        with open("./data/xml/WUIDRequest.xml", "r") as f:
+        WUIDRequest_path = os.path.join(
+            parent_dir, r"data\xml\WUIDRequest.xml")
+        with open(WUIDRequest_path, "r") as f:
             cat_id_content = f.read().format(cookie, cat_id, release_type)
         check(Event)
         out = session.post(
@@ -280,7 +287,8 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             final_dict[value] = identities[value]
 
         # getting the download url for the files using the api
-        with open("./data/xml/FE3FileUrl.xml", "r") as f:
+        FE3FileUrl_path = os.path.join(parent_dir, r"data\xml\FE3FileUrl.xml")
+        with open(FE3FileUrl_path, "r") as f:
             file_content = f.read()
 
         file_dict = {}  # the final result
@@ -336,10 +344,10 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         r = session.get(api, timeout=20)
         datas = json.loads(r.text)
-        
+
         if not datas.get("Data", None):
             raise Exception("server returned a empty list")
-        
+
         total_prog += 20
         progress_current.emit(total_prog)
 
@@ -355,7 +363,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         file_dict = {}
         # casting to list for indexing
         download_data = list(download_data)
-        
+
         # parsing
         arch = download_data[0][0]
         locale = download_data[0][1]
