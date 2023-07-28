@@ -14,7 +14,7 @@ from modules.url_gen import url_generator
 from utls import Worker
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-clr.AddReference(script_dir + r"\data\System.Management.Automation.dll")
+clr.AddReference(fr"{script_dir}\data\System.Management.Automation.dll")
 
 
 class internal_func(Ui_MainProgram):
