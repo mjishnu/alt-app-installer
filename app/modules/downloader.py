@@ -117,7 +117,7 @@ class Downloader:
         json_file = Path(filepath + '.progress.json')
         threads = []
         f_path = str(filepath)
-        head = requests.head(url, timeout=20)
+        head = requests.head(url, timeout=20, allow_redirects=True)
         total = int(head.headers.get('content-length'))
         self.totalMB = total / 1048576  # 1MB = 1048576 bytes (size in MB)
         singlethread = False
