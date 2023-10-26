@@ -8,7 +8,7 @@ A program to  download and install microsoft store apps
 - It can also download non-uwp apps present in microsoft store
 - Auto downloads the latest app according to your system architecture (x64/x32)
 - Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin privilage to install
-- Can installed already downloaded microsoft store apps (appx,msix,appxbundle...)
+- Can install already downloaded microsoft store apps (appx,msix,appxbundle...)
 - Can install microsoft store apps by providing its url
 - Uses custom link generation to produce download links using API from [StoreLib](https://github.com/StoreDev/StoreLib) and [MS-Store-API](https://github.com/ThomasPe/MS-Store-API)
 - Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using a stripped version [pypdl](https://github.com/m-jishnu/pypdl) for fast downloading
