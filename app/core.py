@@ -287,7 +287,12 @@ class core(internal_func):
         worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.result.connect(self.install)
+        if self.actionDownload_Mode.isChecked():
+            worker.signals.result.connect(
+                lambda arg: self.show_success_popup("Download Completed!")
+            )
+        else:
+            worker.signals.result.connect(self.install)
         worker.signals.error.connect(lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
