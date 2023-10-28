@@ -473,15 +473,15 @@ class Ui_MainProgram(object):
         )
         self.actionIgnore_All_filters.setIcon(icon11)
         self.actionIgnore_All_filters.setObjectName("actionIgnore_All_filters")
-        self.actionInstall_using_url = QtGui.QAction(parent=MainProgram)
+        self.actionget_using_url = QtGui.QAction(parent=MainProgram)
         icon12 = QtGui.QIcon()
         icon12.addPixmap(
             QtGui.QPixmap(f"{parent_dir}/data/images/link.png"),
             QtGui.QIcon.Mode.Normal,
             QtGui.QIcon.State.Off,
         )
-        self.actionInstall_using_url.setIcon(icon12)
-        self.actionInstall_using_url.setObjectName("actionInstall_using_url")
+        self.actionget_using_url.setIcon(icon12)
+        self.actionget_using_url.setObjectName("actionget_using_url")
         self.actionDownload_Mode = QtGui.QAction(parent=MainProgram)
         self.actionDownload_Mode.setCheckable(True)
         self.actionDownload_Mode.setIcon(icon10)
@@ -495,7 +495,7 @@ class Ui_MainProgram(object):
         self.advancedmenu.addAction(self.actionDownload_Mode)
         self.advancedmenu.addAction(self.actionDedicated_Folder)
         self.menuOptions.addAction(self.actionDownloads)
-        self.menuOptions.addAction(self.actionInstall_using_url)
+        self.menuOptions.addAction(self.actionget_using_url)
         self.menuOptions.addAction(self.actioninstall_From_File)
         self.menuOptions.addAction(self.actionclear_cache)
         self.menuOptions.addAction(self.advancedmenu.menuAction())
@@ -611,10 +611,8 @@ class Ui_MainProgram(object):
                 "Download all dependencies regardless of system arch (x64,x32,Arm), type (Appx,Msix..etc), latest version",
             )
         )
-        self.actionInstall_using_url.setText(
-            _translate("MainProgram", "Install From Link")
-        )
-        self.actionInstall_using_url.setStatusTip(
+        self.actionget_using_url.setText(_translate("MainProgram", "Install From Link"))
+        self.actionget_using_url.setStatusTip(
             _translate(
                 "MainProgram", "Download and install the app from the link (app url)"
             )

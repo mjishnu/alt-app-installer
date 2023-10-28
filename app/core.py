@@ -41,7 +41,7 @@ class internal_func(Ui_MainProgram):
             self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -61,7 +61,7 @@ class internal_func(Ui_MainProgram):
             self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -85,7 +85,7 @@ class internal_func(Ui_MainProgram):
             self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
@@ -223,7 +223,7 @@ class core(internal_func):
         self.advancedmenu.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
         self.actioninstall_From_File.setEnabled(False)
-        self.actionInstall_using_url.setEnabled(False)
+        self.actionget_using_url.setEnabled(False)
         self.show_bar(True)
         self.pushButton.hide()
         self.stop_btn.show()

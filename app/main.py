@@ -38,7 +38,7 @@ class MainWindowGui(core):
         self.actionDownloads.triggered.connect(self.open_downloads)
         self.actionIgnore_Latest_Version.triggered.connect(self.ignore_version)
         self.actionIgnore_All_filters.triggered.connect(self.ignore_All_filters)
-        self.actionInstall_using_url.triggered.connect(self.install_url)
+        self.actionget_using_url.triggered.connect(self.install_url)
 
     def ignore_version(self):
         if self.actionIgnore_Latest_Version.isChecked():
@@ -119,7 +119,7 @@ class MainWindowGui(core):
             self.advancedmenu.setEnabled(False)
             self.actionclear_cache.setEnabled(False)
             self.actioninstall_From_File.setEnabled(False)
-            self.actionInstall_using_url.setEnabled(False)
+            self.actionget_using_url.setEnabled(False)
             # if the app selector window is open closing it
             try:
                 self.window.close()

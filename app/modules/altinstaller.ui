@@ -567,7 +567,7 @@
      <addaction name="actionDedicated_Folder"/>
     </widget>
     <addaction name="actionDownloads"/>
-    <addaction name="actionInstall_using_url"/>
+    <addaction name="actionget_using_url"/>
     <addaction name="actioninstall_From_File"/>
     <addaction name="actionclear_cache"/>
     <addaction name="advancedmenu"/>
@@ -763,16 +763,16 @@
     <string>Download all dependencies regardless of system arch (x64,x32,Arm), type (Appx,Msix..etc), latest version</string>
    </property>
   </action>
-  <action name="actionInstall_using_url">
+  <action name="actionget_using_url">
    <property name="icon">
     <iconset>
      <normaloff>../data/images/link.png</normaloff>../data/images/link.png</iconset>
    </property>
    <property name="text">
-    <string>Install From Link</string>
+    <string>Get From Link</string>
    </property>
    <property name="statusTip">
-    <string>Download and install the app from the link (app url)</string>
+    <string>Get the app from the link (app url)</string>
    </property>
   </action>
   <action name="actionDownload_Mode">
