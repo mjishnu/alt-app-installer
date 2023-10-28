@@ -14,7 +14,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class MainWindowGui(core):
-
     def setupUi(self, *args, **kwargs):
         core.setupUi(self, *args, **kwargs)
         self.set_bar_0()
@@ -22,20 +21,23 @@ class MainWindowGui(core):
         self.pushButton.clicked.connect(self.openWindow)
         self.stop_btn.clicked.connect(self.stop_func)
         self.stop_btn.hide()
-        self.actioninstall_From_File.triggered.connect(
-            self.standalone_installer)
+        self.actioninstall_From_File.triggered.connect(self.standalone_installer)
         self.actionclear_cache.triggered.connect(self.clear_cache)
-        self.actionCheck_For_Updates.triggered.connect(lambda: open_browser(
-            'https://github.com/m-jishnu/alt-app-installer/releases'))
-        self.actionAbout.triggered.connect(lambda: open_browser(
-            'https://github.com/m-jishnu/alt-app-installer'))
-        self.actionHelp.triggered.connect(lambda: open_browser(
-            'https://discord.com/invite/9eeN2Wve4T'))
+        self.actionCheck_For_Updates.triggered.connect(
+            lambda: open_browser(
+                "https://github.com/m-jishnu/alt-app-installer/releases"
+            )
+        )
+        self.actionAbout.triggered.connect(
+            lambda: open_browser("https://github.com/m-jishnu/alt-app-installer")
+        )
+        self.actionHelp.triggered.connect(
+            lambda: open_browser("https://discord.com/invite/9eeN2Wve4T")
+        )
         self.actionOpen_Logs.triggered.connect(self.open_Logs)
         self.actionDownloads.triggered.connect(self.open_downloads)
         self.actionIgnore_Latest_Version.triggered.connect(self.ignore_version)
-        self.actionIgnore_All_filters.triggered.connect(
-            self.ignore_All_filters)
+        self.actionIgnore_All_filters.triggered.connect(self.ignore_All_filters)
         self.actionInstall_using_url.triggered.connect(self.install_url)
 
     def ignore_version(self):
@@ -55,7 +57,7 @@ class MainWindowGui(core):
             self.actionIgnore_Latest_Version.setEnabled(True)
 
     def open_Logs(self):
-        path = 'log.txt'
+        path = "log.txt"
         if os.path.exists(path):
             os.startfile(path)
         else:
@@ -63,32 +65,36 @@ class MainWindowGui(core):
 
     def clear_cache(self):
         def remove_file():
-            def remove_(path, mode='file'):
-                if mode == 'file':
+            def remove_(path, mode="file"):
+                if mode == "file":
                     if os.path.exists(path):
                         os.remove(path)
                     else:
                         pass
 
-                elif mode == 'dir':
+                elif mode == "dir":
                     shutil.rmtree(path)
 
-            remove_('log.txt')
+            remove_("log.txt")
             try:
-                remove_('downloads', 'dir')
+                remove_("downloads", "dir")
             except FileNotFoundError:
                 print("No Downloads Found!")
 
         worker = Worker(lambda *ars, **kwargs: remove_file())
-        worker.signals.error.connect(lambda arg: self.error_handler(
-            arg, normal=False, msg="Failed To Clear Cache Files!", critical=False))
+        worker.signals.error.connect(
+            lambda arg: self.error_handler(
+                arg, normal=False, msg="Failed To Clear Cache Files!", critical=False
+            )
+        )
 
         self.threadpool.start(worker)
-        worker.signals.result.connect(lambda: self.show_success_popup(
-            text="Cache Files Cleared Successfully!"))
+        worker.signals.result.connect(
+            lambda: self.show_success_popup(text="Cache Files Cleared Successfully!")
+        )
 
     def open_downloads(self):
-        path = os.path.realpath(f'{script_dir}/downloads')
+        path = os.path.realpath(f"{script_dir}/downloads")
         if os.path.exists(path):
             os.startfile(path)
         else:
@@ -110,7 +116,7 @@ class MainWindowGui(core):
             self.threadpool.start(worker)
             self.show_bar(True)
             self.pushButton.setEnabled(False)
-            self.menuDependencies.setEnabled(False)
+            self.advancedmenu.setEnabled(False)
             self.actionclear_cache.setEnabled(False)
             self.actioninstall_From_File.setEnabled(False)
             self.actionInstall_using_url.setEnabled(False)
@@ -140,13 +146,14 @@ class MainWindowGui(core):
             self.window = False  # if not set it to false aka the window is not open
 
         if self.window:  # if it has value then change focus to the already open window
-            self.window.setWindowState(self.window.windowState(
-            ) & ~Qt.WindowState.WindowMinimized | Qt.WindowState.WindowActive)  # if minimized then unminimize
+            self.window.setWindowState(
+                self.window.windowState() & ~Qt.WindowState.WindowMinimized
+                | Qt.WindowState.WindowActive
+            )  # if minimized then unminimize
             self.window.activateWindow()  # set focus to the currently open window
         else:  # open a new window
             self.window = QMainWindow()
-            self.window.setWindowIcon(
-                QIcon(f'{script_dir}/data/images/search.png'))
+            self.window.setWindowIcon(QIcon(f"{script_dir}/data/images/search.png"))
             search_app = AppSelector()
             search_app.setupUi(self.window)
             # overding the new window close event for proper cleanup
@@ -160,11 +167,11 @@ def main():
     MainProgram = QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
-    MainProgram.setWindowIcon(QIcon(f'{script_dir}/data/images/main.ico'))
+    MainProgram.setWindowIcon(QIcon(f"{script_dir}/data/images/main.ico"))
     MainProgram.closeEvent = ui.closeEvent  # overiding close event
     MainProgram.show()
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
