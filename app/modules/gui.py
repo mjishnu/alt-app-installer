@@ -487,6 +487,7 @@ class Ui_MainProgram(object):
         self.actionDownload_Mode.setIcon(icon10)
         self.actionDownload_Mode.setObjectName("actionDownload_Mode")
         self.actionDedicated_Folder = QtGui.QAction(parent=MainProgram)
+        self.actionDedicated_Folder.setCheckable(True)
         self.actionDedicated_Folder.setIcon(icon10)
         self.actionDedicated_Folder.setObjectName("actionDedicated_Folder")
         self.Dependencymenu.addAction(self.actionIgnore_Latest_Version)
@@ -611,11 +612,9 @@ class Ui_MainProgram(object):
                 "Download all dependencies regardless of system arch (x64,x32,Arm), type (Appx,Msix..etc), latest version",
             )
         )
-        self.actionget_using_url.setText(_translate("MainProgram", "Install From Link"))
+        self.actionget_using_url.setText(_translate("MainProgram", "Get From Link"))
         self.actionget_using_url.setStatusTip(
-            _translate(
-                "MainProgram", "Download and install the app from the link (app url)"
-            )
+            _translate("MainProgram", "Get the app from the link (app url)")
         )
         self.actionDownload_Mode.setText(_translate("MainProgram", "Download Mode"))
         self.actionDownload_Mode.setStatusTip(

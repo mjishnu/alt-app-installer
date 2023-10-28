@@ -235,7 +235,10 @@ class core(internal_func):
         def download_install_thread(data, progress_current, progress_main):
             main_dict, final_data, file_name, uwp = data
             part = int(50 / len(final_data))
-            dwnpath = f"{script_dir}//downloads/"
+            if self.actionDedicated_Folder.isChecked():
+                dwnpath = f"{script_dir}//downloads//{file_name}/"
+            else:
+                dwnpath = f"{script_dir}//downloads/"
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}

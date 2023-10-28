@@ -792,6 +792,9 @@
    </property>
   </action>
   <action name="actionDedicated_Folder">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>../data/images/unchecked.png</normaloff>
