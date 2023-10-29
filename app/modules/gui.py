@@ -626,6 +626,6 @@ class Ui_MainProgram(object):
         self.actionDedicated_Folder.setStatusTip(
             _translate(
                 "MainProgram",
-                "Download the apps to seperate folder [causes increase in bandwith and storage space]",
+                "Download the apps to separate folder [causes increase in bandwith and storage space]",
             )
         )
