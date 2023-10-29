@@ -9,7 +9,7 @@ A program to  download and install microsoft store apps
 - Auto downloads the latest app according to your system architecture (x64/x32)
 - Priority for downloading [Appx,Msix,appxbundle...] over other encrypted format like Eappx which needs admin privilage to install
 - Can install already downloaded microsoft store apps (appx,msix,appxbundle...)
-- Can install microsoft store apps by providing its url
+- Can get microsoft store apps by providing its url
 - Uses custom link generation to produce download links using API from [StoreLib](https://github.com/StoreDev/StoreLib) and [MS-Store-API](https://github.com/ThomasPe/MS-Store-API)
 - Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using a stripped version [pypdl](https://github.com/m-jishnu/pypdl) for fast downloading
 - Can resume interrupted downloads
@@ -29,7 +29,7 @@ A program to  download and install microsoft store apps
 
 <img width="1060" alt="1-min" src="https://user-images.githubusercontent.com/83004520/226940878-11cfb8ca-074e-4876-8a38-142559f5116b.png">
 <img width="1060" alt="2-min" src="https://user-images.githubusercontent.com/83004520/226940893-f4f01e91-2d0c-4231-b1a2-27653d6ac164.png">
-<img width="1060" alt="3-min" src="https://user-images.githubusercontent.com/83004520/226940945-063401e1-0ba2-4c38-9559-cbe4acaf7cb8.png">
+<img width="1060" alt="3-min" src="https://github.com/m-jishnu/alt-app-installer/assets/83004520/325e4b8f-f026-4e83-8055-b7defc3adcf5">
 
 # Requirements
 - windows 10/11
@@ -41,7 +41,7 @@ A program to  download and install microsoft store apps
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
 - You can also install already downloaded apps via "Install from file" in "Options" 
-- You can also install the app by manually pasting its url in "Install from Link" in "Options"
+- You can also install the app by manually pasting its url in "Get from Link" in "Options"
 
 # How to build from source
 
@@ -61,8 +61,8 @@ https://youtu.be/ayIilTc-6u4
 
     In some cases, this occurs since the dependencies are already installed on your pc. So check wheather the program is installed from start menu.
     if the program is still not installed, then there are 2 ways to solve this. **[only try the 2nd method if 1st method failed]**
-    1. Enable Ignore Version (Options --> Dependencies --> Ignore Version), this will download all version of dependencies available for your system
-    2. Enable Ignore All Filters (Options --> Dependencies --> Ignore All Filters), this will download all available dependencies (can take time)
+    1. Enable Ignore Version (Options --> Advanced --> Dependencies --> Ignore Version), this will download all version of dependencies available for your system
+    2. Enable Ignore All Filters (Options --> Advanced --> Dependencies --> Ignore All Filters), this will download all available dependencies (can take time)
 
 - For other issues
     
