@@ -236,7 +236,8 @@ class core(internal_func):
             main_dict, final_data, file_name, uwp = data
             part = int(50 / len(final_data))
             if self.actionDedicated_Folder.isChecked():
-                dwnpath = f"{script_dir}//downloads//{file_name}/"
+                app_folder = "".join(file_name.split(".")[:-1])
+                dwnpath = f"{script_dir}//downloads//{app_folder}/"
             else:
                 dwnpath = f"{script_dir}//downloads/"
             if not os.path.exists(dwnpath):
