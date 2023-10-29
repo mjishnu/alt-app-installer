@@ -97,7 +97,7 @@ class internal_func(Ui_MainProgram):
             else:
                 mode = "w"
             # write to the log file
-            with open("log.txt", mode) as f:
+            with open(f"{script_dir}/log.txt", mode) as f:
                 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
                 f.write(f"[python logs] \n{current_time}\n\n")
                 f.write(n[2])
@@ -327,7 +327,7 @@ class core(internal_func):
                 if path[s_path] == 1:
                     main_prog_error = 1
 
-                with open("log.txt", "a") as f:
+                with open(f"{script_dir}/log.txt", "a") as f:
                     current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
                     f.write(f"[powershell logs] \n{current_time}\n\n")
                     f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')

@@ -57,7 +57,7 @@ class MainWindowGui(core):
             self.actionIgnore_Latest_Version.setEnabled(True)
 
     def open_Logs(self):
-        path = "log.txt"
+        path = f"{curr_dir}/log.txt"
         if os.path.exists(path):
             os.startfile(path)
         else:
@@ -75,9 +75,9 @@ class MainWindowGui(core):
                 elif mode == "dir":
                     shutil.rmtree(path)
 
-            remove_("log.txt")
+            remove_(f"{curr_dir}/log.txt")
             try:
-                remove_("downloads", "dir")
+                remove_(f"{curr_dir}/downloads", "dir")
             except FileNotFoundError:
                 print("No Downloads Found!")
 
