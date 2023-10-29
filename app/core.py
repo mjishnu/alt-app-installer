@@ -14,23 +14,23 @@ from modules.url_gen import url_generator
 from utls import Worker
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-clr.AddReference(fr"{script_dir}\data\System.Management.Automation.dll")
+clr.AddReference(rf"{script_dir}\data\System.Management.Automation.dll")
 
 
 class internal_func(Ui_MainProgram):
-
     def error_msg(self, text, msg_details, title="Error", critical=False):
         msg = QMessageBox()
         msg.setWindowTitle(title)
-        msg.setText(f'{str(text)}     ')
+        msg.setText(f"{str(text)}     ")
         if critical:
             msg.setIcon(QMessageBox.Icon.Critical)
-            msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_r.png'))
+            msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_r.png"))
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_y.png'))
-        msg.setDetailedText(str(msg_details) +
-                            '\n\ncheck Full Logs [Help --> Open Logs]')
+            msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_y.png"))
+        msg.setDetailedText(
+            str(msg_details) + "\n\ncheck Full Logs [Help --> Open Logs]"
+        )
         if text == "Failed To Clear Cache Files!":
             pass
         else:
@@ -38,18 +38,18 @@ class internal_func(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
-            self.menuDependencies.setEnabled(True)
+            self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
     def show_error_popup(self, txt="An Error Has Occured Try Again!"):
         msg = QMessageBox()
-        msg.setWindowTitle('Error')
-        msg.setWindowIcon(QIcon(f'{script_dir}/data/images/error_r.png'))
-        msg.setText(f'{txt}     ')
+        msg.setWindowTitle("Error")
+        msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_r.png"))
+        msg.setText(f"{txt}     ")
         msg.setIcon(QMessageBox.Icon.Critical)
         if txt in ("No Logs Found!", "No Downloads Found!"):
             pass
@@ -58,21 +58,21 @@ class internal_func(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
-            self.menuDependencies.setEnabled(True)
+            self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
     def show_success_popup(self, text=None):
         msg = QMessageBox()
-        msg.setWindowTitle('Success')
-        msg.setWindowIcon(QIcon(f'{script_dir}/data/images/success.png'))
+        msg.setWindowTitle("Success")
+        msg.setWindowIcon(QIcon(f"{script_dir}/data/images/success.png"))
         if text:
-            msg.setText(f'{text}     ')
+            msg.setText(f"{text}     ")
         else:
-            msg.setText('Installation completed!     ')
+            msg.setText("Installation completed!     ")
         msg.setIcon(QMessageBox.Icon.Information)
 
         if text == "Cache Files Cleared Successfully!":
@@ -82,24 +82,24 @@ class internal_func(Ui_MainProgram):
             self.show_bar(False)
             self.stop_btn.hide()
             self.pushButton.setEnabled(True)
-            self.menuDependencies.setEnabled(True)
+            self.advancedmenu.setEnabled(True)
             self.actionclear_cache.setEnabled(True)
             self.actioninstall_From_File.setEnabled(True)
-            self.actionInstall_using_url.setEnabled(True)
+            self.actionget_using_url.setEnabled(True)
             self.pushButton.show()
         msg.exec()
 
     def error_handler(self, n, normal=True, msg=None, critical=True):
         def log_error():
             # if path exits or not
-            if os.path.exists('log.txt'):
-                mode = 'a'
+            if os.path.exists("log.txt"):
+                mode = "a"
             else:
-                mode = 'w'
+                mode = "w"
             # write to the log file
-            with open('log.txt', mode) as f:
+            with open("log.txt", mode) as f:
                 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
-                f.write(f'[python logs] \n{current_time}\n\n')
+                f.write(f"[python logs] \n{current_time}\n\n")
                 f.write(n[2])
                 f.write(f'{82*"-"}\n')
 
@@ -108,17 +108,19 @@ class internal_func(Ui_MainProgram):
             log_error()
             self.show_error_popup()
         else:
-            msg_details = f'{n[1]}'
-            if msg_details == 'Stoped By User!':
+            msg_details = f"{n[1]}"
+            if msg_details == "Stoped By User!":
                 self.show_success_popup("Download Stopped!")
-            elif msg_details == 'server returned a empty list':
-                msg = 'Sorry, Application not found!'
-                msg_details = "Application not found in the server, Application is not supported!"
+            elif msg_details == "server returned a empty list":
+                msg = "Sorry, Application not found!"
+                msg_details = (
+                    "Application not found in the server, Application is not supported!"
+                )
                 self.error_msg(msg, msg_details, "Error", critical)
             else:
                 log_error()
                 if msg is None:
-                    msg = 'An Error Has Occured Try Again!'
+                    msg = "An Error Has Occured Try Again!"
                 self.error_msg(msg, msg_details, "Error", critical)
 
     def run_success(self, value):
@@ -162,11 +164,12 @@ class internal_func(Ui_MainProgram):
     def closeEvent(self, event):
         close = QMessageBox()
         close.setWindowTitle("Confirm")
-        close.setWindowIcon(QIcon(f'{script_dir}/data/images/error_y.png'))
+        close.setWindowIcon(QIcon(f"{script_dir}/data/images/error_y.png"))
         close.setText("Are you sure you want to exit?     ")
         close.setIcon(QMessageBox.Icon.Warning)
         close.setStandardButtons(
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel)
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel
+        )
         close = close.exec()
 
         if close == QMessageBox.StandardButton.Yes:
@@ -200,20 +203,27 @@ class core(internal_func):
             pass
 
         self.url = arg  # saving the url for future uses
-        worker = Worker(lambda **kwargs: url_generator(str(arg), self.ignore_ver,
-                                                       self.all_dependencies, self.stop, emit=True, **kwargs))
+        worker = Worker(
+            lambda **kwargs: url_generator(
+                str(arg),
+                self.ignore_ver,
+                self.all_dependencies,
+                self.stop,
+                emit=True,
+                **kwargs,
+            )
+        )
         worker.signals.result.connect(self.download_install)
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.error.connect(
-            lambda arg: self.error_handler(arg, normal=False))
+        worker.signals.error.connect(lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
         self.pushButton.setEnabled(False)
-        self.menuDependencies.setEnabled(False)
+        self.advancedmenu.setEnabled(False)
         self.actionclear_cache.setEnabled(False)
         self.actioninstall_From_File.setEnabled(False)
-        self.actionInstall_using_url.setEnabled(False)
+        self.actionget_using_url.setEnabled(False)
         self.show_bar(True)
         self.pushButton.hide()
         self.stop_btn.show()
@@ -225,7 +235,10 @@ class core(internal_func):
         def download_install_thread(data, progress_current, progress_main):
             main_dict, final_data, file_name, uwp = data
             part = int(50 / len(final_data))
-            dwnpath = f'{script_dir}//downloads/'
+            if self.actionDedicated_Folder.isChecked():
+                dwnpath = f"{script_dir}//downloads//{file_name}/"
+            else:
+                dwnpath = f"{script_dir}//downloads/"
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
@@ -236,12 +249,26 @@ class core(internal_func):
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
                 if not os.path.exists(path):  # don't download if it exists already
-                    def new_url_gen():
-                        return url_generator(self.url, self.ignore_ver, self.all_dependencies,
-                                             self.stop, progress_current, progress_main, emit=False)[0][f_name]
 
-                    d.start(remote_url, path, 20, retries=5,
-                            retry_func=new_url_gen, block=False)
+                    def new_url_gen():
+                        return url_generator(
+                            self.url,
+                            self.ignore_ver,
+                            self.all_dependencies,
+                            self.stop,
+                            progress_current,
+                            progress_main,
+                            emit=False,
+                        )[0][f_name]
+
+                    d.start(
+                        remote_url,
+                        path,
+                        20,
+                        retries=5,
+                        retry_func=new_url_gen,
+                        block=False,
+                    )
                     while d.progress != 100:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
@@ -260,13 +287,16 @@ class core(internal_func):
                     path_lst[path] = 0
             return path_lst, uwp  # install the apps'
 
-        worker = Worker(
-            lambda **kwargs: download_install_thread(arg, **kwargs))
+        worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
-        worker.signals.result.connect(self.install)
-        worker.signals.error.connect(
-            lambda arg: self.error_handler(arg, normal=False))
+        if self.actionDownload_Mode.isChecked():
+            worker.signals.result.connect(
+                lambda arg: self.show_success_popup("Download Completed!")
+            )
+        else:
+            worker.signals.result.connect(self.install)
+        worker.signals.error.connect(lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)
 
     def install(self, arg, **kwargs):
@@ -297,10 +327,9 @@ class core(internal_func):
                 if path[s_path] == 1:
                     main_prog_error = 1
 
-                with open('log.txt', 'a') as f:
-                    current_time = datetime.now().strftime(
-                        "[%d-%m-%Y %H:%M:%S]")
-                    f.write(f'[powershell logs] \n{current_time}\n\n')
+                with open("log.txt", "a") as f:
+                    current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                    f.write(f"[powershell logs] \n{current_time}\n\n")
                     f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')
                     f.write(str(source[e.Index].Exception.Message))
                     f.write(f'{82*"-"}\n')
@@ -329,20 +358,21 @@ class core(internal_func):
             if flag == 1:
                 # if the failed commands include the application package then show app not installed
                 if main_prog_error == 1:
-                    msg = 'Failed To Install The Application!'
-                    detail_msg = 'The Installation has failed, try again!'
+                    msg = "Failed To Install The Application!"
+                    detail_msg = "The Installation has failed, try again!"
                     endresult = (msg, detail_msg, "Error", True)
 
                 else:
-                    msg = 'Failed To Install Dependencies!'
-                    detail_msg = 'In some cases, this occurs since the dependencies are already installed on your pc. '
-                    detail_msg += 'So check wheather the program is installed from start menu.\n\n'
-                    detail_msg += 'if the app is not installed, Enable [Dependencies --> Ignore Version], '
-                    detail_msg += 'If the problem still exists Enable [Dependencies --> Ignore All Filters]'
+                    msg = "Failed To Install Dependencies!"
+                    detail_msg = "In some cases, this occurs since the dependencies are already installed on your pc. "
+                    detail_msg += "So check wheather the program is installed from start menu.\n\n"
+                    detail_msg += "if the app is not installed, Enable [Dependencies --> Ignore Version], "
+                    detail_msg += "If the problem still exists Enable [Dependencies --> Ignore All Filters]"
                     endresult = (msg, detail_msg, "Warning")
 
                 return endresult
             return 0
+
         # for standalone installer
 
         if isinstance(arg, str):
@@ -352,11 +382,9 @@ class core(internal_func):
 
         path, uwp = arg
         # done this way since we can only manupulate the buttons and other qt components inside of the main thread if not it can cause issues
-        worker = Worker(
-            lambda **kwargs: install_thread(path, uwp=uwp, **kwargs))
+        worker = Worker(lambda **kwargs: install_thread(path, uwp=uwp, **kwargs))
         worker.signals.cur_progress.connect(self.cur_Progress)
         worker.signals.main_progress.connect(self.main_Progress)
         worker.signals.result.connect(self.run_success)
-        worker.signals.error.connect(
-            lambda arg: self.error_handler(arg, normal=False))
+        worker.signals.error.connect(lambda arg: self.error_handler(arg, normal=False))
         self.threadpool.start(worker)

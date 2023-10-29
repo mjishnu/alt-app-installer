@@ -30,13 +30,13 @@ class Multidown:
 
     def worker(self):
         """Download a part of the file in multiple chunks"""
-        filepath = self.getval('filepath')
+        filepath = self.getval("filepath")
         path = Path(filepath)
-        end = self.getval('end')
+        end = self.getval("end")
 
         # checks if the part exists if it doesn't exist set start from beginning else download rest of the file
         if not path.exists():
-            start = self.getval('start')
+            start = self.getval("start")
         else:
             # gets the size of the file
             self.curr = path.stat().st_size
@@ -48,29 +48,28 @@ class Multidown:
                 self.error.set()
                 print("corrupted file!")
 
-        url = self.getval('url')
-        if self.curr != self.getval('size'):
+        url = self.getval("url")
+        if self.curr != self.getval("size"):
             try:
                 # download part
-                with requests.session() as s, open(path, 'ab+') as f:
+                with requests.session() as s, open(path, "ab+") as f:
                     headers = {"range": f"bytes={start}-{end}"}
                     with s.get(url, headers=headers, stream=True, timeout=20) as r:
                         for chunk in r.iter_content(1048576):  # 1MB
                             if chunk:
                                 f.write(chunk)
                                 self.curr += len(chunk)
-                                self.setval('curr', self.curr)
+                                self.setval("curr", self.curr)
                             if not chunk or self.stop.is_set() or self.error.is_set():
                                 break
             except Exception as e:
                 self.error.set()
                 time.sleep(1)
-                print(
-                    f"Error in thread {self.id}: ({e.__class__.__name__}, {e})")
+                print(f"Error in thread {self.id}: ({e.__class__.__name__}, {e})")
 
-        if self.curr == self.getval('size'):
+        if self.curr == self.getval("size"):
             self.completed = 1
-            self.setval('completed', 1)
+            self.setval("completed", 1)
 
 
 class Singledown:
@@ -85,7 +84,9 @@ class Singledown:
         flag = True
         try:
             # download part
-            with requests.get(url, stream=True, timeout=20) as r, open(path, 'wb') as file:
+            with requests.get(url, stream=True, timeout=20) as r, open(
+                path, "wb"
+            ) as file:
                 for chunk in r.iter_content(1048576):  # 1MB
                     if chunk:
                         file.write(chunk)
@@ -114,11 +115,11 @@ class Downloader:
         self.progress = 0
 
     def download(self, url, filepath, num_connections, display, multithread):
-        json_file = Path(filepath + '.progress.json')
+        json_file = Path(filepath + ".progress.json")
         threads = []
         f_path = str(filepath)
         head = requests.head(url, timeout=20, allow_redirects=True)
-        total = int(head.headers.get('content-length'))
+        total = int(head.headers.get("content-length"))
         self.totalMB = total / 1048576  # 1MB = 1048576 bytes (size in MB)
         singlethread = False
         # adjust the number of connections for small files
@@ -126,12 +127,13 @@ class Downloader:
             num_connections = 5 if num_connections > 5 else num_connections
 
         # if no range available in header or no size from header use single thread
-        if not total or not head.headers.get('accept-ranges') or not multithread:
+        if not total or not head.headers.get("accept-ranges") or not multithread:
             # create single threaded download object
             sd = Singledown()
             # create single download worker thread
-            th = threading.Thread(target=sd.worker, args=(
-                url, f_path, self.Stop, self._Error))
+            th = threading.Thread(
+                target=sd.worker, args=(url, f_path, self.Stop, self._Error)
+            )
             self._workers.append(sd)
             th.start()
             total = inf if not total else total
@@ -141,19 +143,23 @@ class Downloader:
             if json_file.exists():
                 # load the progress from the progress file
                 # the object_hook converts the key strings whose value is int to type int
-                progress = json.loads(json_file.read_text(), object_hook=lambda d: {
-                    int(k) if k.isdigit() else k: v for k, v in d.items()})
+                progress = json.loads(
+                    json_file.read_text(),
+                    object_hook=lambda d: {
+                        int(k) if k.isdigit() else k: v for k, v in d.items()
+                    },
+                )
             segment = total / num_connections
-            self._dic['total'] = total
-            self._dic['connections'] = num_connections
-            self._dic['paused'] = False
+            self._dic["total"] = total
+            self._dic["connections"] = num_connections
+            self._dic["paused"] = False
             for i in range(num_connections):
                 try:
                     # try to use progress file to resume download
-                    start = progress[i]['start']
-                    end = progress[i]['end']
-                    curr = progress[i]['curr']
-                    size = progress[i]['size']
+                    start = progress[i]["start"]
+                    end = progress[i]["end"]
+                    curr = progress[i]["curr"]
+                    size = progress[i]["size"]
                 except:
                     # if not able to use progress file then calculate the start, end, curr and size
                     # calculate the beginning byte offset by multiplying the segment by num_connections.
@@ -164,13 +170,13 @@ class Downloader:
                     size = end - start + (i != num_connections - 1)
 
                 self._dic[i] = {
-                    'start': start,
-                    'curr': curr,
-                    'end': end,
-                    'filepath': f'{filepath}.{i}.part',
-                    'size': size,
-                    'url': url,
-                    'completed': False
+                    "start": start,
+                    "curr": curr,
+                    "end": end,
+                    "filepath": f"{filepath}.{i}.part",
+                    "size": size,
+                    "url": url,
+                    "completed": False,
                 }
                 # create multidownload object for each connection
                 md = Multidown(self._dic, i, self.Stop, self._Error)
@@ -202,7 +208,7 @@ class Downloader:
 
             # check if download has been stopped or if an error has occurred
             if self.Stop.is_set() or self._Error.is_set():
-                self._dic['paused'] = True
+                self._dic["paused"] = True
                 if not singlethread:
                     # save progress to progress file
                     json_file.write_text(json.dumps(self._dic, indent=4))
@@ -215,10 +221,10 @@ class Downloader:
                     BLOCKSIZE = 4096
                     BLOCKS = 1024
                     CHUNKSIZE = BLOCKSIZE * BLOCKS
-                    with open(f_path, 'wb') as dest:
+                    with open(f_path, "wb") as dest:
                         for i in range(num_connections):
-                            file_ = f'{filepath}.{i}.part'
-                            with open(file_, 'rb') as f:
+                            file_ = f"{filepath}.{i}.part"
+                            with open(file_, "rb") as f:
                                 while True:
                                     chunk = f.read(CHUNKSIZE)
                                     if chunk:
@@ -232,9 +238,19 @@ class Downloader:
             time.sleep(interval)
 
         if display and self.Stop.is_set():
-            print('Task interrupted')
+            print("Task interrupted")
 
-    def start(self, url, filepath, num_connections=10, display=True, multithread=True, block=True, retries=0, retry_func=None):
+    def start(
+        self,
+        url,
+        filepath,
+        num_connections=10,
+        display=True,
+        multithread=True,
+        block=True,
+        retries=0,
+        retry_func=None,
+    ):
         """
         Start the download process.
 
@@ -248,11 +264,11 @@ class Downloader:
             retries (int): The number of times to retry the download in case of an error.
             retry_func (function): A function to call to get a new download URL in case of an error.
         """
+
         def start_thread():
             try:
                 # start the download
-                self.download(url, filepath, num_connections,
-                              display, multithread)
+                self.download(url, filepath, num_connections, display, multithread)
                 # retry the download if there are errors
                 for _ in range(retries):
                     if self._Error.is_set():
@@ -267,13 +283,15 @@ class Downloader:
                                 _url = retry_func()
                             except Exception as e:
                                 print(
-                                    f"Retry function Error: ({e.__class__.__name__}, {e})")
+                                    f"Retry function Error: ({e.__class__.__name__}, {e})"
+                                )
 
                         if display:
                             print("retrying...")
                         # restart the download
-                        self.download(_url, filepath, num_connections,
-                                      display, multithread)
+                        self.download(
+                            _url, filepath, num_connections, display, multithread
+                        )
                     else:
                         break
             # if there's an error, set the error event and print the error message

@@ -30,38 +30,43 @@ def os_arc():
     ################################
     return "arm"  # not sure wheather work or not, needs testing
 
+
 # cleans My.name.1.2 -> myname
 
 
 def clean_name(badname):
     name = "".join(
-        [(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "") for i in badname])
+        [(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "") for i in badname]
+    )
     return name.lower()
 
 
-def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, progress_main, emit):
+def url_generator(
+    url, ignore_ver, all_dependencies, Event, progress_current, progress_main, emit
+):
     total_prog = 0
     progress_current.emit(total_prog)
     # geting product id from url
     try:
-        pattern = re.compile(
-            r".+\/([^\/\?]+)(?:\?|$)")
+        pattern = re.compile(r".+\/([^\/\?]+)(?:\?|$)")
         matches = pattern.search(str(url))
         product_id = matches.group(1)
     except AttributeError:
-        raise Exception(
-            'No Data Found: --> [You Selected Wrong Page, Try Again!]')
+        raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
 
     # getting cat_id and package name from the api
     details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
     session = requests.Session()
     r = session.get(details_api, timeout=20)
-    response = json.loads(r.text, object_hook=lambda obj:
-                          {k: json.loads(v) if k == 'FulfillmentData' else v for k, v in obj.items()})
+    response = json.loads(
+        r.text,
+        object_hook=lambda obj: {
+            k: json.loads(v) if k == "FulfillmentData" else v for k, v in obj.items()
+        },
+    )
 
     if not response.get("Payload", None):
-        raise Exception(
-            'No Data Found: --> [You Selected Wrong Page, Try Again!]')
+        raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
 
     response_data = response["Payload"]["Skus"][0]
     data_list = response_data.get("FulfillmentData", None)
@@ -72,7 +77,6 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         nonlocal total_prog
 
         def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
-
             def greater_ver(arg1, arg2):
                 first = arg1.split(".")
                 second = arg2.split(".")
@@ -102,12 +106,16 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                 matches = pattern.search(str(key))
                 # removing block map files
                 if not matches:
-                    #['Microsoft.VCLibs.140.00', '14.0.30704.0', 'x86', '', '8wekyb3d8bbwe.appx']
+                    # ['Microsoft.VCLibs.140.00', '14.0.30704.0', 'x86', '', '8wekyb3d8bbwe.appx']
                     temp = key.split("_")
-                    #contains [name,arch,type,version]
+                    # contains [name,arch,type,version]
                     # temp[-1].split(".")[1] = type[appx,msix, etc]
-                    content_lst = (clean_name(temp[0]), temp[2].lower(
-                    ), temp[-1].split(".")[1].lower(), temp[1])
+                    content_lst = (
+                        clean_name(temp[0]),
+                        temp[2].lower(),
+                        temp[-1].split(".")[1].lower(),
+                        temp[1],
+                    )
                     full_data[content_lst] = key
 
             # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]}
@@ -120,7 +128,7 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
             final_arch = None  # arch of main file
             # fav_type is a list of extensions that are easy to install without admin privileges
-            fav_type = ['appx', 'msix', 'msixbundle', 'appxbundle']
+            fav_type = ["appx", "msix", "msixbundle", "appxbundle"]
             main_file_name = None
             # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
             pattern = re.compile(file_name)
@@ -141,16 +149,28 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
                     if len(content_list) > 1:
                         for data in content_list[1:]:
-                            if arch not in ("neutral", curr_arch) and data[0] != arch and data[0] in ("neutral", curr_arch):
+                            if (
+                                arch not in ("neutral", curr_arch)
+                                and data[0] != arch
+                                and data[0] in ("neutral", curr_arch)
+                            ):
                                 arch = data[0]
                                 _type = data[1]
                                 ver = data[2]
                             else:
-                                if data[0] == arch and data[1] != _type and data[1] in fav_type:
+                                if (
+                                    data[0] == arch
+                                    and data[1] != _type
+                                    and data[1] in fav_type
+                                ):
                                     _type = data[1]
                                     ver = data[2]
                                 else:
-                                    if data[0] == arch and data[1] == _type and data[2] != ver:
+                                    if (
+                                        data[0] == arch
+                                        and data[1] == _type
+                                        and data[2] != ver
+                                    ):
                                         ver = greater_ver(ver, data[2])
 
                     main_file_name = full_data[(key, arch, _type, ver)]
@@ -182,20 +202,33 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
                     if len(content_list) > 1:
                         for data in content_list[1:]:
                             # checking arch is same as main file
-                            if arch not in ("neutral", final_arch) and data[0] != arch and data[0] in ("neutral", final_arch):
+                            if (
+                                arch not in ("neutral", final_arch)
+                                and data[0] != arch
+                                and data[0] in ("neutral", final_arch)
+                            ):
                                 arch = data[0]
                                 _type = data[1]
                                 ver = data[2]
                             else:
-                                if data[0] == arch and data[1] != _type and data[1] in fav_type:
+                                if (
+                                    data[0] == arch
+                                    and data[1] != _type
+                                    and data[1] in fav_type
+                                ):
                                     _type = data[1]
                                     ver = data[2]
                                 else:
-                                    if data[0] == arch and data[1] == _type and data[2] != ver:
+                                    if (
+                                        data[0] == arch
+                                        and data[1] == _type
+                                        and data[2] != ver
+                                    ):
                                         # checking to see if ignore_ver is checked or not
                                         if ignore_ver:
                                             final_list.append(
-                                                full_data[(key, arch, _type, ver)])
+                                                full_data[(key, arch, _type, ver)]
+                                            )
                                             ver = data[2]
                                         else:
                                             ver = greater_ver(ver, data[2])
@@ -214,36 +247,37 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             return final_list, file_name
 
         cat_id = data_list["WuCategoryId"]
-        main_file_name = data_list["PackageFamilyName"].split('_')[0]
+        main_file_name = data_list["PackageFamilyName"].split("_")[0]
         release_type = "Retail"
 
         # getting the encrypted cookie for the fe3 delivery api
-        with open(fr"{parent_dir}\data\xml\GetCookie.xml", "r") as f:
+        with open(rf"{parent_dir}\data\xml\GetCookie.xml", "r") as f:
             cookie_content = f.read()
         check(Event)
         out = session.post(
-            'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
+            "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx",
             data=cookie_content,
-            headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-            verify=False, timeout=20
+            headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+            verify=False,
+            timeout=20,
         )
         doc = minidom.parseString(out.text)
         total_prog += 20
         progress_current.emit(total_prog)
         # extracting the cooking from the EncryptedData tag
-        cookie = doc.getElementsByTagName('EncryptedData')[
-            0].firstChild.nodeValue
+        cookie = doc.getElementsByTagName("EncryptedData")[0].firstChild.nodeValue
 
         # getting the update id,revision number and package name from the fe3 delivery api by providing the encrpyted cookie, cat_id, realse type
         # Map {"retail": "Retail", "release preview": "RP","insider slow": "WIS", "insider fast": "WIF"}
-        with open(fr"{parent_dir}\data\xml\WUIDRequest.xml", "r") as f:
+        with open(rf"{parent_dir}\data\xml\WUIDRequest.xml", "r") as f:
             cat_id_content = f.read().format(cookie, cat_id, release_type)
         check(Event)
         out = session.post(
-            'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx',
+            "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx",
             data=cat_id_content,
-            headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-            verify=False, timeout=20
+            headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+            verify=False,
+            timeout=20,
         )
 
         doc = minidom.parseString(html.unescape(out.text))
@@ -251,11 +285,14 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         progress_current.emit(total_prog)
         filenames = {}  # {ID: filename}
         # extracting all the filenames(package name) from the xml (the file names are found inside the blockmap)
-        for node in doc.getElementsByTagName('Files'):
+        for node in doc.getElementsByTagName("Files"):
             # using try statement to avoid errors caused when attributes are not found
             try:
-                filenames[node.parentNode.parentNode.getElementsByTagName(
-                    'ID')[0].firstChild.nodeValue] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
+                filenames[
+                    node.parentNode.parentNode.getElementsByTagName("ID")[
+                        0
+                    ].firstChild.nodeValue
+                ] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
             except KeyError:
                 continue
         # if the server returned no files notify the user that the app was not found
@@ -264,27 +301,33 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         # extracting the update id,revision number from the xml
         identities = {}  # {filename: (update_id, revision_number)}
-        for node in doc.getElementsByTagName('SecuredFragment'):
+        for node in doc.getElementsByTagName("SecuredFragment"):
             # using try statement to avoid errors caused when attributes are not found
             try:
-                file_name = filenames[node.parentNode.parentNode.parentNode.getElementsByTagName('ID')[
-                    0].firstChild.nodeValue]
+                file_name = filenames[
+                    node.parentNode.parentNode.parentNode.getElementsByTagName("ID")[
+                        0
+                    ].firstChild.nodeValue
+                ]
 
                 update_identity = node.parentNode.parentNode.firstChild
-                identities[file_name] = (update_identity.attributes['UpdateID'].value,
-                                         update_identity.attributes['RevisionNumber'].value)
+                identities[file_name] = (
+                    update_identity.attributes["UpdateID"].value,
+                    update_identity.attributes["RevisionNumber"].value,
+                )
             except KeyError:
                 continue
         check(Event)
         # parsing the filenames according to latest version,favorable types,system arch
-        parse_names, main_file_name = parse_dict(identities, main_file_name,
-                                                 ignore_ver, all_dependencies)
+        parse_names, main_file_name = parse_dict(
+            identities, main_file_name, ignore_ver, all_dependencies
+        )
         final_dict = {}  # {filename: (update_id, revision_number)}
         for value in parse_names:
             final_dict[value] = identities[value]
 
         # getting the download url for the files using the api
-        with open(fr"{parent_dir}\data\xml\FE3FileUrl.xml", "r") as f:
+        with open(rf"{parent_dir}\data\xml\FE3FileUrl.xml", "r") as f:
             file_content = f.read()
 
         file_dict = {}  # the final result
@@ -294,11 +337,11 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         def geturl(updateid, revisionnumber, file_name, total_prog):
             out = session.post(
-                'https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured',
-                data=file_content.format(
-                    updateid, revisionnumber, release_type),
-                headers={'Content-Type': 'application/soap+xml; charset=utf-8'},
-                verify=False, timeout=20
+                "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured",
+                data=file_content.format(updateid, revisionnumber, release_type),
+                headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+                verify=False,
+                timeout=20,
             )
             doc = minidom.parseString(out.text)
             # checks for all the tags which have name "filelocation" and extracts the url from it
@@ -316,8 +359,9 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
             check(Event)
             file_name = key
             updateid, revisionnumber = value
-            th = Thread(target=geturl, args=(
-                updateid, revisionnumber, file_name, total_prog))
+            th = Thread(
+                target=geturl, args=(updateid, revisionnumber, file_name, total_prog)
+            )
             th.daemon = True
             threads.append(th)
             th.start()
@@ -353,7 +397,13 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
         download_data = set()
         for d in installer_list:
             download_data.add(
-                (d["Architecture"], d["InstallerLocale"], d["InstallerType"], d["InstallerUrl"]))
+                (
+                    d["Architecture"],
+                    d["InstallerLocale"],
+                    d["InstallerType"],
+                    d["InstallerUrl"],
+                )
+            )
 
         curr_arch = os_arc()
         file_dict = {}
@@ -368,13 +418,21 @@ def url_generator(url, ignore_ver, all_dependencies, Event, progress_current, pr
 
         if len(download_data) > 1:
             for data in download_data[1:]:
-                if arch not in ("neutral", curr_arch) and data[0] != arch and data[0] in ("neutral", curr_arch):
+                if (
+                    arch not in ("neutral", curr_arch)
+                    and data[0] != arch
+                    and data[0] in ("neutral", curr_arch)
+                ):
                     arch = data[0]
                     locale = data[1]
                     installer_type = data[2]
                     url = data[3]
                 else:
-                    if data[0] == arch and data[1] != locale and ("us" in data[1] or "en" in data[1]):
+                    if (
+                        data[0] == arch
+                        and data[1] != locale
+                        and ("us" in data[1] or "en" in data[1])
+                    ):
                         locale = data[1]
                         installer_type = data[2]
                         url = data[3]

@@ -528,34 +528,49 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <widget class="QMenu" name="menuDependencies">
+    <widget class="QMenu" name="advancedmenu">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="statusTip">
-      <string>Dependency Download Option</string>
+      <string>Advanced Settings</string>
      </property>
      <property name="tearOffEnabled">
       <bool>false</bool>
      </property>
      <property name="title">
-      <string>Dependencies</string>
+      <string>Advanced</string>
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../data/images/dependencies.png</normaloff>../data/images/dependencies.png</iconset>
+       <normaloff>../data/images/advanced.png</normaloff>../data/images/advanced.png</iconset>
      </property>
      <property name="toolTipsVisible">
       <bool>false</bool>
      </property>
-     <addaction name="actionIgnore_Latest_Version"/>
-     <addaction name="actionIgnore_All_filters"/>
+     <widget class="QMenu" name="Dependencymenu">
+      <property name="statusTip">
+       <string>Dependency Download Option</string>
+      </property>
+      <property name="title">
+       <string>Dependencies</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>../data/images/dependency.png</normaloff>../data/images/dependency.png</iconset>
+      </property>
+      <addaction name="actionIgnore_Latest_Version"/>
+      <addaction name="actionIgnore_All_filters"/>
+     </widget>
+     <addaction name="actionDownload_Mode"/>
+     <addaction name="actionDedicated_Folder"/>
+     <addaction name="actionclear_cache"/>
+     <addaction name="Dependencymenu"/>
     </widget>
     <addaction name="actionDownloads"/>
-    <addaction name="actionInstall_using_url"/>
+    <addaction name="actionget_using_url"/>
     <addaction name="actioninstall_From_File"/>
-    <addaction name="actionclear_cache"/>
-    <addaction name="menuDependencies"/>
+    <addaction name="advancedmenu"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -724,7 +739,7 @@
      <normalon>../data/images/checked.png</normalon>../data/images/unchecked.png</iconset>
    </property>
    <property name="text">
-    <string>Ignore Version</string>
+    <string>Ignore  Version</string>
    </property>
    <property name="statusTip">
     <string>Download all versions of the dependencies</string>
@@ -742,22 +757,54 @@
      <selectedon>../data/images/checked.png</selectedon>../data/images/unchecked.png</iconset>
    </property>
    <property name="text">
-    <string>Ignore All Filters</string>
+    <string>Ignore All  Filters</string>
    </property>
    <property name="statusTip">
     <string>Download all dependencies regardless of system arch (x64,x32,Arm), type (Appx,Msix..etc), latest version</string>
    </property>
   </action>
-  <action name="actionInstall_using_url">
+  <action name="actionget_using_url">
    <property name="icon">
     <iconset>
      <normaloff>../data/images/link.png</normaloff>../data/images/link.png</iconset>
    </property>
    <property name="text">
-    <string>Install From Link</string>
+    <string>Get From Link</string>
    </property>
    <property name="statusTip">
-    <string>Download and install the app from the link (app url)</string>
+    <string>Get the app from the link (app url)</string>
+   </property>
+  </action>
+  <action name="actionDownload_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../data/images/unchecked.png</normaloff>
+     <normalon>../data/images/checked.png</normalon>../data/images/unchecked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Download Mode</string>
+   </property>
+   <property name="statusTip">
+    <string>Enable download only mode</string>
+   </property>
+  </action>
+  <action name="actionDedicated_Folder">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>../data/images/unchecked.png</normaloff>
+     <normalon>../data/images/checked.png</normalon>../data/images/unchecked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dedicated Folder</string>
+   </property>
+   <property name="statusTip">
+    <string>Download the apps to seperate folder [causes increase in bandwith and storage space]</string>
    </property>
   </action>
  </widget>
