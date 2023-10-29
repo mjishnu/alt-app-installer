@@ -562,14 +562,14 @@
       <addaction name="actionIgnore_Latest_Version"/>
       <addaction name="actionIgnore_All_filters"/>
      </widget>
-     <addaction name="Dependencymenu"/>
      <addaction name="actionDownload_Mode"/>
      <addaction name="actionDedicated_Folder"/>
+     <addaction name="actionclear_cache"/>
+     <addaction name="Dependencymenu"/>
     </widget>
     <addaction name="actionDownloads"/>
     <addaction name="actionget_using_url"/>
     <addaction name="actioninstall_From_File"/>
-    <addaction name="actionclear_cache"/>
     <addaction name="advancedmenu"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
