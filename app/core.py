@@ -243,7 +243,7 @@ class core(internal_func):
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            d = Downloader(self.stop)
+            d = Downloader()
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
@@ -275,6 +275,7 @@ class core(internal_func):
                         progress_current.emit(download_percentage)
                         time.sleep(0.1)
                         if self.stop.is_set():  # check if the stop event is triggered
+                            d.stop()
                             raise Exception("Stoped By User!")
                         if d.Failed:
                             raise Exception("Download Error Occured!")

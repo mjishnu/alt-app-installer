@@ -17,7 +17,7 @@ class Multidown:
         self.id = id  # ID of this download part
         # dictionary containing download information for all parts, {start, curr, end, filepath, count, size, url, completed}
         self.dic = dic
-        self.stop = stop  # event to stop the download
+        self._stop = stop  # event to stop the download
         self.error = error  # event to indicate an error occurred
 
     def getval(self, key):
@@ -60,7 +60,7 @@ class Multidown:
                                 f.write(chunk)
                                 self.curr += len(chunk)
                                 self.setval("curr", self.curr)
-                            if not chunk or self.stop.is_set() or self.error.is_set():
+                            if not chunk or self._stop.is_set() or self.error.is_set():
                                 break
             except Exception as e:
                 self.error.set()
@@ -103,13 +103,14 @@ class Singledown:
 
 
 class Downloader:
-    def __init__(self, StopEvent=threading.Event()):
+    def __init__(self):
         self._dic = {}
         self._workers = []
+        self._threads = []
         self._Error = threading.Event()
+        self._stop = threading.Event()  # stop Event
 
         # attributes
-        self.Stop = StopEvent  # stop Event
         self.Failed = False
         self.totalMB = 0
         self.progress = 0
@@ -132,7 +133,7 @@ class Downloader:
             sd = Singledown()
             # create single download worker thread
             th = threading.Thread(
-                target=sd.worker, args=(url, f_path, self.Stop, self._Error)
+                target=sd.worker, args=(url, f_path, self._stop, self._Error)
             )
             self._workers.append(sd)
             th.start()
@@ -179,12 +180,13 @@ class Downloader:
                     "completed": False,
                 }
                 # create multidownload object for each connection
-                md = Multidown(self._dic, i, self.Stop, self._Error)
+                md = Multidown(self._dic, i, self._stop, self._Error)
                 # create worker thread for each connection
                 th = threading.Thread(target=md.worker)
                 threads.append(th)
                 th.start()
                 self._workers.append(md)
+                self._threads.append(th)
 
             # save the progress to the progress file
             if not singlethread:
@@ -207,7 +209,7 @@ class Downloader:
                 self.progress = 0
 
             # check if download has been stopped or if an error has occurred
-            if self.Stop.is_set() or self._Error.is_set():
+            if self._stop.is_set() or self._Error.is_set():
                 self._dic["paused"] = True
                 if not singlethread:
                     # save progress to progress file
@@ -237,8 +239,18 @@ class Downloader:
                 break
             time.sleep(interval)
 
-        if display and self.Stop.is_set():
+        if display and self._stop.is_set():
             print("Task interrupted")
+
+    def stop(self):
+        """
+        Stop the download process.
+        """
+        time.sleep(2)
+        self._stop.set()
+        # waiting for all threads to be killed by the poison pill
+        for thread in self._threads:
+            thread.join()
 
     def start(
         self,
@@ -274,7 +286,7 @@ class Downloader:
                     if self._Error.is_set():
                         time.sleep(3)
                         # reset the downloader object
-                        self.__init__(self.Stop)
+                        self.__init__()
 
                         # get a new download URL to retry
                         _url = url
@@ -305,8 +317,7 @@ class Downloader:
                 print("Download Failed!")
 
         # Initialize the downloader with stop Event
-        self.__init__(self.Stop)
-        self.Stop.clear()
+        self.__init__()
         # Start the download process in a new thread
         th = threading.Thread(target=start_thread)
         th.start()
