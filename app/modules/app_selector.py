@@ -4,10 +4,10 @@ from PyQt6.QtCore import QObject, QUrl, pyqtSignal
 from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtWebEngineCore import QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import (QLabel, QLineEdit, QMenu, QPushButton, QStatusBar,
-                             QToolBar)
+from PyQt6.QtWidgets import QLabel, QLineEdit, QMenu, QPushButton, QStatusBar, QToolBar
 
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 class CustomWebEngineView(QWebEngineView):
     def __init__(self, *args, **kwargs):
@@ -21,7 +21,7 @@ class CustomWebEngineView(QWebEngineView):
     def _on_url_changed(self, url):
         if self._history_index >= 0 and url == self._history[self._history_index]:
             return
-        self._history = self._history[:self._history_index + 1]
+        self._history = self._history[: self._history_index + 1]
         self._history.append(url)
         self._history_index += 1
 
@@ -55,16 +55,21 @@ class CustomWebEngineView(QWebEngineView):
         # Check if text is selected or if the context menu was triggered within a text box
         if self.selectedText() or self._is_text_box:
             menu = QMenu(self)
-            copy_action = menu.addAction(QIcon("data/images/copy.png"), "Copy")
+            copy_action = menu.addAction(
+                QIcon(f"{parent_dir}/data/images/copy.png"), "Copy"
+            )
             copy_action.setShortcut("Ctrl+C")
             copy_action.triggered.connect(
-                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Copy))
+                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Copy)
+            )
             menu.addSeparator()
             paste_action = menu.addAction(
-                QIcon("data/images/paste.png"), "Paste")
+                QIcon(f"{parent_dir}/data/images/paste.png"), "Paste"
+            )
             paste_action.setShortcut("Ctrl+V")
             paste_action.triggered.connect(
-                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Paste))
+                lambda: self.page().triggerAction(QWebEnginePage.WebAction.Paste)
+            )
 
             if not self.selectedText():
                 copy_action.setDisabled(True)
@@ -88,7 +93,6 @@ class AppSelector(QObject):
     def setupUi(self, qt_window):
         # all helper functions
         def navigate_to_url():
-
             # getting url and converting it to QUrl object
             q = QUrl(qt_window.urlbar.text())
 
@@ -103,7 +107,6 @@ class AppSelector(QObject):
         # method for updating url
         # this method is called by the QWebEngineView object
         def update_urlbar(q):
-
             # setting text to the url bar
             qt_window.urlbar.setText(q.toString())
 
@@ -120,8 +123,7 @@ class AppSelector(QObject):
         qt_window.browser = CustomWebEngineView()
 
         # setting default browser url as google
-        qt_window.browser.setUrl(
-            QUrl("https://apps.microsoft.com/"))
+        qt_window.browser.setUrl(QUrl("https://apps.microsoft.com/"))
 
         # adding action when url get changed
         qt_window.browser.urlChanged.connect(update_urlbar)
@@ -147,7 +149,7 @@ class AppSelector(QObject):
 
         # setting status tip
         back_btn.setStatusTip("Back to previous page")
-        back_btn.setIcon(QIcon(f'{parent_dir}/data/images/Back.png'))
+        back_btn.setIcon(QIcon(f"{parent_dir}/data/images/Back.png"))
 
         # adding action to the back button
         # making browser go back
@@ -159,7 +161,7 @@ class AppSelector(QObject):
         # similarly for forward action
         next_btn = QAction("", qt_window)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.setIcon(QIcon(f'{parent_dir}/data/images/forward.png'))
+        next_btn.setIcon(QIcon(f"{parent_dir}/data/images/forward.png"))
 
         # adding action to the next button
         # making browser go forward
@@ -173,7 +175,7 @@ class AppSelector(QObject):
         # similarly for reload action
         reload_btn = QAction("", qt_window)
         reload_btn.setStatusTip("Reload page")
-        reload_btn.setIcon(QIcon(f'{parent_dir}/data/images/reload.png'))
+        reload_btn.setIcon(QIcon(f"{parent_dir}/data/images/reload.png"))
 
         # adding action to the reload button
         # making browser to reload
@@ -183,12 +185,13 @@ class AppSelector(QObject):
         # similarly for home button
         home_btn = QAction("", qt_window)
         home_btn.setStatusTip("Home page")
-        home_btn.setIcon(QIcon(f'{parent_dir}/data/images/home.png'))
+        home_btn.setIcon(QIcon(f"{parent_dir}/data/images/home.png"))
 
         # adding action to the home button
         # making browser go to home
-        home_btn.triggered.connect(lambda: qt_window.browser.load(
-            QUrl("https://apps.microsoft.com/")))
+        home_btn.triggered.connect(
+            lambda: qt_window.browser.load(QUrl("https://apps.microsoft.com/"))
+        )
         navtb.addAction(home_btn)
 
         qt_window.label2 = QLabel(qt_window)
@@ -201,18 +204,18 @@ class AppSelector(QObject):
         # adding select button to the tool bar
         navtb.addWidget(qt_window.urlbar)
         qt_window.label = QLabel(qt_window)
-        qt_window.label.setText(
-            "  Select The App ")
+        qt_window.label.setText("  Select The App ")
         qt_window.label.setStyleSheet("QLabel{font-size: 10pt;}")
         navtb.addWidget(qt_window.label)
 
         qt_window.select_btn = QPushButton(qt_window)
         qt_window.select_btn.setText("Select")
         qt_window.select_btn.setStatusTip("Select The File To Download")
-        qt_window.select_btn.setIcon(QIcon(f'{parent_dir}/data/images/ok.png'))
+        qt_window.select_btn.setIcon(QIcon(f"{parent_dir}/data/images/ok.png"))
         qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)
+
 
 # test code
 # from PyQt6.QtWidgets import (QApplication, QMainWindow)
