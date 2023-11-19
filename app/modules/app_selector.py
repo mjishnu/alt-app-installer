@@ -40,12 +40,18 @@ class CustomWebEngineView(QWebEngineView):
         self._context_menu_pos = event.pos()
 
         # Check if the element under the cursor is a text box using JavaScript
-        script = """
+        x = event.x()
+        y = event.y()
+
+        script = f"""
             (function() {{
-                let el = document.elementFromPoint({}, {});
+                let el = document.elementFromPoint({x}, {y});
+                while (el && el.shadowRoot) {{
+                    el = el.shadowRoot.elementFromPoint({x}, {y});
+                }}
                 return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable);
             }})()
-        """.format(event.x(), event.y())
+        """
         self.page().runJavaScript(script, self._on_text_box_check)
 
     def _on_text_box_check(self, is_text_box):
