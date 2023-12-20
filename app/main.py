@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from core import core
 from modules.app_selector import AppSelector
-from utls import UrlBox, Worker, open_browser
+from utls import UrlBox, Worker, open_browser, Ui_about
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,9 +28,7 @@ class MainWindowGui(core):
                 "https://github.com/m-jishnu/alt-app-installer/releases"
             )
         )
-        self.actionAbout.triggered.connect(
-            lambda: open_browser("https://github.com/m-jishnu/alt-app-installer")
-        )
+        self.actionAbout.triggered.connect(self.about)
         self.actionHelp.triggered.connect(
             lambda: open_browser("https://discord.com/invite/9eeN2Wve4T")
         )
@@ -55,6 +53,10 @@ class MainWindowGui(core):
             self.all_dependencies = False
             self.actionIgnore_Latest_Version.setChecked(False)
             self.actionIgnore_Latest_Version.setEnabled(True)
+
+    def about(self):
+        window = Ui_about()
+        window.exec()
 
     def open_Logs(self):
         path = f"{curr_dir}/log.txt"
