@@ -1,4 +1,0 @@
-pythonnet
-requests
-pyqt6
-PyQt6-WebEngine
