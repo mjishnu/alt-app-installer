@@ -25,9 +25,9 @@ def select_file():
 window = Tk()
 
 # Set window title
-window.title("file Installer")
+window.title("Alt App Installer")
 
-label = ttk.Label(window, text="file Installer V1.1")
+label = ttk.Label(window, text="Alt App Installer V1.1")
 
 label.config(font=("Courier", 12))
 
