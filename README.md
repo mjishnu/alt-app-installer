@@ -1,7 +1,7 @@
 # Windows-Store-App-Installer
 A Simple Program To Install Windows Store Apps
 
-![image](https://user-images.githubusercontent.com/83004520/154809372-b5a89b8e-0922-43e2-861d-c4280b9734d8.png)
+<img width="400" alt="image" src="https://github.com/m-jishnu/alt-app-installer/assets/83004520/26853a4a-0e9e-4beb-bf3c-b7661e5c0545">
 
 # Video Guide
 
