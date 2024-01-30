@@ -1,3 +1,4 @@
+pypdl
 pythonnet
 requests
 pyqt6
