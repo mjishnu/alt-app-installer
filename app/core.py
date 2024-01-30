@@ -8,7 +8,7 @@ from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
-from modules.downloader import Downloader
+from pypdl import Downloader
 from modules.gui import Ui_MainProgram
 from modules.url_gen import url_generator
 from utls import Worker
@@ -267,17 +267,18 @@ class core(internal_func):
                         path,
                         20,
                         retries=5,
-                        retry_func=new_url_gen,
+                        mirror_func=new_url_gen,
                         block=False,
+                        display=False,
                     )
-                    while d.progress != 100:
+                    while not d.completed:
                         download_percentage = int(d.progress)
                         progress_current.emit(download_percentage)
                         time.sleep(0.1)
                         if self.stop.is_set():  # check if the stop event is triggered
                             d.stop()
                             raise Exception("Stoped By User!")
-                        if d.Failed:
+                        if d.failed:
                             raise Exception("Download Error Occured!")
 
                     progress_main.emit(part)
