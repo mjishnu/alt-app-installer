@@ -262,7 +262,7 @@ class core(internal_func):
                             emit=False,
                         )[0][f_name]
 
-                    d.start(
+                    res = d.start(
                         remote_url,
                         path,
                         20,
@@ -277,9 +277,12 @@ class core(internal_func):
                         time.sleep(0.1)
                         if self.stop.is_set():  # check if the stop event is triggered
                             d.stop()
+                            res.result()
                             raise Exception("Stoped By User!")
                         if d.failed:
+                            res.result()
                             raise Exception("Download Error Occured!")
+                    res.result()
 
                     progress_main.emit(part)
 
