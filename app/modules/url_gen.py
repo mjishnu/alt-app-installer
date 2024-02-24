@@ -255,7 +255,7 @@ def url_generator(
             cookie_content = f.read()
         check(Event)
         out = session.post(
-            "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx",
+            "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
             data=cookie_content,
             headers={"Content-Type": "application/soap+xml; charset=utf-8"},
             verify=False,
@@ -273,7 +273,7 @@ def url_generator(
             cat_id_content = f.read().format(cookie, cat_id, release_type)
         check(Event)
         out = session.post(
-            "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx",
+            "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
             data=cat_id_content,
             headers={"Content-Type": "application/soap+xml; charset=utf-8"},
             verify=False,
@@ -337,7 +337,7 @@ def url_generator(
 
         def geturl(updateid, revisionnumber, file_name, total_prog):
             out = session.post(
-                "https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured",
+                "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured",
                 data=file_content.format(updateid, revisionnumber, release_type),
                 headers={"Content-Type": "application/soap+xml; charset=utf-8"},
                 verify=False,
