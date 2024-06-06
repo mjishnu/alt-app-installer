@@ -1,14 +1,15 @@
+import asyncio
 import os
 import time
 from datetime import datetime
 from threading import Event
 
 import clr
+from pypdl import Pypdl
 from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
-from pypdl import Downloader
 from modules.gui import Ui_MainProgram
 from modules.url_gen import url_generator
 from utls import Worker
@@ -204,13 +205,15 @@ class core(internal_func):
 
         self.url = arg  # saving the url for future uses
         worker = Worker(
-            lambda **kwargs: url_generator(
-                str(arg),
-                self.ignore_ver,
-                self.all_dependencies,
-                self.stop,
-                emit=True,
-                **kwargs,
+            lambda **kwargs: asyncio.run(
+                url_generator(
+                    str(arg),
+                    self.ignore_ver,
+                    self.all_dependencies,
+                    self.stop,
+                    emit=True,
+                    **kwargs,
+                )
             )
         )
         worker.signals.result.connect(self.download_install)
@@ -243,16 +246,16 @@ class core(internal_func):
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            d = Downloader()
+            d = Pypdl(allow_reuse=True)
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
-                if not os.path.exists(path):  # don't download if it exists already
 
-                    def new_url_gen():
-                        return url_generator(
+                def new_url_gen():
+                    urls = asyncio.run(
+                        url_generator(
                             self.url,
                             self.ignore_ver,
                             self.all_dependencies,
@@ -260,37 +263,39 @@ class core(internal_func):
                             progress_current,
                             progress_main,
                             emit=False,
-                        )[0][f_name]
-
-                    res = d.start(
-                        remote_url,
-                        path,
-                        20,
-                        retries=5,
-                        mirror_func=new_url_gen,
-                        block=False,
-                        display=False,
+                        )
                     )
-                    while not d.completed:
-                        download_percentage = int(d.progress)
-                        progress_current.emit(download_percentage)
-                        time.sleep(0.1)
-                        if self.stop.is_set():  # check if the stop event is triggered
-                            d.stop()
-                            res.result()
-                            raise Exception("Stoped By User!")
-                        if d.failed:
-                            res.result()
-                            raise Exception("Download Error Occured!")
-                    res.result()
+                    return urls[0][f_name]
 
-                    progress_main.emit(part)
+                d.start(
+                    remote_url,
+                    path,
+                    20,
+                    retries=3,
+                    mirror_func=new_url_gen,
+                    block=False,
+                    display=False,
+                    overwrite=False,
+                )
+                while not d.completed:
+                    download_percentage = int(d.progress)
+                    progress_current.emit(download_percentage)
+                    time.sleep(0.1)
+                    if self.stop.is_set():  # check if the stop event is triggered
+                        d.stop()
+                        raise Exception("Stoped By User!")
+                    if d.failed:
+                        raise Exception("Download Error Occured!")
+
+                progress_main.emit(part)
 
                 fname_lower = (f_name.split(".")[1].split("_")[0]).lower()
                 if file_name in fname_lower:
                     path_lst[path] = 1
                 else:
                     path_lst[path] = 0
+
+            d.shutdown()
             return path_lst, uwp  # install the apps'
 
         worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))

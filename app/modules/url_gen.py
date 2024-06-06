@@ -1,3 +1,4 @@
+import asyncio
 import html
 import json
 import os
@@ -5,10 +6,9 @@ import platform
 import re
 import time
 import warnings
-from threading import Thread
 from xml.dom import minidom
 
-import requests
+import aiohttp
 
 warnings.filterwarnings("ignore")
 # parent directory for absloute path
@@ -41,39 +41,10 @@ def clean_name(badname):
     return name.lower()
 
 
-def url_generator(
+async def url_generator(
     url, ignore_ver, all_dependencies, Event, progress_current, progress_main, emit
 ):
-    total_prog = 0
-    progress_current.emit(total_prog)
-    # geting product id from url
-    try:
-        pattern = re.compile(r".+\/([^\/\?]+)(?:\?|$)")
-        matches = pattern.search(str(url))
-        product_id = matches.group(1)
-    except AttributeError:
-        raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
-
-    # getting cat_id and package name from the api
-    details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
-    session = requests.Session()
-    r = session.get(details_api, timeout=20)
-    response = json.loads(
-        r.text,
-        object_hook=lambda obj: {
-            k: json.loads(v) if k == "FulfillmentData" else v for k, v in obj.items()
-        },
-    )
-
-    if not response.get("Payload", None):
-        raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
-
-    response_data = response["Payload"]["Skus"][0]
-    data_list = response_data.get("FulfillmentData", None)
-    total_prog += 20
-    progress_current.emit(total_prog)
-
-    def uwp_gen():
+    async def uwp_gen(session):
         nonlocal total_prog
 
         def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
@@ -254,14 +225,14 @@ def url_generator(
         with open(rf"{parent_dir}\data\xml\GetCookie.xml", "r") as f:
             cookie_content = f.read()
         check(Event)
-        out = session.post(
-            "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
-            data=cookie_content,
-            headers={"Content-Type": "application/soap+xml; charset=utf-8"},
-            verify=False,
-            timeout=20,
-        )
-        doc = minidom.parseString(out.text)
+        out = await (
+            await session.post(
+                "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
+                data=cookie_content,
+                headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+            )
+        ).text()
+        doc = minidom.parseString(out)
         total_prog += 20
         progress_current.emit(total_prog)
         # extracting the cooking from the EncryptedData tag
@@ -272,15 +243,15 @@ def url_generator(
         with open(rf"{parent_dir}\data\xml\WUIDRequest.xml", "r") as f:
             cat_id_content = f.read().format(cookie, cat_id, release_type)
         check(Event)
-        out = session.post(
-            "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
-            data=cat_id_content,
-            headers={"Content-Type": "application/soap+xml; charset=utf-8"},
-            verify=False,
-            timeout=20,
-        )
+        out = await (
+            await session.post(
+                "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx",
+                data=cat_id_content,
+                headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+            )
+        ).text()
 
-        doc = minidom.parseString(html.unescape(out.text))
+        doc = minidom.parseString(html.unescape(out))
         total_prog += 20
         progress_current.emit(total_prog)
         filenames = {}  # {ID: filename}
@@ -335,15 +306,15 @@ def url_generator(
         progress_current.emit(total_prog)
         part = int(30 / len(final_dict))
 
-        def geturl(updateid, revisionnumber, file_name, total_prog):
-            out = session.post(
-                "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured",
-                data=file_content.format(updateid, revisionnumber, release_type),
-                headers={"Content-Type": "application/soap+xml; charset=utf-8"},
-                verify=False,
-                timeout=20,
-            )
-            doc = minidom.parseString(out.text)
+        async def geturl(updateid, revisionnumber, file_name, total_prog):
+            out = await (
+                await session.post(
+                    "https://fe3cr.delivery.mp.microsoft.com/ClientWebService/client.asmx/secured",
+                    data=file_content.format(updateid, revisionnumber, release_type),
+                    headers={"Content-Type": "application/soap+xml; charset=utf-8"},
+                )
+            ).text()
+            doc = minidom.parseString(out)
             # checks for all the tags which have name "filelocation" and extracts the url from it
             for i in doc.getElementsByTagName("FileLocation"):
                 url = i.getElementsByTagName("Url")[0].firstChild.nodeValue
@@ -353,18 +324,19 @@ def url_generator(
                     total_prog += part
                     progress_current.emit(total_prog)
 
-        # using threading to concurrently get the download url for all the files
-        threads = []
+        # creating a list of tasks to be executed
+        tasks = []
         for key, value in final_dict.items():
             check(Event)
             file_name = key
             updateid, revisionnumber = value
-            th = Thread(
-                target=geturl, args=(updateid, revisionnumber, file_name, total_prog)
+            tasks.append(
+                asyncio.create_task(
+                    geturl(updateid, revisionnumber, file_name, total_prog)
+                )
             )
-            th.daemon = True
-            threads.append(th)
-            th.start()
+
+        await asyncio.gather(*tasks)
 
         # waiting for all threads to complete
         while len(file_dict) != len(final_dict):
@@ -377,13 +349,13 @@ def url_generator(
         # uwp = True
         return file_dict, parse_names, main_file_name, True
 
-    def non_uwp_gen():
+    async def non_uwp_gen(session):
         nonlocal total_prog
         api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/packageManifests//{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
         check(Event)
 
-        r = session.get(api, timeout=20)
-        datas = json.loads(r.text)
+        data = await (await session.get(api)).text()
+        datas = json.loads(data)
 
         if not datas.get("Data", None):
             raise Exception("server returned a empty list")
@@ -444,8 +416,40 @@ def url_generator(
         # uwp = False
         return file_dict, [main_file_name], main_file_name, False
 
-    # check and see if the app is ump or not, return --> func_output,(ump or not)
-    if data_list:
-        return uwp_gen()
-    else:
-        return non_uwp_gen()
+    total_prog = 0
+    progress_current.emit(total_prog)
+    # geting product id from url
+    try:
+        pattern = re.compile(r".+\/([^\/\?]+)(?:\?|$)")
+        matches = pattern.search(str(url))
+        product_id = matches.group(1)
+    except AttributeError:
+        raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
+
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=60), raise_for_status=True
+    ) as session:
+        # getting cat_id and package name from the api
+        details_api = f"https://storeedgefd.dsx.mp.microsoft.com/v9.0/products/{product_id}?market=US&locale=en-us&deviceFamily=Windows.Desktop"
+        data = await (await session.get(details_api)).text()
+        response = json.loads(
+            data,
+            object_hook=lambda obj: {
+                k: json.loads(v) if k == "FulfillmentData" else v
+                for k, v in obj.items()
+            },
+        )
+
+        if not response.get("Payload", None):
+            raise Exception("No Data Found: --> [You Selected Wrong Page, Try Again!]")
+
+        response_data = response["Payload"]["Skus"][0]
+        data_list = response_data.get("FulfillmentData", None)
+        total_prog += 20
+        progress_current.emit(total_prog)
+
+        # check and see if the app is ump or not, return --> func_output,(ump or not)
+        if data_list:
+            return await uwp_gen(session)
+        else:
+            return await non_uwp_gen(session)
