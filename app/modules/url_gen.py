@@ -338,10 +338,10 @@ async def url_generator(
 
         await asyncio.gather(*tasks)
 
-        # waiting for all threads to complete
-        while len(file_dict) != len(final_dict):
-            check(Event)
-            time.sleep(0.2)
+        # # waiting for all threads to complete
+        if len(file_dict) != len(final_dict):
+            raise Exception("server returned a incomplete list")
+
         if emit is True:
             progress_current.emit(100)
             time.sleep(0.2)

@@ -271,20 +271,23 @@ class core(internal_func):
                     remote_url,
                     path,
                     20,
-                    retries=3,
+                    retries=0,
                     mirror_func=new_url_gen,
                     block=False,
                     display=False,
                     overwrite=False,
                 )
+                print(remote_url)
                 while not d.completed:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
                     time.sleep(0.1)
                     if self.stop.is_set():  # check if the stop event is triggered
                         d.stop()
+                        d.shutdown()
                         raise Exception("Stoped By User!")
                     if d.failed:
+                        d.shutdown()
                         raise Exception("Download Error Occured!")
 
                 progress_main.emit(part)
