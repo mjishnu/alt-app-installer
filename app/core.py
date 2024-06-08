@@ -271,7 +271,7 @@ class core(internal_func):
                     remote_url,
                     path,
                     20,
-                    retries=0,
+                    retries=3,
                     mirror_func=new_url_gen,
                     block=False,
                     display=False,
