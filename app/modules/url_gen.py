@@ -23,17 +23,19 @@ def check(Event):
 
 
 def os_arc():
-    if platform.machine().endswith("64"):
+    machine = platform.machine().lower()
+
+    if machine.endswith("arm64"):
+        return "arm64"
+    if machine.endswith("64"):
         return "x64"
-    if platform.machine().endswith("32") or platform.machine().endswith("86"):
+    if machine.endswith("32") or machine.endswith("86"):
         return "x86"
-    ################################
-    return "arm"  # not sure wheather work or not, needs testing
+    else:
+        return "arm"
 
 
 # cleans My.name.1.2 -> myname
-
-
 def clean_name(badname):
     name = "".join(
         [(i if (64 < ord(i) < 91 or 96 < ord(i) < 123) else "") for i in badname]

@@ -1,14 +1,27 @@
+import logging
+import os
 import sys
 import traceback
 import webbrowser
 
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QIcon, QPixmap, QFont
+from PyQt6.QtGui import QFont, QIcon, QPixmap
 from PyQt6.QtWidgets import QDialog
-import os
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def default_logger(name: str) -> logging.Logger:
+    """Creates a default debugging logger."""
+    logger = logging.getLogger(name)
+    handler = logging.FileHandler(f"{curr_dir}/log.txt", mode="a", delay=True)
+    custom_format = (
+        f"[{name} logs] \n[%(asctime)s]\n\n %(levelname)s: %(message)s\n{82*"-"}\n"
+    )
+    handler.setFormatter(logging.Formatter(custom_format, datefmt="%d-%m-%Y %H:%M:%S"))
+    logger.addHandler(handler)
+    return logger
 
 
 class UrlBox(QDialog):

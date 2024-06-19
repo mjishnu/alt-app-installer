@@ -12,13 +12,17 @@ from PyQt6.QtWidgets import QMessageBox
 
 from modules.gui import Ui_MainProgram
 from modules.url_gen import url_generator
-from utls import Worker
+from utls import Worker, default_logger
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 clr.AddReference(rf"{script_dir}\data\System.Management.Automation.dll")
 
 
 class internal_func(Ui_MainProgram):
+    def __init__(self):
+        super().__init__()
+        self.logger = default_logger("Downloader")
+
     def error_msg(self, text, msg_details, title="Error", critical=False):
         msg = QMessageBox()
         msg.setWindowTitle(title)
@@ -246,7 +250,7 @@ class core(internal_func):
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            d = Pypdl(allow_reuse=True)
+            d = Pypdl(allow_reuse=True, logger=self.logger)
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
@@ -277,7 +281,7 @@ class core(internal_func):
                     display=False,
                     overwrite=False,
                 )
-                print(remote_url)
+
                 while not d.completed:
                     download_percentage = int(d.progress)
                     progress_current.emit(download_percentage)
