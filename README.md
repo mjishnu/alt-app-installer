@@ -1,6 +1,6 @@
 # Alt App Installer
 
-A program to  download and install microsoft store apps
+A program to  download and install microsoft store apps, for cli version check [alt app installer cli](https://github.com/mjishnu/alt-app-installer-cli)
 
 # Features
 
