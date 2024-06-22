@@ -384,8 +384,8 @@ class core(internal_func):
                     msg = "Failed To Install Dependencies!"
                     detail_msg = "In some cases, this occurs since the dependencies are already installed on your pc. "
                     detail_msg += "So check wheather the program is installed from start menu.\n\n"
-                    detail_msg += "if the app is not installed, Enable [Dependencies --> Ignore Version], "
-                    detail_msg += "If the problem still exists Enable [Dependencies --> Ignore All Filters]"
+                    detail_msg += "if the app is not installed, Enable [Advanced --> Dependencies --> Ignore Version], "
+                    detail_msg += "If the problem still exists Enable [Advanced --> Dependencies --> Ignore All Filters]"
                     endresult = (msg, detail_msg, "Warning")
 
                 return endresult
