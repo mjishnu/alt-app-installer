@@ -29,7 +29,7 @@ A program to  download and install microsoft store apps, for cli version check [
 
 <img width="1060" alt="1-min" src="https://user-images.githubusercontent.com/83004520/226940878-11cfb8ca-074e-4876-8a38-142559f5116b.png">
 <img width="1060" alt="2-min" src="https://user-images.githubusercontent.com/83004520/226940893-f4f01e91-2d0c-4231-b1a2-27653d6ac164.png">
-<img width="1060" alt="3-min" src="https://github.com/m-jishnu/alt-app-installer/assets/83004520/325e4b8f-f026-4e83-8055-b7defc3adcf5">
+<img width="1060" alt="3-min" src="https://github.com/mjishnu/alt-app-installer/assets/83004520/325e4b8f-f026-4e83-8055-b7defc3adcf5">
 
 # Requirements
 - windows 10/11
@@ -46,7 +46,7 @@ A program to  download and install microsoft store apps, for cli version check [
 # How to build from source
 
 - Install [git](https://git-scm.com/download/win)
-- Open a git bash terminal run the command `git clone https://github.com/m-jishnu/alt-app-installer`
+- Open a git bash terminal run the command `git clone https://github.com/mjishnu/alt-app-installer`
 - Now install python3 and pip, go to the cloned folder and run the command `pip install -r requirements.txt`
 - Run the "run.bat" or run the command `.\run` in the terminal from the cloned folder
 - Enjoy!
@@ -71,5 +71,5 @@ https://youtu.be/ayIilTc-6u4
 # Credits
 
 - [StoreLib](https://github.com/StoreDev/StoreLib): API for download link generation
-- [pypdl](https://github.com/m-jishnu/pypdl): Downloader
+- [pypdl](https://github.com/mjishnu/pypdl): Downloader
 - [MS-Store-API](https://github.com/ThomasPe/MS-Store-API): API for download link generation

@@ -25,7 +25,7 @@ class MainWindowGui(core):
         self.actionclear_cache.triggered.connect(self.clear_cache)
         self.actionCheck_For_Updates.triggered.connect(
             lambda: open_browser(
-                "https://github.com/m-jishnu/alt-app-installer/releases"
+                "https://github.com/mjishnu/alt-app-installer/releases"
             )
         )
         self.actionAbout.triggered.connect(self.about)
