@@ -280,7 +280,7 @@ class Ui_about(QDialog):
         self.gridLayout.addItem(spacerItem9, 0, 1, 1, 1)
         self.label.setText("Alt App Installer 2.6.9")
         self.label_2.setText("© 2022 - 2024 Jishnu M")
-        urlLink = '<a href="http://github.com/m-jishnu/alt-app-installer" style="text-decoration: none; color: black;">github.com/m-jishnu/alt-app-installer</a>'
+        urlLink = '<a href="http://github.com/mjishnu/alt-app-installer" style="text-decoration: none; color: black;">github.com/mjishnu/alt-app-installer</a>'
         self.label_3.setText(urlLink)
         self.setWindowTitle("About")
         self.label_3.setOpenExternalLinks(True)
