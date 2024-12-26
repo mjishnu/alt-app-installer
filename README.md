@@ -11,7 +11,7 @@ A program to  download and install microsoft store apps, for cli version check [
 - Can install already downloaded microsoft store apps (appx,msix,appxbundle...)
 - Can get microsoft store apps by providing its url
 - Uses custom link generation to produce download links using API from [StoreLib](https://github.com/StoreDev/StoreLib) and [MS-Store-API](https://github.com/ThomasPe/MS-Store-API)
-- Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using [pypdl](https://github.com/m-jishnu/pypdl) for fast downloading
+- Uses [concurrent/multi-part downloader](https://stackoverflow.com/questions/93642/how-do-download-accelerators-work) using [pypdl](https://github.com/mjishnu/pypdl) for fast downloading
 - Can resume interrupted downloads
 - Automatically use a new url in case current one expires
 - Downloads and install app along with all dependencies 
@@ -24,7 +24,7 @@ A program to  download and install microsoft store apps, for cli version check [
     - System architecture of the user(x64/x32)
     - Favorable type(these are decrypted file formats, which doesn't need admin privilage to install)
     - Latest version
-- Then it retrives the download links for the parsed data using the API and the files are downloaded using [pypdl](https://github.com/m-jishnu/pypdl), which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
+- Then it retrives the download links for the parsed data using the API and the files are downloaded using [pypdl](https://github.com/mjishnu/pypdl), which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
 - Finally it installs the downloaded files via System.Management.Automation.dll using [pythonnet](https://pypi.org/project/pythonnet)
 
 <img width="1060" alt="1-min" src="https://user-images.githubusercontent.com/83004520/226940878-11cfb8ca-074e-4876-8a38-142559f5116b.png">
