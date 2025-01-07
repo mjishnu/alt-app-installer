@@ -21,7 +21,6 @@ clr.AddReference(rf"{script_dir}\data\System.Management.Automation.dll")
 class internal_func(Ui_MainProgram):
     def __init__(self):
         super().__init__()
-        self.logger = default_logger("Downloader")
 
     def error_msg(self, text, msg_details, title="Error", critical=False):
         msg = QMessageBox()
@@ -250,49 +249,51 @@ class core(internal_func):
             if not os.path.exists(dwnpath):
                 os.makedirs(dwnpath)
             path_lst = {}
-            d = Pypdl(allow_reuse=True, logger=self.logger)
+            logger, handler = default_logger("Downloader")
+            d = Pypdl(allow_reuse=True, logger=logger)
             for f_name in final_data:
                 # Define the remote file to retrieve
                 remote_url = main_dict[f_name]  # {f_name:url}
                 # Download remote and save locally
                 path = f"{dwnpath}{f_name}"
 
-                def new_url_gen():
-                    urls = asyncio.run(
-                        url_generator(
-                            self.url,
-                            self.ignore_ver,
-                            self.all_dependencies,
-                            self.stop,
-                            progress_current,
-                            progress_main,
-                            emit=False,
-                        )
+                async def new_url_gen():
+                    urls = await url_generator(
+                        self.url,
+                        self.ignore_ver,
+                        self.all_dependencies,
+                        self.stop,
+                        progress_current,
+                        progress_main,
+                        emit=False,
                     )
+
                     return urls[0][f_name]
 
-                d.start(
-                    remote_url,
-                    path,
-                    20,
+                future = d.start(
+                    url=remote_url,
+                    file_path=path,
+                    segments=10,
                     retries=3,
-                    mirror_func=new_url_gen,
+                    mirrors=new_url_gen,
                     block=False,
                     display=False,
                     overwrite=False,
                 )
 
                 while not d.completed:
-                    download_percentage = int(d.progress)
+                    download_percentage = int(d.progress) if d.progress else 0
                     progress_current.emit(download_percentage)
                     time.sleep(0.1)
                     if self.stop.is_set():  # check if the stop event is triggered
-                        d.stop()
                         d.shutdown()
+                        handler.close()
                         raise Exception("Stoped By User!")
-                    if d.failed:
-                        d.shutdown()
-                        raise Exception("Download Error Occured!")
+
+                if len(d.failed) == d.total_task:
+                    d.shutdown()
+                    handler.close()
+                    raise Exception("Download Error Occured!")
 
                 progress_main.emit(part)
 
@@ -302,7 +303,10 @@ class core(internal_func):
                 else:
                     path_lst[path] = 0
 
+                future.result()
             d.shutdown()
+
+            handler.close()
             return path_lst, uwp  # install the apps'
 
         worker = Worker(lambda **kwargs: download_install_thread(arg, **kwargs))
