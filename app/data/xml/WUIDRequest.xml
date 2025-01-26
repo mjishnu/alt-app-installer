@@ -2,9 +2,11 @@
 	xmlns:a="http://www.w3.org/2005/08/addressing"
 	xmlns:s="http://www.w3.org/2003/05/soap-envelope">
 	<s:Header>
-		<a:Action s:mustUnderstand="1">http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates</a:Action>
+		<a:Action s:mustUnderstand="1">
+			http://www.microsoft.com/SoftwareDistribution/Server/ClientWebService/SyncUpdates</a:Action>
 		<a:MessageID>urn:uuid:175df68c-4b91-41ee-b70b-f2208c65438e</a:MessageID>
-		<a:To s:mustUnderstand="1">https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx</a:To>
+		<a:To s:mustUnderstand="1">
+			https://fe3.delivery.mp.microsoft.com/ClientWebService/client.asmx</a:To>
 		<o:Security s:mustUnderstand="1"
 			xmlns:o="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
 			<Timestamp
@@ -655,7 +657,7 @@
 				</FilterAppCategoryIds>
 				<TreatAppCategoryIdsAsInstalled>true</TreatAppCategoryIdsAsInstalled>
 				<AlsoPerformRegularSync>false</AlsoPerformRegularSync>
-				<ComputerSpec/>
+				<ComputerSpec />
 				<ExtendedUpdateInfoParameters>
 					<XmlUpdateFragmentTypes>
 						<XmlUpdateFragmentType>Extended</XmlUpdateFragmentType>
@@ -670,9 +672,11 @@
 				</ClientPreferredLanguages>
 				<ProductsParameters>
 					<SyncCurrentVersionOnly>false</SyncCurrentVersionOnly>
-					<DeviceAttributes>BranchReadinessLevel=CB;CurrentBranch=rs_prerelease;OEMModel=Virtual Machine;FlightRing={2};AttrDataVer=21;SystemManufacturer=Microsoft Corporation;InstallLanguage=en-US;OSUILocale=en-US;InstallationType=Client;FlightingBranchName=external;FirmwareVersion=Hyper-V UEFI Release v2.5;SystemProductName=Virtual Machine;OSSkuId=48;FlightContent=Branch;App=WU;OEMName_Uncleaned=Microsoft Corporation;AppVer=10.0.16184.1001;OSArchitecture=AMD64;SystemSKU=None;UpdateManagementGroup=2;IsFlightingEnabled=1;IsDeviceRetailDemo=0;TelemetryLevel=3;OSVersion=10.0.16184.1001;DeviceFamily=Windows.Desktop;</DeviceAttributes>
+					<DeviceAttributes>
+						BranchReadinessLevel=CB;CurrentBranch=rs_prerelease;FlightRing={2};FlightingBranchName=external;IsFlightingEnabled=1;InstallLanguage=en-US;OSUILocale=en-US;InstallationType=Client;DeviceFamily=Windows.Desktop;
+					</DeviceAttributes>
 					<CallerAttributes>Interactive=1;IsSeeker=0;</CallerAttributes>
-					<Products/>
+					<Products />
 				</ProductsParameters>
 			</parameters>
 		</SyncUpdates>

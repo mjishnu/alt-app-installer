@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import html
 import json
 import os
@@ -43,179 +44,91 @@ def clean_name(badname):
     return name.lower()
 
 
+def select_latest(content_list, curr_arch, ignore_ver=False):
+    # Score function returns a tuple, higher is better
+    def score(item):
+        fav_type = {"appx", "msix", "msixbundle", "appxbundle"}
+        arch, ext, modified_str, version_str = item
+        # 2 = exact arch, 1 = neutral, 0 = something else
+        arch_score = 2 if arch == curr_arch else (1 if arch == "neutral" else 0)
+        # 1 = favorable type, 0 = other
+        type_score = 1 if ext in fav_type else 0
+        if ignore_ver:
+            dt = 0
+            ver_tuple = (0, 0, 0, 0)
+        else:
+            dt = datetime.datetime.fromisoformat(modified_str)
+            ver_tuple = tuple(map(int, version_str.split(".")))
+        # The “score” is a tuple that Python compares in order
+        # Higher arch_score > better type_score > later date > bigger version
+        return (arch_score, type_score, dt, ver_tuple)
+
+    # Filter to arch in (curr_arch, "neutral") so we don’t pick nonsense arch
+    candidates = [item for item in content_list if item[0] in (curr_arch, "neutral")]
+    if not candidates:
+        candidates = content_list  # fallback if no matching arch at all
+
+    # Pick the item with the best score
+    best = max(candidates, key=score)
+    return best
+
+
 async def url_generator(
     url, ignore_ver, all_dependencies, Event, progress_current, progress_main, emit
 ):
     async def uwp_gen(session):
         nonlocal total_prog
 
-        def parse_dict(main_dict, file_name, ignore_ver, all_dependencies):
-            def greater_ver(arg1, arg2):
-                first = arg1.split(".")
-                second = arg2.split(".")
-                if first[0] > second[0]:
-                    return arg1
-                if first[0] == second[0]:
-                    if first[1] > second[1]:
-                        return arg1
-                    if first[1] == second[1]:
-                        if first[2] > second[2]:
-                            return arg1
-                        if first[2] == second[2]:
-                            if first[3] > second[3]:
-                                return arg1
-                            return arg2
-                        return arg2
-                    return arg2
-                return arg2
-
-            # removing all non string elements
+        def parse_dict(main_dict, file_name):
             file_name = clean_name(file_name.split("-")[0])
-
             pattern = re.compile(r".+\.BlockMap")
-            full_data = {}  # {(name,arch,type,version):full_name}
+            full_data = {}
 
-            for key in main_dict.keys():
-                matches = pattern.search(str(key))
-                # removing block map files
-                if not matches:
-                    # ['Microsoft.VCLibs.140.00', '14.0.30704.0', 'x86', '', '8wekyb3d8bbwe.appx']
+            for key, value in main_dict.items():
+                if not pattern.search(str(key)):
                     temp = key.split("_")
-                    # contains [name,arch,type,version]
-                    # temp[-1].split(".")[1] = type[appx,msix, etc]
                     content_lst = (
                         clean_name(temp[0]),
                         temp[2].lower(),
                         temp[-1].split(".")[1].lower(),
+                        value,
                         temp[1],
                     )
                     full_data[content_lst] = key
 
-            # dict of repeated_names {repeated_name:[ver1,ver2,ver3,ver4]}
             names_dict = {}
-            for value in full_data:
-                if value[0] not in names_dict:
-                    names_dict[value[0]] = [value[1:]]
-                else:
-                    names_dict[value[0]] += [value[1:]]
+            for v in full_data:
+                names_dict.setdefault(v[0], []).append(v[1:])
 
-            final_arch = None  # arch of main file
-            # fav_type is a list of extensions that are easy to install without admin privileges
-            fav_type = ["appx", "msix", "msixbundle", "appxbundle"]
-            main_file_name = None
-            # get the full file name list of the main file (eg: spotify.appx, minecraft.appx)
-            pattern = re.compile(file_name)
-            # getting the name of the main_appx file
-            remove_list = []
-            curr_arch = os_arc()
-
-            for key in names_dict:
-                matches = pattern.search(key)
-                if matches:
-                    # all the contents of the main file [ver1,ver2,ver3,ver4]
-                    content_list = names_dict[key]
-                    remove_list.append(key)
-
-                    arch = content_list[0][0]
-                    _type = content_list[0][1]
-                    ver = content_list[0][2]
-
-                    if len(content_list) > 1:
-                        for data in content_list[1:]:
-                            if (
-                                arch not in ("neutral", curr_arch)
-                                and data[0] != arch
-                                and data[0] in ("neutral", curr_arch)
-                            ):
-                                arch = data[0]
-                                _type = data[1]
-                                ver = data[2]
-                            else:
-                                if (
-                                    data[0] == arch
-                                    and data[1] != _type
-                                    and data[1] in fav_type
-                                ):
-                                    _type = data[1]
-                                    ver = data[2]
-                                else:
-                                    if (
-                                        data[0] == arch
-                                        and data[1] == _type
-                                        and data[2] != ver
-                                    ):
-                                        ver = greater_ver(ver, data[2])
-
-                    main_file_name = full_data[(key, arch, _type, ver)]
-                    final_arch = curr_arch if arch == "neutral" else arch
+            file_arch, main_file_name, main_file_name_key = None, None, None
+            pat_main = re.compile(file_name)
+            sys_arch = os_arc()
+            for k in names_dict:
+                if pat_main.search(k):
+                    content_list = names_dict[k]
+                    main_file_name_key = k
+                    arch, ext, modifed, ver = select_latest(content_list, sys_arch)
+                    main_file_name = full_data[(k, arch, ext, modifed, ver)]
+                    file_arch = sys_arch if arch == "neutral" else arch
                     break
 
-            # removing all the items that we have already parsed (done this way to remove runtime errors)
-            for i in remove_list:
-                del names_dict[i]
+            del names_dict[main_file_name_key]
 
             final_list = []
-            # checking for dependencies
-            #################################################################
-            for key in names_dict:
-                # all the contents of the main file [ver1,ver2,ver3,ver4]
-                # [(arch,type,ver),(arch,type,ver),(arch,type,ver)]
-                content_list = names_dict[key]
-
+            for k in names_dict:
+                content_list = names_dict[k]
                 if all_dependencies:
-                    # if all_dependencies is checked then we will just add all the files
                     for data in content_list:
-                        final_list.append(full_data[(key, *data)])
+                        final_list.append(full_data[(k, *data)])
                 else:
-                    # if all_dependencies is not checked then we will add only the files that are required
-                    arch = content_list[0][0]
-                    _type = content_list[0][1]
-                    ver = content_list[0][2]
-
-                    if len(content_list) > 1:
-                        for data in content_list[1:]:
-                            # checking arch is same as main file
-                            if (
-                                arch not in ("neutral", final_arch)
-                                and data[0] != arch
-                                and data[0] in ("neutral", final_arch)
-                            ):
-                                arch = data[0]
-                                _type = data[1]
-                                ver = data[2]
-                            else:
-                                if (
-                                    data[0] == arch
-                                    and data[1] != _type
-                                    and data[1] in fav_type
-                                ):
-                                    _type = data[1]
-                                    ver = data[2]
-                                else:
-                                    if (
-                                        data[0] == arch
-                                        and data[1] == _type
-                                        and data[2] != ver
-                                    ):
-                                        # checking to see if ignore_ver is checked or not
-                                        if ignore_ver:
-                                            final_list.append(
-                                                full_data[(key, arch, _type, ver)]
-                                            )
-                                            ver = data[2]
-                                        else:
-                                            ver = greater_ver(ver, data[2])
-
-                    # only add if arch is same as main file
-                    if arch in ("neutral", final_arch):
-                        final_list.append(full_data[(key, arch, _type, ver)])
+                    arch, ext, modifed, ver = select_latest(content_list, file_arch)
+                    final_list.append(full_data[(k, arch, ext, modifed, ver)])
 
             if main_file_name:
                 final_list.append(main_file_name)
                 file_name = main_file_name
             else:
-                # since unable to detect the main file assuming it to be the first file, since its true in most cases
-                file_name = final_list[0]
+                file_name = final_list[0] if final_list else file_name
 
             return final_list, file_name
 
@@ -265,7 +178,10 @@ async def url_generator(
                     node.parentNode.parentNode.getElementsByTagName("ID")[
                         0
                     ].firstChild.nodeValue
-                ] = f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}"
+                ] = (
+                    f"{node.firstChild.attributes['InstallerSpecificIdentifier'].value}_{node.firstChild.attributes['FileName'].value}",
+                    node.firstChild.attributes["Modified"].value,
+                )
             except KeyError:
                 continue
         # if the server returned no files notify the user that the app was not found
@@ -274,16 +190,18 @@ async def url_generator(
 
         # extracting the update id,revision number from the xml
         identities = {}  # {filename: (update_id, revision_number)}
+        name_modified = {}  # {filename: (update_id, revision_number, modified)}
         for node in doc.getElementsByTagName("SecuredFragment"):
             # using try statement to avoid errors caused when attributes are not found
             try:
-                file_name = filenames[
+                file_name, modifed = filenames[
                     node.parentNode.parentNode.parentNode.getElementsByTagName("ID")[
                         0
                     ].firstChild.nodeValue
                 ]
 
                 update_identity = node.parentNode.parentNode.firstChild
+                name_modified[file_name] = modifed
                 identities[file_name] = (
                     update_identity.attributes["UpdateID"].value,
                     update_identity.attributes["RevisionNumber"].value,
@@ -292,9 +210,7 @@ async def url_generator(
                 continue
         check(Event)
         # parsing the filenames according to latest version,favorable types,system arch
-        parse_names, main_file_name = parse_dict(
-            identities, main_file_name, ignore_ver, all_dependencies
-        )
+        parse_names, main_file_name = parse_dict(name_modified, main_file_name)
         final_dict = {}  # {filename: (update_id, revision_number)}
         for value in parse_names:
             final_dict[value] = identities[value]

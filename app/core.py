@@ -1,10 +1,10 @@
 import asyncio
 import os
+import subprocess
 import time
 from datetime import datetime
 from threading import Event
 
-import clr
 from pypdl import Pypdl
 from PyQt6.QtCore import QThreadPool
 from PyQt6.QtGui import QIcon
@@ -15,7 +15,6 @@ from modules.url_gen import url_generator
 from utls import Worker, default_logger
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-clr.AddReference(rf"{script_dir}\data\System.Management.Automation.dll")
 
 
 class internal_func(Ui_MainProgram):
@@ -105,7 +104,7 @@ class internal_func(Ui_MainProgram):
                 current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
                 f.write(f"[python logs] \n{current_time}\n\n")
                 f.write(n[2])
-                f.write(f'{82*"-"}\n')
+                f.write(f"{82 * '-'}\n")
 
         # if normal show a simple popup
         if normal:
@@ -322,58 +321,45 @@ class core(internal_func):
         self.threadpool.start(worker)
 
     def install(self, arg, **kwargs):
-        # importing the system management.Automation dlls powershell funcs
-        from System.Management.Automation import PowerShell
-
         self.stop_btn.hide()
         self.pushButton.show()
 
         def install_thread(path, progress_current, progress_main, uwp, val=True):
+            def run(command):
+                output = subprocess.run(
+                    [
+                        "C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                        command,
+                    ],
+                    creationflags=subprocess.CREATE_NO_WINDOW,
+                    capture_output=True,
+                    text=True,
+                )
+                return output
+
             flag = 0
             main_prog_error = 0
             part = int((100 - self.mainprogressBar.value()) / len(path))
 
-            # helper func for getting progress from powershell
-            def Progress(source, e):
-                prog = int(source[e.Index].PercentComplete)
-                # to remove -1 from the progress bar
-                progress_current.emit(prog if prog > 0 else 0)
-                if not val:
-                    progress_main.emit(prog if prog > 0 else 0)
-
-            # helper func for getting error from powershell
-            def error(source, e):
-                nonlocal flag, main_prog_error
-
-                flag = 1
-                if path[s_path] == 1:
-                    main_prog_error = 1
-
-                with open(f"{script_dir}/log.txt", "a") as f:
-                    current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
-                    f.write(f"[powershell logs] \n{current_time}\n\n")
-                    f.write(f'Package Name: {s_path.split("/")[-1]}\n\n')
-                    f.write(str(source[e.Index].Exception.Message))
-                    f.write(f'{82*"-"}\n')
-
             for s_path in path.keys():
-                # C# command run using pythonnet via system.management.automation dll
-                ps = PowerShell.Create()
-                ps.Streams.Progress.DataAdded += Progress
-                ps.Streams.Error.DataAdded += error
-
+                progress_current.emit(10)
                 if uwp:
-                    ps.AddCommand("Add-AppxPackage")
-                    ps.AddParameter("Path", s_path)
+                    output = run(f'Add-AppPackage "{s_path}"')
                 else:
-                    ps.AddCommand("Start-Process")
-                    ps.AddParameter("FilePath", s_path)
+                    output = run(f'Start-Process "{s_path}"')
 
-                try:
-                    ps.Invoke()
-                except Exception as e:
-                    print(e)
+                if not output.returncode == 0:
+                    flag = 1
+                    if path[s_path] == 1:
+                        main_prog_error = 1
 
+                    with open(f"{script_dir}/log.txt", "a") as f:
+                        current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
+                        f.write(f"[powershell logs] \n{current_time}\n\n")
+                        f.write(f"command: {output.args[1]}\n\n")
+                        f.write(output.stderr)
+                        f.write(f"{82 * '-'}\n")
+                progress_current.emit(100)
                 time.sleep(0.3)
                 progress_main.emit(part)
 
@@ -391,7 +377,6 @@ class core(internal_func):
                     detail_msg += "if the app is not installed, Enable [Advanced --> Dependencies --> Ignore Version], "
                     detail_msg += "If the problem still exists Enable [Advanced --> Dependencies --> Ignore All Filters]"
                     endresult = (msg, detail_msg, "Warning")
-
                 return endresult
             return 0
 

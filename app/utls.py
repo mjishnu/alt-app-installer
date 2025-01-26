@@ -18,7 +18,7 @@ def default_logger(name: str):
     logger.setLevel(logging.ERROR)
     handler = logging.FileHandler(f"{curr_dir}/log.txt", mode="a", delay=True)
     custom_format = (
-        f"[{name} logs] \n[%(asctime)s]\n\n %(levelname)s: %(message)s\n{82*'-'}\n"
+        f"[{name} logs] \n[%(asctime)s]\n\n %(levelname)s: %(message)s\n{82 * '-'}\n"
     )
     handler.setFormatter(logging.Formatter(custom_format, datefmt="%d-%m-%Y %H:%M:%S"))
     logger.addHandler(handler)
@@ -279,7 +279,7 @@ class Ui_about(QDialog):
             QtWidgets.QSizePolicy.Policy.Expanding,
         )
         self.gridLayout.addItem(spacerItem9, 0, 1, 1, 1)
-        self.label.setText("Alt App Installer 2.6.10")
+        self.label.setText("Alt App Installer 2.7.0")
         self.label_2.setText("© 2022 - 2025 Jishnu M")
         urlLink = '<a href="http://github.com/mjishnu/alt-app-installer" style="text-decoration: none; color: black;">github.com/mjishnu/alt-app-installer</a>'
         self.label_3.setText(urlLink)
