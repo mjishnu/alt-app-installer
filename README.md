@@ -25,7 +25,7 @@ A program to  download and install microsoft store apps, for cli version check [
     - Favorable type(these are decrypted file formats, which doesn't need admin privilage to install)
     - Latest version
 - Then it retrives the download links for the parsed data using the API and the files are downloaded using [pypdl](https://github.com/mjishnu/pypdl), which allows for concurrent/multi-part downloading this makes the download faster.It also has the ability to resume interrupted downloads and can also automatically use a new url in case current download link expires.
-- Finally it installs the downloaded files via System.Management.Automation.dll using [pythonnet](https://pypi.org/project/pythonnet)
+- Finally it installs the downloaded files via Subprocess module
 
 <img width="1060" alt="1-min" src="https://user-images.githubusercontent.com/83004520/226940878-11cfb8ca-074e-4876-8a38-142559f5116b.png">
 <img width="1060" alt="2-min" src="https://user-images.githubusercontent.com/83004520/226940893-f4f01e91-2d0c-4231-b1a2-27653d6ac164.png">
