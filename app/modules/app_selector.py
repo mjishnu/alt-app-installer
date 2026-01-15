@@ -1,10 +1,12 @@
 import os
 
 from PyQt6.QtCore import QObject, QUrl, pyqtSignal
-from PyQt6.QtGui import QAction, QIcon
+from PyQt6.QtGui import QAction
 from PyQt6.QtWebEngineCore import QWebEnginePage
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWidgets import QLabel, QLineEdit, QMenu, QPushButton, QStatusBar, QToolBar
+
+from utls import load_icon
 
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -62,7 +64,8 @@ class CustomWebEngineView(QWebEngineView):
         if self.selectedText() or self._is_text_box:
             menu = QMenu(self)
             copy_action = menu.addAction(
-                QIcon(f"{parent_dir}/data/images/copy.png"), "Copy"
+                load_icon(f"{parent_dir}/data/images/copy.png", recolor_for_dark=True),
+                "Copy",
             )
             copy_action.setShortcut("Ctrl+C")
             copy_action.triggered.connect(
@@ -70,7 +73,8 @@ class CustomWebEngineView(QWebEngineView):
             )
             menu.addSeparator()
             paste_action = menu.addAction(
-                QIcon(f"{parent_dir}/data/images/paste.png"), "Paste"
+                load_icon(f"{parent_dir}/data/images/paste.png", recolor_for_dark=True),
+                "Paste",
             )
             paste_action.setShortcut("Ctrl+V")
             paste_action.triggered.connect(
@@ -155,7 +159,9 @@ class AppSelector(QObject):
 
         # setting status tip
         back_btn.setStatusTip("Back to previous page")
-        back_btn.setIcon(QIcon(f"{parent_dir}/data/images/Back.png"))
+        back_btn.setIcon(
+            load_icon(f"{parent_dir}/data/images/Back.png", recolor_for_dark=True)
+        )
 
         # adding action to the back button
         # making browser go back
@@ -167,7 +173,9 @@ class AppSelector(QObject):
         # similarly for forward action
         next_btn = QAction("", qt_window)
         next_btn.setStatusTip("Forward to next page")
-        next_btn.setIcon(QIcon(f"{parent_dir}/data/images/forward.png"))
+        next_btn.setIcon(
+            load_icon(f"{parent_dir}/data/images/forward.png", recolor_for_dark=True)
+        )
 
         # adding action to the next button
         # making browser go forward
@@ -181,7 +189,9 @@ class AppSelector(QObject):
         # similarly for reload action
         reload_btn = QAction("", qt_window)
         reload_btn.setStatusTip("Reload page")
-        reload_btn.setIcon(QIcon(f"{parent_dir}/data/images/reload.png"))
+        reload_btn.setIcon(
+            load_icon(f"{parent_dir}/data/images/reload.png", recolor_for_dark=True)
+        )
 
         # adding action to the reload button
         # making browser to reload
@@ -191,7 +201,9 @@ class AppSelector(QObject):
         # similarly for home button
         home_btn = QAction("", qt_window)
         home_btn.setStatusTip("Home page")
-        home_btn.setIcon(QIcon(f"{parent_dir}/data/images/home.png"))
+        home_btn.setIcon(
+            load_icon(f"{parent_dir}/data/images/home.png", recolor_for_dark=True)
+        )
 
         # adding action to the home button
         # making browser go to home
@@ -217,7 +229,9 @@ class AppSelector(QObject):
         qt_window.select_btn = QPushButton(qt_window)
         qt_window.select_btn.setText("Select")
         qt_window.select_btn.setStatusTip("Select The File To Download")
-        qt_window.select_btn.setIcon(QIcon(f"{parent_dir}/data/images/ok.png"))
+        qt_window.select_btn.setIcon(
+            load_icon(f"{parent_dir}/data/images/ok.png", recolor_for_dark=True)
+        )
         qt_window.select_btn.clicked.connect(current_url)
         navtb.addWidget(qt_window.select_btn)
         qt_window.urlbar.returnPressed.connect(navigate_to_url)

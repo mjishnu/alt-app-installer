@@ -7,12 +7,11 @@ from threading import Event
 
 from pypdl import Pypdl
 from PyQt6.QtCore import QThreadPool
-from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox
 
 from modules.gui import Ui_MainProgram
 from modules.url_gen import url_generator
-from utls import Worker, default_logger
+from utls import Worker, default_logger, load_icon
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,10 +26,10 @@ class internal_func(Ui_MainProgram):
         msg.setText(f"{str(text)}     ")
         if critical:
             msg.setIcon(QMessageBox.Icon.Critical)
-            msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_r.png"))
+            msg.setWindowIcon(load_icon(f"{script_dir}/data/images/error_r.png"))
         else:
             msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_y.png"))
+            msg.setWindowIcon(load_icon(f"{script_dir}/data/images/error_y.png"))
         msg.setDetailedText(
             str(msg_details) + "\n\ncheck Full Logs [Help --> Open Logs]"
         )
@@ -51,7 +50,7 @@ class internal_func(Ui_MainProgram):
     def show_error_popup(self, txt="An Error Has Occured Try Again!"):
         msg = QMessageBox()
         msg.setWindowTitle("Error")
-        msg.setWindowIcon(QIcon(f"{script_dir}/data/images/error_r.png"))
+        msg.setWindowIcon(load_icon(f"{script_dir}/data/images/error_r.png"))
         msg.setText(f"{txt}     ")
         msg.setIcon(QMessageBox.Icon.Critical)
         if txt in ("No Logs Found!", "No Downloads Found!"):
@@ -71,7 +70,7 @@ class internal_func(Ui_MainProgram):
     def show_success_popup(self, text=None):
         msg = QMessageBox()
         msg.setWindowTitle("Success")
-        msg.setWindowIcon(QIcon(f"{script_dir}/data/images/success.png"))
+        msg.setWindowIcon(load_icon(f"{script_dir}/data/images/success.png"))
         if text:
             msg.setText(f"{text}     ")
         else:
@@ -167,7 +166,7 @@ class internal_func(Ui_MainProgram):
     def closeEvent(self, event):
         close = QMessageBox()
         close.setWindowTitle("Confirm")
-        close.setWindowIcon(QIcon(f"{script_dir}/data/images/error_y.png"))
+        close.setWindowIcon(load_icon(f"{script_dir}/data/images/error_y.png"))
         close.setText("Are you sure you want to exit?     ")
         close.setIcon(QMessageBox.Icon.Warning)
         close.setStandardButtons(

@@ -2,6 +2,8 @@ import os
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
+from utls import build_check_icon, load_icon, load_pixmap
+
 # parent directory for absloute path
 parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -62,7 +64,9 @@ class Ui_MainProgram(object):
         self.imagetitle.setMaximumSize(QtCore.QSize(51, 51))
         self.imagetitle.setText("")
         self.imagetitle.setPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/installer_icon.png")
+            load_pixmap(
+                f"{parent_dir}/data/images/installer_icon.png", recolor_for_dark=True
+            )
         )
         self.imagetitle.setScaledContents(True)
         self.imagetitle.setObjectName("imagetitle")
@@ -161,7 +165,7 @@ class Ui_MainProgram(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
         self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setMaximumSize(QtCore.QSize(114, 30))
+        self.pushButton.setMaximumSize(QtCore.QSize(180, 30))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(14)
@@ -318,23 +322,15 @@ class Ui_MainProgram(object):
         self.advancedmenu = QtWidgets.QMenu(parent=self.menuOptions)
         self.advancedmenu.setEnabled(True)
         self.advancedmenu.setTearOffEnabled(False)
-        icon = QtGui.QIcon()
-        icon.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/advanced.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.advancedmenu.setIcon(
+            load_icon(f"{parent_dir}/data/images/advanced.png", recolor_for_dark=True)
         )
-        self.advancedmenu.setIcon(icon)
         self.advancedmenu.setToolTipsVisible(False)
         self.advancedmenu.setObjectName("advancedmenu")
         self.Dependencymenu = QtWidgets.QMenu(parent=self.advancedmenu)
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/dependency.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.Dependencymenu.setIcon(
+            load_icon(f"{parent_dir}/data/images/dependency.png", recolor_for_dark=True)
         )
-        self.Dependencymenu.setIcon(icon1)
         self.Dependencymenu.setObjectName("Dependencymenu")
         self.menuAbout = QtWidgets.QMenu(parent=self.menubar)
         self.menuAbout.setObjectName("menuAbout")
@@ -347,140 +343,80 @@ class Ui_MainProgram(object):
         self.actionDownload_From_Url = QtGui.QAction(parent=MainProgram)
         self.actionDownload_From_Url.setObjectName("actionDownload_From_Url")
         self.actionclear_cache = QtGui.QAction(parent=MainProgram)
-        icon2 = QtGui.QIcon()
-        icon2.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/clear.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionclear_cache.setIcon(
+            load_icon(f"{parent_dir}/data/images/clear.png", recolor_for_dark=True)
         )
-        self.actionclear_cache.setIcon(icon2)
         self.actionclear_cache.setObjectName("actionclear_cache")
         self.actionInstall_Driver_Chrome = QtGui.QAction(parent=MainProgram)
         self.actionInstall_Driver_Chrome.setObjectName("actionInstall_Driver_Chrome")
         self.actionInstall_Chrome_Driver = QtGui.QAction(parent=MainProgram)
         self.actionInstall_Chrome_Driver.setObjectName("actionInstall_Chrome_Driver")
         self.actionCheck_For_Updates = QtGui.QAction(parent=MainProgram)
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/update.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionCheck_For_Updates.setIcon(
+            load_icon(f"{parent_dir}/data/images/update.png", recolor_for_dark=True)
         )
-        self.actionCheck_For_Updates.setIcon(icon3)
         self.actionCheck_For_Updates.setObjectName("actionCheck_For_Updates")
         self.actionAbout = QtGui.QAction(parent=MainProgram)
-        icon4 = QtGui.QIcon()
-        icon4.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/about.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionAbout.setIcon(
+            load_icon(f"{parent_dir}/data/images/about.png", recolor_for_dark=True)
         )
-        self.actionAbout.setIcon(icon4)
         self.actionAbout.setStatusTip("")
         self.actionAbout.setObjectName("actionAbout")
         self.actionHelp = QtGui.QAction(parent=MainProgram)
-        icon5 = QtGui.QIcon()
-        icon5.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/help.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionHelp.setIcon(
+            load_icon(f"{parent_dir}/data/images/help.png", recolor_for_dark=True)
         )
-        self.actionHelp.setIcon(icon5)
         self.actionHelp.setObjectName("actionHelp")
         self.actionOpen_Logs = QtGui.QAction(parent=MainProgram)
-        icon6 = QtGui.QIcon()
-        icon6.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/log.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionOpen_Logs.setIcon(
+            load_icon(f"{parent_dir}/data/images/log.png", recolor_for_dark=True)
         )
-        self.actionOpen_Logs.setIcon(icon6)
         self.actionOpen_Logs.setObjectName("actionOpen_Logs")
         self.actionDownload_From_Url_2 = QtGui.QAction(parent=MainProgram)
         self.actionDownload_From_Url_2.setObjectName("actionDownload_From_Url_2")
         self.actioninstall_From_File = QtGui.QAction(parent=MainProgram)
-        icon7 = QtGui.QIcon()
-        icon7.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/file.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actioninstall_From_File.setIcon(
+            load_icon(f"{parent_dir}/data/images/file.png", recolor_for_dark=True)
         )
-        self.actioninstall_From_File.setIcon(icon7)
         self.actioninstall_From_File.setObjectName("actioninstall_From_File")
         self.actionSet_Wait_Time = QtGui.QAction(parent=MainProgram)
         self.actionSet_Wait_Time.setObjectName("actionSet_Wait_Time")
         self.actionDownloads = QtGui.QAction(parent=MainProgram)
-        icon8 = QtGui.QIcon()
-        icon8.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/downloads.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionDownloads.setIcon(
+            load_icon(f"{parent_dir}/data/images/downloads.png", recolor_for_dark=True)
         )
-        self.actionDownloads.setIcon(icon8)
         self.actionDownloads.setObjectName("actionDownloads")
         self.actionAll_Dependencies = QtGui.QAction(parent=MainProgram)
         self.actionAll_Dependencies.setCheckable(True)
-        icon9 = QtGui.QIcon()
-        icon9.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/unchecked.png"),
-            QtGui.QIcon.Mode.Selected,
-            QtGui.QIcon.State.Off,
-        )
-        icon9.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/checked.png"),
-            QtGui.QIcon.Mode.Selected,
-            QtGui.QIcon.State.On,
+        icon9 = build_check_icon(
+            f"{parent_dir}/data/images/unchecked.png",
+            f"{parent_dir}/data/images/checked.png",
+            recolor_for_dark=True,
         )
         self.actionAll_Dependencies.setIcon(icon9)
         self.actionAll_Dependencies.setObjectName("actionAll_Dependencies")
         self.actionIgnore_Latest_Version = QtGui.QAction(parent=MainProgram)
         self.actionIgnore_Latest_Version.setCheckable(True)
-        icon10 = QtGui.QIcon()
-        icon10.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/unchecked.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
-        icon10.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/checked.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.On,
+        icon10 = build_check_icon(
+            f"{parent_dir}/data/images/unchecked.png",
+            f"{parent_dir}/data/images/checked.png",
+            recolor_for_dark=True,
         )
         self.actionIgnore_Latest_Version.setIcon(icon10)
         self.actionIgnore_Latest_Version.setObjectName("actionIgnore_Latest_Version")
         self.actionIgnore_All_filters = QtGui.QAction(parent=MainProgram)
         self.actionIgnore_All_filters.setCheckable(True)
-        icon11 = QtGui.QIcon()
-        icon11.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/unchecked.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
-        )
-        icon11.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/checked.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.On,
-        )
-        icon11.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/unchecked.png"),
-            QtGui.QIcon.Mode.Selected,
-            QtGui.QIcon.State.Off,
-        )
-        icon11.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/checked.png"),
-            QtGui.QIcon.Mode.Selected,
-            QtGui.QIcon.State.On,
+        icon11 = build_check_icon(
+            f"{parent_dir}/data/images/unchecked.png",
+            f"{parent_dir}/data/images/checked.png",
+            recolor_for_dark=True,
         )
         self.actionIgnore_All_filters.setIcon(icon11)
         self.actionIgnore_All_filters.setObjectName("actionIgnore_All_filters")
         self.actionget_using_url = QtGui.QAction(parent=MainProgram)
-        icon12 = QtGui.QIcon()
-        icon12.addPixmap(
-            QtGui.QPixmap(f"{parent_dir}/data/images/link.png"),
-            QtGui.QIcon.Mode.Normal,
-            QtGui.QIcon.State.Off,
+        self.actionget_using_url.setIcon(
+            load_icon(f"{parent_dir}/data/images/link.png", recolor_for_dark=True)
         )
-        self.actionget_using_url.setIcon(icon12)
         self.actionget_using_url.setObjectName("actionget_using_url")
         self.actionDownload_Mode = QtGui.QAction(parent=MainProgram)
         self.actionDownload_Mode.setCheckable(True)

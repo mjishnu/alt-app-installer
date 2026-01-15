@@ -3,12 +3,11 @@ import shutil
 import sys
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from core import core
 from modules.app_selector import AppSelector
-from utls import UrlBox, Worker, open_browser, Ui_about
+from utls import Ui_about, UrlBox, Worker, load_icon, open_browser
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -155,7 +154,9 @@ class MainWindowGui(core):
             self.window.activateWindow()  # set focus to the currently open window
         else:  # open a new window
             self.window = QMainWindow()
-            self.window.setWindowIcon(QIcon(f"{curr_dir}/data/images/search.png"))
+            self.window.setWindowIcon(
+                load_icon(f"{curr_dir}/data/images/search.png", recolor_for_dark=True)
+            )
             search_app = AppSelector()
             search_app.setupUi(self.window)
             # overding the new window close event for proper cleanup
@@ -166,10 +167,13 @@ class MainWindowGui(core):
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet("QMenu::indicator { width: 0px; height: 0px; }")
     MainProgram = QMainWindow()
     ui = MainWindowGui()
     ui.setupUi(MainProgram)
-    MainProgram.setWindowIcon(QIcon(f"{curr_dir}/data/images/main.ico"))
+    MainProgram.setWindowIcon(
+        load_icon(f"{curr_dir}/data/images/main.ico", recolor_for_dark=True)
+    )
     MainProgram.closeEvent = ui.closeEvent  # overiding close event
     MainProgram.show()
     sys.exit(app.exec())

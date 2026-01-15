@@ -6,10 +6,130 @@ import webbrowser
 
 from PyQt6 import QtCore, QtWidgets
 from PyQt6.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
-from PyQt6.QtGui import QFont, QIcon, QPixmap
+from PyQt6.QtGui import (
+    QColor,
+    QFont,
+    QGuiApplication,
+    QIcon,
+    QImage,
+    QPainter,
+    QPalette,
+    QPixmap,
+)
 from PyQt6.QtWidgets import QDialog
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def is_dark_mode() -> bool:
+    app = QGuiApplication.instance()
+    if not app:
+        return False
+    hints = app.styleHints()
+    if hasattr(hints, "colorScheme"):
+        return hints.colorScheme() == QtCore.Qt.ColorScheme.Dark
+    palette = app.palette()
+    return palette.color(QPalette.ColorRole.Window).lightness() < 128
+
+
+_DARK_MODE_ICON_COLOR = QColor(255, 255, 255)
+
+
+def _palette_color(role: QPalette.ColorRole) -> QColor | None:
+    app = QGuiApplication.instance()
+    if not app:
+        return None
+    return app.palette().color(role)
+
+
+def _recolor_pixmap(pixmap: QPixmap, color: QColor) -> QPixmap:
+    if pixmap.isNull():
+        return pixmap
+    image = pixmap.toImage().convertToFormat(QImage.Format.Format_ARGB32)
+    painter = QPainter(image)
+    painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+    painter.fillRect(image.rect(), color)
+    painter.end()
+    return QPixmap.fromImage(image)
+
+
+def load_pixmap(
+    path: str,
+    *,
+    invert_for_dark: bool = False,
+    recolor_for_dark: bool = False,
+    recolor_color: QColor | None = None,
+    recolor_role: QPalette.ColorRole = QPalette.ColorRole.WindowText,
+) -> QPixmap:
+    pixmap = QPixmap(path)
+    if pixmap.isNull():
+        return pixmap
+    if is_dark_mode() and recolor_for_dark:
+        color = recolor_color or _palette_color(recolor_role) or _DARK_MODE_ICON_COLOR
+        return _recolor_pixmap(pixmap, color)
+    if is_dark_mode() and invert_for_dark:
+        image = pixmap.toImage()
+        if not image.isNull():
+            image.invertPixels()
+            return QPixmap.fromImage(image)
+    return pixmap
+
+
+def load_icon(
+    path: str,
+    *,
+    invert_for_dark: bool = False,
+    recolor_for_dark: bool = False,
+    recolor_color: QColor | None = None,
+    recolor_role: QPalette.ColorRole = QPalette.ColorRole.WindowText,
+) -> QIcon:
+    pixmap = load_pixmap(
+        path,
+        invert_for_dark=invert_for_dark,
+        recolor_for_dark=recolor_for_dark,
+        recolor_color=recolor_color,
+        recolor_role=recolor_role,
+    )
+    if pixmap.isNull():
+        return QIcon(path)
+    icon = QIcon()
+    icon.addPixmap(pixmap, QIcon.Mode.Normal, QIcon.State.Off)
+    return icon
+
+
+def build_check_icon(
+    unchecked_path: str,
+    checked_path: str,
+    *,
+    invert_for_dark: bool = False,
+    recolor_for_dark: bool = False,
+    recolor_color: QColor | None = None,
+    recolor_role: QPalette.ColorRole = QPalette.ColorRole.WindowText,
+) -> QIcon:
+    icon = QIcon()
+    icon.addPixmap(
+        load_pixmap(
+            unchecked_path,
+            invert_for_dark=invert_for_dark,
+            recolor_for_dark=recolor_for_dark,
+            recolor_color=recolor_color,
+            recolor_role=recolor_role,
+        ),
+        QIcon.Mode.Normal,
+        QIcon.State.Off,
+    )
+    icon.addPixmap(
+        load_pixmap(
+            checked_path,
+            invert_for_dark=invert_for_dark,
+            recolor_for_dark=recolor_for_dark,
+            recolor_color=recolor_color,
+            recolor_role=recolor_role,
+        ),
+        QIcon.Mode.Normal,
+        QIcon.State.On,
+    )
+    return icon
 
 
 def default_logger(name: str):
@@ -39,13 +159,9 @@ class UrlBox(QDialog):
         Form.setMaximumSize(QtCore.QSize(600, 49))
         Form.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.NoContextMenu)
         Form.setWindowTitle("Enter URL")
-        icon = QIcon()
-        icon.addPixmap(
-            QPixmap(f"{curr_dir}/data/images/main.ico"),
-            QIcon.Mode.Normal,
-            QIcon.State.Off,
+        Form.setWindowIcon(
+            load_icon(f"{curr_dir}/data/images/main.ico", recolor_for_dark=True)
         )
-        Form.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -139,7 +255,7 @@ class Worker(QRunnable):
         try:
             self.signals.started.emit()
             result = self.fn(*self.args, **self.kwargs)
-        except:
+        except Exception:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
@@ -163,13 +279,9 @@ class Ui_about(QDialog):
         about.setObjectName("about")
         about.resize(315, 200)
         about.setMaximumSize(QtCore.QSize(327, 218))
-        icon = QIcon()
-        icon.addPixmap(
-            QPixmap(f"{curr_dir}/data/images/main.ico"),
-            QIcon.Mode.Normal,
-            QIcon.State.Off,
+        about.setWindowIcon(
+            load_icon(f"{curr_dir}/data/images/main.ico", recolor_for_dark=True)
         )
-        about.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(about)
         self.gridLayout.setObjectName("gridLayout")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -208,7 +320,11 @@ class Ui_about(QDialog):
         self.imagetitle = QtWidgets.QLabel(parent=about)
         self.imagetitle.setMaximumSize(QtCore.QSize(90, 90))
         self.imagetitle.setText("")
-        self.imagetitle.setPixmap(QPixmap(f"{curr_dir}/data/images/installer_icon.png"))
+        self.imagetitle.setPixmap(
+            load_pixmap(
+                f"{curr_dir}/data/images/installer_icon.png", recolor_for_dark=True
+            )
+        )
         self.imagetitle.setScaledContents(True)
         self.imagetitle.setObjectName("imagetitle")
         self.horizontalLayout.addWidget(self.imagetitle)
@@ -255,6 +371,9 @@ class Ui_about(QDialog):
         self.label_3.setFont(font)
         self.label_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label_3.setOpenExternalLinks(True)
+        self.label_3.setStyleSheet(
+            "QLabel a { color: palette(link); text-decoration: none; }"
+        )
         self.label_3.setObjectName("label_3")
         self.horizontalLayout_6.addWidget(self.label_3)
         spacerItem7 = QtWidgets.QSpacerItem(
@@ -279,9 +398,12 @@ class Ui_about(QDialog):
             QtWidgets.QSizePolicy.Policy.Expanding,
         )
         self.gridLayout.addItem(spacerItem9, 0, 1, 1, 1)
-        self.label.setText("Alt App Installer 2.7.0")
-        self.label_2.setText("© 2022 - 2025 Jishnu M")
-        urlLink = '<a href="http://github.com/mjishnu/alt-app-installer" style="text-decoration: none; color: black;">github.com/mjishnu/alt-app-installer</a>'
+        self.label.setText("Alt App Installer 2.7.1")
+        self.label_2.setText("© 2022 - 2026 Jishnu M")
+        urlLink = (
+            '<a href="http://github.com/mjishnu/alt-app-installer" '
+            'style="text-decoration: none;">github.com/mjishnu/alt-app-installer</a>'
+        )
         self.label_3.setText(urlLink)
         self.setWindowTitle("About")
         self.label_3.setOpenExternalLinks(True)
