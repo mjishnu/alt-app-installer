@@ -352,12 +352,15 @@ class core(internal_func):
                     if path[s_path] == 1:
                         main_prog_error = 1
 
-                    with open(f"{script_dir}/log.txt", "a") as f:
-                        current_time = datetime.now().strftime("[%d-%m-%Y %H:%M:%S]")
-                        f.write(f"[powershell logs] \n{current_time}\n\n")
-                        f.write(f"command: {output.args[1]}\n\n")
-                        f.write(output.stderr)
-                        f.write(f"{82 * '-'}\n")
+                    if output.stderr:
+                        with open(f"{script_dir}/log.txt", "a") as f:
+                            current_time = datetime.now().strftime(
+                                "[%d-%m-%Y %H:%M:%S]"
+                            )
+                            f.write(f"[powershell logs] \n{current_time}\n\n")
+                            f.write(f"command: {output.args[1]}\n\n")
+                            f.write(output.stderr)
+                            f.write(f"{82 * '-'}\n")
                 progress_current.emit(100)
                 time.sleep(0.3)
                 progress_main.emit(part)

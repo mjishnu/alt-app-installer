@@ -398,7 +398,7 @@ class Ui_about(QDialog):
             QtWidgets.QSizePolicy.Policy.Expanding,
         )
         self.gridLayout.addItem(spacerItem9, 0, 1, 1, 1)
-        self.label.setText("Alt App Installer 2.7.1")
+        self.label.setText("Alt App Installer 2.7.2")
         self.label_2.setText("© 2022 - 2026 Jishnu M")
         urlLink = (
             '<a href="http://github.com/mjishnu/alt-app-installer" '
