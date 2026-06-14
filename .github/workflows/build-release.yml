@@ -1,0 +1,135 @@
+name: Build and Draft Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (for example: 1.1.0 or v1.1.0)"
+        required: true
+        default: "v1.1.0"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build, Sign and Draft Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Normalize and Validate Version
+        id: version
+        shell: pwsh
+        env:
+          VERSION_INPUT: ${{ github.event.inputs.version }}
+        run: |
+          $raw = "$env:VERSION_INPUT".Trim()
+          if ([string]::IsNullOrWhiteSpace($raw)) {
+            throw "Version input cannot be empty."
+          }
+
+          $normalized = if ($raw.StartsWith('v', [System.StringComparison]::OrdinalIgnoreCase)) {
+            $raw.Substring(1)
+          } else {
+            $raw
+          }
+
+          $parsed = $null
+          if (-not [System.Version]::TryParse($normalized, [ref]$parsed)) {
+            throw "Invalid version '$raw'. Use a numeric version format like 1.1.0 (optional v prefix)."
+          }
+
+          "release_version=$normalized" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "release_tag=v$normalized"    | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Patch VERSION in utls.py
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
+        run: |
+          $path = "app/utls.py"
+          $content = Get-Content $path -Raw
+          $content = $content -replace 'Alt App Installer \d+(\.\d+)*', "Alt App Installer $env:RELEASE_VERSION"
+          Set-Content -Path $path -Value $content -NoNewline
+          Write-Host "Set version to $env:RELEASE_VERSION"
+
+      - name: Setup Python (x64)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: "x64"
+
+      - name: Install Dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Application
+        shell: pwsh
+        run: >
+          pyinstaller app/main.py
+          --windowed
+          --name altappinstaller
+          --icon app/data/images/main.ico
+          --add-data "app/data/xml/*;data/xml"
+          --add-data "app/data/images/*;data/images"
+          --noconfirm
+
+      - name: Decode Certificate
+        shell: pwsh
+        env:
+          CERT_BASE64: ${{ secrets.CERT_BASE64 }}
+        run: |
+          $pfxCertBytes = [System.Convert]::FromBase64String($env:CERT_BASE64)
+          [System.IO.File]::WriteAllBytes("cert.pfx", $pfxCertBytes)
+
+      - name: Sign Executable and Export Public Certificate
+        shell: pwsh
+        env:
+          CERT_PASSWORD: ${{ secrets.CERT_PASSWORD }}
+        run: |
+          $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new(
+            "cert.pfx",
+            $env:CERT_PASSWORD
+          )
+
+          Set-AuthenticodeSignature `
+            -FilePath "dist/altappinstaller/altappinstaller.exe" `
+            -Certificate $cert `
+            -TimestampServer "http://timestamp.digicert.com" | Out-Null
+
+          $certBytes = $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+          [System.IO.File]::WriteAllBytes("altappinstaller.cer", $certBytes)
+
+      - name: Package Application with Version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.release_tag }}
+        run: |
+          Compress-Archive -Path "dist/altappinstaller/*" -DestinationPath "dist/altappinstaller-$env:RELEASE_TAG.zip" -Force
+
+      - name: Create Certificate Install Bundle
+        shell: pwsh
+        run: |
+          $bundleDir = Join-Path $PWD "cert_bundle"
+          New-Item -ItemType Directory -Path $bundleDir -Force | Out-Null
+          Copy-Item -Path "altappinstaller.cer" -Destination (Join-Path $bundleDir "altappinstaller.cer") -Force
+          Copy-Item -Path ".github/scripts/install-cert.bat" -Destination (Join-Path $bundleDir "install-cert.bat") -Force
+          Compress-Archive -Path (Join-Path $bundleDir "*") -DestinationPath "altappinstaller-cert.zip" -Force
+
+      - name: Create Draft GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.release_tag }}
+          name: Alt App Installer ${{ steps.version.outputs.release_tag }}
+          draft: true
+          generate_release_notes: true
+          files: |
+            dist/altappinstaller-${{ steps.version.outputs.release_tag }}.zip
+            altappinstaller-cert.zip

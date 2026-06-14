@@ -1,0 +1,44 @@
+name: Publish to WinGet
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag to publish (e.g., v2.7.3)"
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Komac
+        run: |
+          wget https://github.com/russellbanks/Komac/releases/download/v2.16.0/komac-2.16.0-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf komac-2.16.0-x86_64-unknown-linux-gnu.tar.gz
+          chmod +x komac
+
+      - name: Submit update to WinGet
+        run: |
+          # Determine the tag based on how the action was triggered
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.version }}"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+          fi
+
+          # Strip the 'v' for the WinGet version format (e.g., v2.7.3 becomes 2.7.3)
+          VERSION="${TAG#v}"
+
+          # Single neutral zip (nested portable). Komac reuses the InstallerType,
+          # NestedInstallerType and neutral architecture from the previous version,
+          # so only the new installer URL is required here.
+          # Asset name matches build-release.yml output: altappinstaller-<TAG>.zip
+          URL="https://github.com/mjishnu/alt-app-installer/releases/download/$TAG/altappinstaller-$TAG.zip"
+          ./komac update mjishnu.altappinstaller \
+            --version "$VERSION" \
+            --urls "$URL" \
+            --submit
+        env:
+          GITHUB_TOKEN: ${{ secrets.WINGET_TOKEN }}

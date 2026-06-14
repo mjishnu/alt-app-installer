@@ -1,0 +1,18 @@
+name: Discord Release Notification
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  github-releases-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: GitHub Releases to Discord
+        uses: SethCohen/github-releases-to-discord@v1
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          username: "Github"
+          avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
