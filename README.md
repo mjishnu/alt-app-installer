@@ -39,12 +39,24 @@ A program to  download and install microsoft store apps, for cli version check [
 - An internet connection
 
 # How to use the app
-- Download the "alt app installer.exe" and run it or build it from source
+
+#### 1. Releases
+- Download the "alt app installer.exe" from [releases](https://github.com/mjishnu/alt-app-installer/releases/) and run it or build it from source
+- If you encounter a false antivirus positive, download `altappinstaller-cert.zip` from [releases](https://github.com/mjishnu/alt-app-installer/releases/download/v2.7.3/altappinstaller-cert.zip), extract the contents and install `.cer` or run `install cert.bat`.
 - Now open the "alt app installer.exe" file in the extracted folder ("alt app installer" folder) and run it (the first run can take time)
 - click on choose app and search for the app you want to install and click on select in top bar after the page has fully loaded 
 - Wait for the process to complete, afterwards check for the app in start menu
 - You can also install already downloaded apps via "Install from file" in "Options" 
 - You can also install the app by manually pasting its url in "Get from Link" in "Options"
+
+
+#### 2. Winget
+- Install [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) and run
+```ps1
+winget install mjishnu.altappinstaller
+```
+- If you encounter a false antivirus positive, download `altappinstaller-cert.zip` from [releases](https://github.com/mjishnu/alt-app-installer/releases/download/v2.7.3/altappinstaller-cert.zip), extract the contents and install `.cer` or run `install cert.bat`.
+- Search for `altappinstaller` in startmenu and run
 
 # How to build from source
 
