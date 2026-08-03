@@ -47,7 +47,7 @@ class internal_func(Ui_MainProgram):
             self.pushButton.show()
         msg.exec()
 
-    def show_error_popup(self, txt="An Error Has Occured Try Again!"):
+    def show_error_popup(self, txt="An Error Has Occurred Try Again!"):
         msg = QMessageBox()
         msg.setWindowTitle("Error")
         msg.setWindowIcon(load_icon(f"{script_dir}/data/images/error_r.png"))
@@ -122,7 +122,7 @@ class internal_func(Ui_MainProgram):
             else:
                 log_error()
                 if msg is None:
-                    msg = "An Error Has Occured Try Again!"
+                    msg = "An Error Has Occurred Try Again!"
                 self.error_msg(msg, msg_details, "Error", critical)
 
     def run_success(self, value):
@@ -291,7 +291,7 @@ class core(internal_func):
                 if len(d.failed) == d.total_task:
                     d.shutdown()
                     handler.close()
-                    raise Exception("Download Error Occured!")
+                    raise Exception("Download Error Occurred!")
 
                 progress_main.emit(part)
 
